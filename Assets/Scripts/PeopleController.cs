@@ -31,12 +31,17 @@ namespace GoogleARCore.HelloAR
     public class PeopleController : MonoBehaviour
     {
         /// <summary>
-        /// The ARCore library to avoid enabling when running on the Unity Editor
+        /// The ARCore Device prefab.
         /// </summary>
-        public GameObject m_ARCore;
+        public GameObject m_ARCoreDevice;
 
         /// <summary>
-        /// The camera used when running on the Unity Editor
+        /// Renders points detected by ARCore.
+        /// </summary>
+        public GameObject m_pointCloud;
+
+        /// <summary>
+        /// The camera used when running on the Unity Editor.
         /// </summary>
         public Camera m_editorCamera;
 
@@ -90,7 +95,8 @@ namespace GoogleARCore.HelloAR
         public void Start ()
         {
 #if !UNITY_EDITOR
-            m_ARCore.SetActive (true);
+            m_ARCoreDevice.SetActive (true);
+            m_pointCloud.SetActive (true);
             m_activeCamera = m_firstPersonCamera;
             m_searchingForPlaneUI.SetActive (true);
 #else
