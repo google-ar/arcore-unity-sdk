@@ -31,6 +31,16 @@ namespace GoogleARCore.HelloAR
     public class PeopleController : MonoBehaviour
     {
         /// <summary>
+        /// The ARCore library to avoid enabling when running on the Unity Editor
+        /// </summary>
+        public GameObject m_ARCore;
+
+        /// <summary>
+        /// The camera used when running on the Unity Editor
+        /// </summary>
+        public Camera m_editorCamera;
+
+        /// <summary>
         /// The first-person camera being used to render the passthrough camera.
         /// </summary>
         public Camera m_firstPersonCamera;
@@ -49,6 +59,8 @@ namespace GoogleARCore.HelloAR
         /// A gameobject parenting UI for displaying the "searching for planes" snackbar.
         /// </summary>
         public GameObject m_searchingForPlaneUI;
+
+        private Camera m_activeCamera;
 
         private List<TrackedPlane> m_newPlanes = new List<TrackedPlane> ();
 
@@ -73,10 +85,26 @@ namespace GoogleARCore.HelloAR
         };
 
         /// <summary>
+        /// The Unity Start() method.
+        /// </summary>
+        public void Start ()
+        {
+#if !UNITY_EDITOR
+            m_ARCore.SetActive (true);
+            m_activeCamera = m_firstPersonCamera;
+            m_searchingForPlaneUI.SetActive (true);
+#else
+            m_editorCamera.gameObject.SetActive (true);
+            m_activeCamera = m_editorCamera;
+#endif
+        }
+
+        /// <summary>
         /// The Unity Update() method.
         /// </summary>
         public void Update ()
         {
+#if !UNITY_EDITOR
             _QuitOnConnectionErrors ();
 
             // The tracking state must be FrameTrackingState.Tracking in order to access the Frame.
@@ -129,20 +157,36 @@ namespace GoogleARCore.HelloAR
                 // world evolves.
                 var anchor = Session.CreateAnchor (hit.Point, Quaternion.identity);
 
-                // Intanstiate an Andy Android object as a child of the anchor; it's transform will now benefit
-                // from the anchor's tracking.
-                var andyObject = Instantiate (m_andyAndroidPrefab, hit.Point, Quaternion.identity,
-                                     anchor.transform);
-
-                // Andy should look at the camera but still be flush with the plane.
-                andyObject.transform.LookAt (m_firstPersonCamera.transform);
-                andyObject.transform.rotation = Quaternion.Euler (0.0f,
-                    andyObject.transform.rotation.eulerAngles.y, andyObject.transform.rotation.z);
+                var andyObject = PlaceCharacter (hit.Point, anchor.transform);
 
                 // Use a plane attachment component to maintain Andy's y-offset from the plane
                 // (occurs after anchor updates).
                 andyObject.GetComponent<PlaneAttachment> ().Attach (hit.Plane);
             }
+#else
+            if (Input.GetMouseButtonDown (0)) {
+                float randomX = Random.Range (0.0f, 2.0f);
+                float randomZ = Random.Range (0.0f, 2.0f);
+                Vector3 position = new Vector3 (randomX, 0, randomZ);
+
+                PlaceCharacter (position, null);
+            }
+#endif
+        }
+
+        private GameObject PlaceCharacter (Vector3 position, Transform parent)
+        {
+
+            // Intanstiate an Andy Android object as a child of the anchor; it's transform will now benefit
+            // from the anchor's tracking.
+            GameObject andyObject = Instantiate (m_andyAndroidPrefab, position, Quaternion.identity, parent);
+
+            // Andy should look at the camera but still be flush with the plane.
+            andyObject.transform.LookAt (m_activeCamera.transform);
+            andyObject.transform.rotation = Quaternion.Euler (0.0f, andyObject.transform.rotation.eulerAngles.y,
+                andyObject.transform.rotation.z);
+
+            return andyObject;
         }
 
         /// <summary>
