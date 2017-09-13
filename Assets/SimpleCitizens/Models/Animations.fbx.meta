@@ -1,0 +1,936 @@
+fileFormatVersion: 2
+guid: 4dc1a999b3d9240418f7b4a18e99bba9
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Body_jnt
+    100004: Foot_Left_jnt
+    100006: Foot_Left_jnt1
+    100008: Foot_Right_jnt
+    100010: Foot_Right_jnt1
+    100012: Hand_Left_jnt
+    100014: Hand_Right_jnt
+    100016: Hat_jnt
+    100018: Hat_jnt1
+    100020: Head_jnt
+    100022: Hips_jnt
+    100024: LowerArm_Left_jnt
+    100026: LowerArm_Right_jnt
+    100028: LowerLeg_Left_jnt
+    100030: LowerLeg_Right_jnt
+    100032: Root_jnt
+    100034: Spine_jnt
+    100036: UpperArm_Left_jnt
+    100038: UpperArm_Right_jnt
+    100040: UpperLeg_Left_jnt
+    100042: UpperLeg_Right_jnt
+    100044: Body
+    100046: Foot_Left
+    100048: Foot_Right
+    100050: Hand_Left
+    100052: Hand_Right
+    100054: Head
+    100056: LowerArm_Left
+    100058: LowerArm_Right
+    100060: LowerBody
+    100062: LowerLeg_Left
+    100064: LowerLeg_Right
+    100066: Prop_FireFighterPack
+    100068: UpperArm_Left
+    100070: UpperArm_Left24
+    100072: UpperArm_Left25
+    100074: UpperArm_Right
+    100076: UpperArm_Right23
+    100078: UpperArm_Right24
+    100080: UpperLeg_Left
+    100082: UpperLeg_Right
+    100084: Weapon_Shield
+    100086: Weapon_Sword
+    400000: //RootNode
+    400002: Body_jnt
+    400004: Foot_Left_jnt
+    400006: Foot_Left_jnt1
+    400008: Foot_Right_jnt
+    400010: Foot_Right_jnt1
+    400012: Hand_Left_jnt
+    400014: Hand_Right_jnt
+    400016: Hat_jnt
+    400018: Hat_jnt1
+    400020: Head_jnt
+    400022: Hips_jnt
+    400024: LowerArm_Left_jnt
+    400026: LowerArm_Right_jnt
+    400028: LowerLeg_Left_jnt
+    400030: LowerLeg_Right_jnt
+    400032: Root_jnt
+    400034: Spine_jnt
+    400036: UpperArm_Left_jnt
+    400038: UpperArm_Right_jnt
+    400040: UpperLeg_Left_jnt
+    400042: UpperLeg_Right_jnt
+    400044: Body
+    400046: Foot_Left
+    400048: Foot_Right
+    400050: Hand_Left
+    400052: Hand_Right
+    400054: Head
+    400056: LowerArm_Left
+    400058: LowerArm_Right
+    400060: LowerBody
+    400062: LowerLeg_Left
+    400064: LowerLeg_Right
+    400066: Prop_FireFighterPack
+    400068: UpperArm_Left
+    400070: UpperArm_Left24
+    400072: UpperArm_Left25
+    400074: UpperArm_Right
+    400076: UpperArm_Right23
+    400078: UpperArm_Right24
+    400080: UpperLeg_Left
+    400082: UpperLeg_Right
+    400084: Weapon_Shield
+    400086: Weapon_Sword
+    2300000: Body
+    2300002: Foot_Left
+    2300004: Foot_Right
+    2300006: Hand_Left
+    2300008: Hand_Right
+    2300010: Head
+    2300012: LowerArm_Left
+    2300014: LowerArm_Right
+    2300016: LowerBody
+    2300018: LowerLeg_Left
+    2300020: LowerLeg_Right
+    2300022: Prop_FireFighterPack
+    2300024: UpperArm_Left
+    2300026: UpperArm_Left24
+    2300028: UpperArm_Left25
+    2300030: UpperArm_Right
+    2300032: UpperArm_Right23
+    2300034: UpperArm_Right24
+    2300036: UpperLeg_Left
+    2300038: UpperLeg_Right
+    2300040: Weapon_Shield
+    2300042: Weapon_Sword
+    3300000: Body
+    3300002: Foot_Left
+    3300004: Foot_Right
+    3300006: Hand_Left
+    3300008: Hand_Right
+    3300010: Head
+    3300012: LowerArm_Left
+    3300014: LowerArm_Right
+    3300016: LowerBody
+    3300018: LowerLeg_Left
+    3300020: LowerLeg_Right
+    3300022: Prop_FireFighterPack
+    3300024: UpperArm_Left
+    3300026: UpperArm_Left24
+    3300028: UpperArm_Left25
+    3300030: UpperArm_Right
+    3300032: UpperArm_Right23
+    3300034: UpperArm_Right24
+    3300036: UpperLeg_Left
+    3300038: UpperLeg_Right
+    3300040: Weapon_Shield
+    3300042: Weapon_Sword
+    4300000: Foot_Left
+    4300002: LowerLeg_Left
+    4300004: UpperLeg_Left
+    4300006: Foot_Right
+    4300008: LowerLeg_Right
+    4300010: UpperLeg_Right
+    4300012: Head
+    4300014: Hand_Right
+    4300016: Weapon_Sword
+    4300018: LowerArm_Right
+    4300020: UpperArm_Right
+    4300022: UpperArm_Left24
+    4300024: UpperArm_Right23
+    4300026: Hand_Left
+    4300028: Weapon_Shield
+    4300030: LowerArm_Left
+    4300032: UpperArm_Left
+    4300034: UpperArm_Right24
+    4300036: UpperArm_Left25
+    4300038: Body
+    4300040: Prop_FireFighterPack
+    4300042: LowerBody
+    7400000: Idle
+    7400002: Walking
+    7400004: Running
+    7400006: Idle_SittingOnGround
+    7400008: Idle_Wave
+    7400010: Idle_CheckTime
+    7400012: Idle_WipeMouth
+    7400014: Running_Jump
+    7400016: Death_01
+    7400018: Idle_LeaningAgainstWall
+    7400020: Idle_Smoking
+    7400022: Idle_SexyDance
+    7400024: Falling
+    7400026: Standing_Jump
+    7400028: CrossArms
+    7400030: HandsOnHips
+    7400032: Idle_HandsOnHips
+    7400034: Idle_CrossedArms
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 0
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 2
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Walking
+      takeName: Take 001
+      firstFrame: 52
+      lastFrame: 79
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Running
+      takeName: Take 001
+      firstFrame: 82
+      lastFrame: 100
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_SittingOnGround
+      takeName: Take 001
+      firstFrame: 117
+      lastFrame: 146
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_Wave
+      takeName: Take 001
+      firstFrame: 322
+      lastFrame: 378
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_CheckTime
+      takeName: Take 001
+      firstFrame: 381
+      lastFrame: 420
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_WipeMouth
+      takeName: Take 001
+      firstFrame: 423
+      lastFrame: 460
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Running_Jump
+      takeName: Take 001
+      firstFrame: 461
+      lastFrame: 491
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Death_01
+      takeName: Take 001
+      firstFrame: 492
+      lastFrame: 547
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_LeaningAgainstWall
+      takeName: Take 001
+      firstFrame: 662
+      lastFrame: 709
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_Smoking
+      takeName: Take 001
+      firstFrame: 610
+      lastFrame: 660
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_SexyDance
+      takeName: Take 001
+      firstFrame: 712
+      lastFrame: 770
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Falling
+      takeName: Take 001
+      firstFrame: 550
+      lastFrame: 579
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Standing_Jump
+      takeName: Take 001
+      firstFrame: 582
+      lastFrame: 608
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: CrossArms
+      takeName: Take 001
+      firstFrame: 781
+      lastFrame: 850
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HandsOnHips
+      takeName: Take 001
+      firstFrame: 851
+      lastFrame: 900
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_HandsOnHips
+      takeName: Take 001
+      firstFrame: 865
+      lastFrame: 889
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_CrossedArms
+      takeName: Take 001
+      firstFrame: 800
+      lastFrame: 840
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 0
+    normalImportMode: 1
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 1
+  humanDescription:
+    human:
+    - boneName: Hips_jnt
+      humanName: Hips
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: .0152389491, y: 0, z: .00761947455}
+        length: .0190486908
+        modified: 1
+    - boneName: UpperLeg_Left_jnt
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: -60.0000038, y: -60.0000038, z: -90}
+        max: {x: 60.0000038, y: 60.0000038, z: 50}
+        value: {x: .299617231, y: 0, z: .149808615}
+        length: .374521673
+        modified: 1
+    - boneName: UpperLeg_Right_jnt
+      humanName: RightUpperLeg
+      limit:
+        min: {x: -60.0000038, y: -60.0000038, z: -90}
+        max: {x: 60.0000038, y: 60.0000038, z: 50}
+        value: {x: .299617469, y: 0, z: .149808735}
+        length: .374521971
+        modified: 1
+    - boneName: LowerLeg_Left_jnt
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: .310994893, y: 0, z: .155497447}
+        length: .388743758
+        modified: 1
+    - boneName: LowerLeg_Right_jnt
+      humanName: RightLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: .310995072, y: 0, z: .155497536}
+        length: .388743967
+        modified: 1
+    - boneName: Foot_Left_jnt
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: -30.0000019, z: -50}
+        max: {x: 0, y: 30.0000019, z: 50}
+        value: {x: .122244045, y: 0, z: .0611220226}
+        length: .15280509
+        modified: 1
+    - boneName: Foot_Right_jnt
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: -30.0000019, z: -50}
+        max: {x: 0, y: 30.0000019, z: 50}
+        value: {x: .122244023, y: 0, z: .0611220114}
+        length: .15280506
+        modified: 1
+    - boneName: Body_jnt
+      humanName: Spine
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: .53625989, y: 0, z: .268129945}
+        length: .67032516
+        modified: 1
+    - boneName: Spine_jnt
+      humanName: Chest
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: .248500764, y: 0, z: .124250382}
+        length: .31062603
+        modified: 1
+    - boneName: Head_jnt
+      humanName: Head
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: .124250382, y: 0, z: .0621251911}
+        length: .155313015
+        modified: 1
+    - boneName: UpperArm_Left_jnt
+      humanName: LeftUpperArm
+      limit:
+        min: {x: -90, y: -100, z: -60.0000038}
+        max: {x: 90, y: 100, z: 100}
+        value: {x: .376950294, y: 0, z: .188475147}
+        length: .471188009
+        modified: 1
+    - boneName: UpperArm_Right_jnt
+      humanName: RightUpperArm
+      limit:
+        min: {x: -90, y: -100, z: -60.0000038}
+        max: {x: 90, y: 100, z: 100}
+        value: {x: .376951814, y: 0, z: .188475907}
+        length: .471189916
+        modified: 1
+    - boneName: LowerArm_Left_jnt
+      humanName: LeftLowerArm
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: .352239877, y: 0, z: .176119938}
+        length: .440299988
+        modified: 1
+    - boneName: LowerArm_Right_jnt
+      humanName: RightLowerArm
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: .352239877, y: 0, z: .176119938}
+        length: .440299988
+        modified: 1
+    - boneName: Hand_Left_jnt
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: .176119938, y: 0, z: .0880599692}
+        length: .220149994
+        modified: 1
+    - boneName: Hand_Right_jnt
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: .176119938, y: 0, z: .0880599692}
+        length: .220149994
+        modified: 1
+    - boneName: Hat_jnt
+      humanName: RightEye
+      limit:
+        min: {x: 0, y: -20, z: -10}
+        max: {x: 0, y: 20, z: 15.000001}
+        value: {x: .0799999759, y: 0, z: .0399999879}
+        length: .100000001
+        modified: 1
+    skeleton:
+    - name: SimplePeople
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Root_jnt
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Hips_jnt
+      position: {x: -0, y: 1.04498756, z: 0}
+      rotation: {x: 0, y: 0, z: .259743571, w: .965677559}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Body_jnt
+      position: {x: .00955589768, y: .0164783578, z: 0}
+      rotation: {x: -0, y: 0, z: .866503596, w: -.499170691}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Spine_jnt
+      position: {x: -.67032522, y: 1.48842099e-16, z: 0}
+      rotation: {x: 0, y: 0, z: -1.66576811e-15, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Head_jnt
+      position: {x: -.31062609, y: 6.89728473e-17, z: 0}
+      rotation: {x: 0, y: 0, z: -1.55431213e-15, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Hat_jnt
+      position: {x: -.542270958, y: 1.20408341e-16, z: 0}
+      rotation: {x: 3.71063588e-16, y: -1.51482803e-16, z: .707106769, w: .707106769}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: UpperArm_Left_jnt
+      position: {x: -.219108447, y: -.565231979, z: 0}
+      rotation: {x: 0, y: 0, z: -.707106769, w: .707106769}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: LowerArm_Left_jnt
+      position: {x: .471188009, y: -2.84217088e-16, z: 5.77040997e-17}
+      rotation: {x: 0, y: 0, z: -3.33066886e-15, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Hand_Left_jnt
+      position: {x: .440299988, y: 0, z: 5.39208998e-17}
+      rotation: {x: -1.75920544e-13, y: .99999994, z: -5.05321486e-16, w: -2.28380793e-15}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: UpperArm_Right_jnt
+      position: {x: -.219108447, y: .565231979, z: 0}
+      rotation: {x: -.707106769, y: .707106769, z: 3.42739963e-23, w: -8.65955796e-17}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: LowerArm_Right_jnt
+      position: {x: -.471189976, y: 5.68434176e-16, z: -5.77041328e-17}
+      rotation: {x: -6.62765645e-19, y: -3.5869213e-21, z: 6.13224696e-16, w: .99999994}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Hand_Right_jnt
+      position: {x: -.440299988, y: -8.52651264e-16, z: -5.39211976e-17}
+      rotation: {x: 1.41725675e-13, y: .99999994, z: -9.49410643e-16, w: 1.73233813e-15}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: UpperLeg_Left_jnt
+      position: {x: -.256982446, y: -1.42108544e-16, z: 0}
+      rotation: {x: -.000137111012, y: -8.42471563e-05, z: .499174625, w: .866501331}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: LowerLeg_Left_jnt
+      position: {x: -.374521643, y: -3.5527136e-17, z: -2.71050537e-22}
+      rotation: {x: -.707590163, y: 6.44689135e-06, z: -6.14591136e-06, w: .706622958}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Foot_Left_jnt
+      position: {x: -.388743728, y: 1.22525682e-17, z: 7.34260656e-12}
+      rotation: {x: .50042218, y: .50042212, z: -.499573082, w: .499581784}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: UpperLeg_Right_jnt
+      position: {x: .127638385, y: -.223043367, z: 0}
+      rotation: {x: -.499185652, y: .86646986, z: .00572497677, w: -.00328412373}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: LowerLeg_Right_jnt
+      position: {x: .374522001, y: 2.48689959e-16, z: -1.09874122e-12}
+      rotation: {x: -.704109907, y: -3.0960502e-05, z: 5.1819683e-05, w: .710090876}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Foot_Right_jnt
+      position: {x: .388743997, y: 8.19713481e-12, z: -3.69072238e-11}
+      rotation: {x: .501171172, y: .501196861, z: -.498828977, w: .498797327}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c72c97e952bf7834b85e6164373d310d,
+    type: 3}
+  animationType: 3
+  additionalBone: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
