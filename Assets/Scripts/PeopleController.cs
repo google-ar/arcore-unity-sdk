@@ -198,6 +198,8 @@ namespace GoogleARCore.HelloAR
             andyObject.transform.rotation = Quaternion.Euler (0.0f, andyObject.transform.rotation.eulerAngles.y,
                 andyObject.transform.rotation.z);
 
+            GetComponent<AudioSource> ().Play ();
+
             return andyObject;
         }
 
