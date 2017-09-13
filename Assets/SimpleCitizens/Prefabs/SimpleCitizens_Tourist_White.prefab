@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 64462361571966308}
   m_Layer: 0
   m_Name: SimpleCitizens_Tourist_White
-  m_TagString: Untagged
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

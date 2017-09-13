@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 64285270556670794}
   m_Layer: 0
   m_Name: SimpleCitizens_Cheerleader_White
-  m_TagString: Untagged
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

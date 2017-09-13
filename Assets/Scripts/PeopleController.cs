@@ -178,9 +178,22 @@ namespace GoogleARCore.HelloAR
                 return;
             }
 
+            // Has an object been touched?
+            Ray raycast = m_firstPersonCamera.ScreenPointToRay (Input.GetTouch (0).position);
+            RaycastHit raycastHit;
+            if (Physics.Raycast (raycast, out raycastHit)) {
+                if (raycastHit.collider.name == "ad-cube") {
+                    m_adPrefab.GetComponent<AdController> ().OnAdClicked ();
+                }
+
+                if (raycastHit.collider.CompareTag ("Character")) {
+                    // TODO: Animate character
+                }
+            }
+
+            // Has a plane been touched?
             TrackableHit hit;
             TrackableHitFlag raycastFilter = TrackableHitFlag.PlaneWithinBounds | TrackableHitFlag.PlaneWithinPolygon;
-
             if (Session.Raycast (m_firstPersonCamera.ScreenPointToRay (touch.position), raycastFilter, out hit)) {
                 // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                 // world evolves.
@@ -238,9 +251,9 @@ namespace GoogleARCore.HelloAR
 
             if (adTime) {
                 // Add some force to throw the ad cube
-                andyObject.GetComponent<Rigidbody>().AddForce(andyObject.transform.forward * m_adThrowForce * -0.5f);
-                andyObject.GetComponent<Rigidbody>().AddTorque(andyObject.transform.right * m_adThrowForce * 2.5f);
-                andyObject.GetComponent<Rigidbody>().AddTorque(andyObject.transform.forward * m_adThrowForce * -2.5f);
+                andyObject.GetComponent<Rigidbody> ().AddForce (andyObject.transform.forward * m_adThrowForce * -0.5f);
+                andyObject.GetComponent<Rigidbody> ().AddTorque (andyObject.transform.right * m_adThrowForce * 2.5f);
+                andyObject.GetComponent<Rigidbody> ().AddTorque (andyObject.transform.forward * m_adThrowForce * -2.5f);
             } else {
                 GetComponent<AudioSource> ().Play ();
             }

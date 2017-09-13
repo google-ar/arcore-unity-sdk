@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 82092653547036182}
   - component: {fileID: 54701335091908252}
   - component: {fileID: 65409535334884434}
+  - component: {fileID: 114573055045221462}
   m_Layer: 0
   m_Name: ad-cube
   m_TagString: Untagged
@@ -211,3 +212,14 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114573055045221462
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1405611509293062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4389b0473a4d0460193de315567e9d7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

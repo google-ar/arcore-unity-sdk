@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 64748126759350358}
   m_Layer: 0
   m_Name: SimpleCitizens_Grandpa_Black
-  m_TagString: Untagged
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
