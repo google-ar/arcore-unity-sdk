@@ -64,16 +64,21 @@ namespace GoogleARCore.HelloAR
         /// The list of prefabs to place when a raycast from a user touch hits a plane.
         /// </summary>
         public List<GameObject> m_characterPrefabs;
+        
+        /// <summary>
+        /// Surface for characters and ads to fall on.
+        /// </summary>
+        public GameObject m_floorPrefab;
+        
+        /// <summary>
+        /// Whether to show ads or not.
+        /// </summary>
+        public bool m_adSupported;
 
         /// <summary>
         /// The prefab to use when spawning an ad.
         /// </summary>
         public GameObject m_adPrefab;
-
-        /// <summary>
-        /// Surface for ads to fall on.
-        /// </summary>
-        public GameObject m_floorPrefab;
 
         /// <summary>
         /// How hard to throw the ad.
@@ -221,7 +226,7 @@ namespace GoogleARCore.HelloAR
             // Add floor to support objects
             Instantiate (m_floorPrefab, position, m_floorPrefab.transform.rotation, null);
 
-            GameObject spawnPrefab = adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
+            GameObject spawnPrefab = m_adSupported && adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
 
             position.y += 0.5f;
 #if UNITY_EDITOR

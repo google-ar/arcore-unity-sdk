@@ -12,7 +12,7 @@ public class CitizenController : MonoBehaviour
         "sit",
         "wipe",
         "check_time",
-        "lean",
+//        "lean",
         "cross_arms",
         "hands_on_hips",
         "smoke",
