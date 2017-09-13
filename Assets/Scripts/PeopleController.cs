@@ -71,6 +71,16 @@ namespace GoogleARCore.HelloAR
         public GameObject m_adPrefab;
 
         /// <summary>
+        /// Surface for ads to fall on.
+        /// </summary>
+        public GameObject m_floorPrefab;
+
+        /// <summary>
+        /// How hard to throw the ad.
+        /// </summary>
+        public float m_adThrowForce;
+
+        /// <summary>
         /// How many characters to spawn between ads.
         /// </summary>
         public int m_adFrequency = 5;
@@ -200,6 +210,17 @@ namespace GoogleARCore.HelloAR
 
             GameObject spawnPrefab = adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
 
+            if (adTime) {
+                // Add floor for ad cube to bounce on
+                Instantiate (m_floorPrefab, position, m_floorPrefab.transform.rotation, null);
+
+                position.y += 0.5f;
+#if UNITY_EDITOR
+                position.x = 1.5f;
+                position.z = 0.0f;
+#endif
+            }
+
             // Intanstiate a random character object as a child of the anchor; it's transform will now benefit
             // from the anchor's tracking.
             GameObject andyObject = Instantiate (spawnPrefab, position, Quaternion.identity, parent);
@@ -212,12 +233,18 @@ namespace GoogleARCore.HelloAR
             andyObject.transform.LookAt (m_activeCamera.transform);
             andyObject.transform.rotation = Quaternion.Euler (0.0f, andyObject.transform.rotation.eulerAngles.y,
                 andyObject.transform.rotation.z);
+            
             m_spawnCount++;
 
-            GetComponent<AudioSource> ().Play ();
+            if (adTime) {
+                // Add some force to throw the ad cube
+                andyObject.GetComponent<Rigidbody>().AddForce(andyObject.transform.forward * m_adThrowForce * -0.5f);
+                andyObject.GetComponent<Rigidbody>().AddTorque(andyObject.transform.right * m_adThrowForce * 2.5f);
+                andyObject.GetComponent<Rigidbody>().AddTorque(andyObject.transform.forward * m_adThrowForce * -2.5f);
+            } else {
+                GetComponent<AudioSource> ().Play ();
+            }
 
-            Debug.Log ("count: " + m_spawnCount);
-            Debug.Log ("adTime? " + adTime);
             return andyObject;
         }
 

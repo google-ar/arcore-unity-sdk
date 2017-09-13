@@ -391,7 +391,10 @@ MonoBehaviour:
   - {fileID: 100066, guid: bb0bbb3bd42912a4cb4ce1c044ba210d, type: 2}
   - {fileID: 100000, guid: 657efc207b24f9a44aaafc6eed64fb20, type: 2}
   - {fileID: 100066, guid: 24e1d4352595c86418932a9a904f80b6, type: 2}
-  m_adPrefab: {fileID: 100000, guid: c932d24b6e4a2457a8ebcd8b69a47ac1, type: 3}
+  m_adPrefab: {fileID: 1405611509293062, guid: 27e1e70ca79a643a7a474e8f37da2fef, type: 2}
+  m_floorPrefab: {fileID: 1412169946545898, guid: 1500e3b4bc4214a6d95678987f173d1d,
+    type: 2}
+  m_adThrowForce: 10
   m_adFrequency: 5
 --- !u!82 &627916104
 AudioSource:
