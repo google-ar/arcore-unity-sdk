@@ -56,14 +56,14 @@ namespace GoogleARCore.HelloAR
         public GameObject m_trackedPlanePrefab;
 
         /// <summary>
-        /// A model to place when a raycast from a user touch hits a plane.
-        /// </summary>
-        public GameObject m_andyAndroidPrefab;
-
-        /// <summary>
         /// A gameobject parenting UI for displaying the "searching for planes" snackbar.
         /// </summary>
         public GameObject m_searchingForPlaneUI;
+
+        /// <summary>
+        /// The list of prefabs to place when a raycast from a user touch hits a plane.
+        /// </summary>
+        public List<GameObject> m_characterPrefabs;
 
         private Camera m_activeCamera;
 
@@ -183,9 +183,15 @@ namespace GoogleARCore.HelloAR
         private GameObject PlaceCharacter (Vector3 position, Transform parent)
         {
 
-            // Intanstiate an Andy Android object as a child of the anchor; it's transform will now benefit
+            int randomIndex = Random.Range (0, m_characterPrefabs.Count - 1);
+
+            // Intanstiate a random character object as a child of the anchor; it's transform will now benefit
             // from the anchor's tracking.
-            GameObject andyObject = Instantiate (m_andyAndroidPrefab, position, Quaternion.identity, parent);
+            GameObject andyObject = Instantiate (m_characterPrefabs[randomIndex], position, Quaternion.identity, parent);
+
+            // Adjust size for Simple Citizens prefabs
+            float sizeMultiplier = 0.2f;
+            andyObject.transform.localScale = new Vector3 (sizeMultiplier, sizeMultiplier, sizeMultiplier);
 
             // Andy should look at the camera but still be flush with the plane.
             andyObject.transform.LookAt (m_activeCamera.transform);
