@@ -395,7 +395,7 @@ MonoBehaviour:
   m_floorPrefab: {fileID: 1412169946545898, guid: 1500e3b4bc4214a6d95678987f173d1d,
     type: 2}
   m_adThrowForce: 10
-  m_adFrequency: 5
+  m_adFrequency: 3
 --- !u!82 &627916104
 AudioSource:
   m_ObjectHideFlags: 0
