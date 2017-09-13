@@ -9,5 +9,6 @@ obj/
 *.sln
 *.suo
 *.userprefs
+*.apk
 # OS generated
 .DS_Store
