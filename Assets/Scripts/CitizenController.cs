@@ -24,4 +24,12 @@ public class CitizenController : MonoBehaviour
         string animation = m_animations [Random.Range (0, m_animations.Length)];
         GetComponent<Animator> ().SetTrigger (animation);
     }
+
+    void OnCollisionEnter (Collision col)
+    {
+        if (col.gameObject.CompareTag ("Floor")) {
+            GetComponent<Animator> ().SetBool ("Grounded_b", true);
+            GetComponent<Rigidbody> ().isKinematic = true;
+        }
+    }
 }

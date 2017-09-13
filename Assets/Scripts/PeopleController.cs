@@ -178,6 +178,16 @@ namespace GoogleARCore.HelloAR
                 return;
             }
 
+            // Has an object been touched?
+            Ray raycast = m_firstPersonCamera.ScreenPointToRay (Input.GetTouch (0).position);
+            RaycastHit raycastHit;
+            if (Physics.Raycast (raycast, out raycastHit)) {
+                if (raycastHit.collider.name == "ad-cube" || raycastHit.collider.CompareTag ("Character")) {
+                    // Prevent object touch from spawning character or ad
+                    return;
+                }
+            }
+
             // Has a plane been touched?
             TrackableHit hit;
             TrackableHitFlag raycastFilter = TrackableHitFlag.PlaneWithinBounds | TrackableHitFlag.PlaneWithinPolygon;
@@ -208,18 +218,18 @@ namespace GoogleARCore.HelloAR
             bool adTime = (m_spawnCount + 1) % (m_adFrequency + 1) == 0;
             int randomIndex = Random.Range (0, m_characterPrefabs.Count - 1);
 
+            // Add floor to support objects
+            Instantiate (m_floorPrefab, position, m_floorPrefab.transform.rotation, null);
+
             GameObject spawnPrefab = adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
 
-            if (adTime) {
-                // Add floor for ad cube to bounce on
-                Instantiate (m_floorPrefab, position, m_floorPrefab.transform.rotation, null);
-
-                position.y += 0.5f;
+            position.y += 0.5f;
 #if UNITY_EDITOR
+            if (adTime) {
                 position.x = 1.5f;
                 position.z = 0.0f;
-#endif
             }
+#endif
 
             // Intanstiate a random character object as a child of the anchor; it's transform will now benefit
             // from the anchor's tracking.
