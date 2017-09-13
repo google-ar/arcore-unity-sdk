@@ -65,6 +65,18 @@ namespace GoogleARCore.HelloAR
         /// </summary>
         public List<GameObject> m_characterPrefabs;
 
+        /// <summary>
+        /// The prefab to use when spawning an ad.
+        /// </summary>
+        public GameObject m_adPrefab;
+
+        /// <summary>
+        /// How many characters to spawn between ads.
+        /// </summary>
+        public int m_adFrequency = 5;
+
+        private int m_spawnCount;
+
         private Camera m_activeCamera;
 
         private List<TrackedPlane> m_newPlanes = new List<TrackedPlane> ();
@@ -103,6 +115,7 @@ namespace GoogleARCore.HelloAR
             m_editorCamera.gameObject.SetActive (true);
             m_activeCamera = m_editorCamera;
 #endif
+            m_spawnCount = 0;
         }
 
         /// <summary>
@@ -182,12 +195,14 @@ namespace GoogleARCore.HelloAR
 
         private GameObject PlaceCharacter (Vector3 position, Transform parent)
         {
-
+            bool adTime = (m_spawnCount + 1) % (m_adFrequency + 1) == 0;
             int randomIndex = Random.Range (0, m_characterPrefabs.Count - 1);
+
+            GameObject spawnPrefab = adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
 
             // Intanstiate a random character object as a child of the anchor; it's transform will now benefit
             // from the anchor's tracking.
-            GameObject andyObject = Instantiate (m_characterPrefabs[randomIndex], position, Quaternion.identity, parent);
+            GameObject andyObject = Instantiate (spawnPrefab, position, Quaternion.identity, parent);
 
             // Adjust size for Simple Citizens prefabs
             float sizeMultiplier = 0.1f;
@@ -197,9 +212,12 @@ namespace GoogleARCore.HelloAR
             andyObject.transform.LookAt (m_activeCamera.transform);
             andyObject.transform.rotation = Quaternion.Euler (0.0f, andyObject.transform.rotation.eulerAngles.y,
                 andyObject.transform.rotation.z);
+            m_spawnCount++;
 
             GetComponent<AudioSource> ().Play ();
 
+            Debug.Log ("count: " + m_spawnCount);
+            Debug.Log ("adTime? " + adTime);
             return andyObject;
         }
 
