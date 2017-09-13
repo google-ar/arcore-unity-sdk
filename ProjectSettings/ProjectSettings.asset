@@ -11,8 +11,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Google
-  productName: HelloAR U3D
+  companyName: AOrnelas
+  productName: AR People
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -148,7 +148,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.google.ar.core.examples.unity.helloar
+    Android: com.aornelas.arpeople
     Standalone: unity.DefaultCompany.TangoUnitySDK
     Tizen: com.Company.ProductName
     iOS: com.Company.ProductName
