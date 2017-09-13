@@ -133,7 +133,7 @@ namespace GoogleARCore.HelloAR
                 float scale = 1.0f - Mathf.Min((FEATHER_LENGTH / d.magnitude), FEATHER_SCALE);
                 m_meshVertices.Add(scale * d + planeCenter);
 
-                m_meshColors.Add(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+                m_meshColors.Add(new Color(0.0f, 0.0f, 0.0f, 0.3f));
             }
 
             m_meshIndices.Clear();
