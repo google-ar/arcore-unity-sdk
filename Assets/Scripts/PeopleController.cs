@@ -220,13 +220,13 @@ namespace GoogleARCore.HelloAR
 
         private GameObject PlaceCharacter (Vector3 position, Transform parent)
         {
-            bool adTime = (m_spawnCount + 1) % (m_adFrequency + 1) == 0;
+            bool adTime = m_adSupported && (m_spawnCount + 1) % (m_adFrequency + 1) == 0;
             int randomIndex = Random.Range (0, m_characterPrefabs.Count - 1);
 
             // Add floor to support objects
             Instantiate (m_floorPrefab, position, m_floorPrefab.transform.rotation, null);
 
-            GameObject spawnPrefab = m_adSupported && adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
+            GameObject spawnPrefab = adTime ? m_adPrefab : m_characterPrefabs [randomIndex];
 
             position.y += 0.5f;
 #if UNITY_EDITOR
