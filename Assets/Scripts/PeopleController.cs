@@ -190,7 +190,7 @@ namespace GoogleARCore.HelloAR
             GameObject andyObject = Instantiate (m_characterPrefabs[randomIndex], position, Quaternion.identity, parent);
 
             // Adjust size for Simple Citizens prefabs
-            float sizeMultiplier = 0.2f;
+            float sizeMultiplier = 0.1f;
             andyObject.transform.localScale = new Vector3 (sizeMultiplier, sizeMultiplier, sizeMultiplier);
 
             // Andy should look at the camera but still be flush with the plane.
