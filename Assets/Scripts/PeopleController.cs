@@ -178,21 +178,6 @@ namespace GoogleARCore.HelloAR
                 return;
             }
 
-            // Has an object been touched?
-            Ray raycast = m_firstPersonCamera.ScreenPointToRay (Input.GetTouch (0).position);
-            RaycastHit raycastHit;
-            if (Physics.Raycast (raycast, out raycastHit)) {
-                if (raycastHit.collider.name == "ad-cube") {
-                    m_adPrefab.GetComponent<AdController> ().OnAdClicked ();
-                    return;
-                }
-
-                if (raycastHit.collider.CompareTag ("Character")) {
-                    raycastHit.collider.gameObject.GetComponent<Animator>().SetTrigger ("wave");
-                    return;
-                }
-            }
-
             // Has a plane been touched?
             TrackableHit hit;
             TrackableHitFlag raycastFilter = TrackableHitFlag.PlaneWithinBounds | TrackableHitFlag.PlaneWithinPolygon;
