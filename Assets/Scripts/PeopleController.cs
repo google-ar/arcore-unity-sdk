@@ -184,10 +184,12 @@ namespace GoogleARCore.HelloAR
             if (Physics.Raycast (raycast, out raycastHit)) {
                 if (raycastHit.collider.name == "ad-cube") {
                     m_adPrefab.GetComponent<AdController> ().OnAdClicked ();
+                    return;
                 }
 
                 if (raycastHit.collider.CompareTag ("Character")) {
-                    // TODO: Animate character
+                    raycastHit.collider.gameObject.GetComponent<Animator>().SetTrigger ("wave");
+                    return;
                 }
             }
 
@@ -246,7 +248,7 @@ namespace GoogleARCore.HelloAR
             andyObject.transform.LookAt (m_activeCamera.transform);
             andyObject.transform.rotation = Quaternion.Euler (0.0f, andyObject.transform.rotation.eulerAngles.y,
                 andyObject.transform.rotation.z);
-            
+
             m_spawnCount++;
 
             if (adTime) {

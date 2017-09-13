@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 400066}
   - component: {fileID: 9500000}
   - component: {fileID: 64518239343777658}
+  - component: {fileID: 114540848060866710}
   m_Layer: 0
   m_Name: SimpleCitizens_Emo_Brown
   m_TagString: Character
@@ -2096,3 +2097,14 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 7d49fc550a99f094da3a743df3289156, type: 3}
+--- !u!114 &114540848060866710
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a86e35d2b5b0b4e3d9d0e4dbe8f1af10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
