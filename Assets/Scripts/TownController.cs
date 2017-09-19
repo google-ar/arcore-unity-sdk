@@ -23,6 +23,7 @@ namespace GoogleARCore.HelloAR
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.Rendering;
+    using UnityEngine.UI;
     using GoogleARCore;
 
     /// <summary>
@@ -41,10 +42,26 @@ namespace GoogleARCore.HelloAR
         public Camera m_editorCamera;
 
         /// <summary>
+        /// The prefab to create the town from
         /// </summary>
         public GameObject m_townPrefab;
+        
+        /// <summary>
+        /// Developer UI
+        /// </summary>
+        public GameObject m_devPanel;
+        public Text m_sizeLabel;
+        public Text m_positionXLabel;
+        public Text m_positionZLabel;
 
-        private Camera m_activeCamera;
+        /// <summary>
+        /// The amount to increase or decrease in size for the town
+        /// </summary>
+        public float m_modifierStep;
+
+        private GameObject _currentTown;
+
+        private Camera _activeCamera;
 
 
         /// <summary>
@@ -52,11 +69,14 @@ namespace GoogleARCore.HelloAR
         /// </summary>
         public void Start ()
         {
+            m_devPanel.SetActive (false);
 #if UNITY_EDITOR
             m_editorCamera.gameObject.SetActive (true);
-            m_activeCamera = m_editorCamera;
+            _activeCamera = m_editorCamera;
+            Vector3 position = new Vector3 (0, 0, 0);
+            PlaceTown (position, null);
 #elif UNITY_ANDROID
-            m_activeCamera = m_arCoreController.Init ();
+            _activeCamera = m_arCoreController.Init ();
 #elif UNITY_IOS
             // TODO: add ARKit Init
 #endif
@@ -68,11 +88,11 @@ namespace GoogleARCore.HelloAR
         public void Update ()
         {
 #if UNITY_EDITOR
-            if (Input.GetMouseButtonDown (0)) {
-                Vector3 position = new Vector3 (0, 0, 0);
-
-                PlaceTown (position, null);
-            }
+//            if (Input.GetMouseButtonDown (0)) {
+//                Vector3 position = new Vector3 (0, 0, 0);
+//
+//                PlaceTown (position, null);
+//            }
 #elif UNITY_ANDROID
             m_arCoreController.ARUpdate ();
 #elif UNITY_IOS
@@ -82,14 +102,87 @@ namespace GoogleARCore.HelloAR
 
         public GameObject PlaceTown (Vector3 position, Transform parent)
         {
+            if (m_devPanel.activeSelf) {
+                return _currentTown;
+            }
+            if (_currentTown != null) {
+                Destroy (_currentTown);
+            }
+
             // Intanstiate town
             GameObject townObject = Instantiate (m_townPrefab, position, Quaternion.identity, parent);
-            // Adjust size for Simple Citizens prefabs
+            // Adjust size for prefabs
             float sizeMultiplier = 0.1f;
             townObject.transform.localScale = new Vector3 (sizeMultiplier, sizeMultiplier, sizeMultiplier);
             GetComponent<AudioSource> ().Play ();
 
+            _currentTown = townObject;
             return townObject;
+        }
+
+        public void ToggleDevPanel (bool show)
+        {
+            if (_currentTown == null) {
+                return;
+            }
+
+            GetComponent<AudioSource> ().Play ();
+            _UpdateSizeLabel ();
+            _UpdatePositionXLabel ();
+            _UpdatePositionZLabel ();
+            m_devPanel.SetActive (show);
+        }
+
+        public void ChangeSize (int multiplier)
+        {
+            GetComponent<AudioSource> ().Play ();
+            float sizeIncrement = m_modifierStep * multiplier;
+            Vector3 currentSize = _currentTown.transform.localScale;
+            _currentTown.transform.localScale = new Vector3 (currentSize.x + sizeIncrement,
+                currentSize.y + sizeIncrement, currentSize.z + sizeIncrement);
+            _UpdateSizeLabel ();
+        }
+
+        public void MoveSideways (int multiplier)
+        {
+            GetComponent<AudioSource> ().Play ();
+            float moveAmount = m_modifierStep * multiplier * 10;
+            Vector3 currentPosition = _currentTown.transform.position;
+            _currentTown.transform.position = new Vector3 (currentPosition.x + moveAmount, currentPosition.y,
+                currentPosition.z);
+            _UpdatePositionXLabel ();
+        }
+
+        public void MoveNearways (int multiplier)
+        {
+            GetComponent<AudioSource> ().Play ();
+            float moveAmount = m_modifierStep * multiplier * 10;
+            Vector3 currentPosition = _currentTown.transform.position;
+            _currentTown.transform.position = new Vector3 (currentPosition.x, currentPosition.y,
+                currentPosition.z + moveAmount);
+            _UpdatePositionZLabel ();
+        }
+
+        private void _UpdateSizeLabel ()
+        {
+            Vector3 currentSize = _currentTown.transform.localScale;
+            m_sizeLabel.text = string.Format ("{0},{1},{2}", _Round (currentSize.x), _Round (currentSize.y),
+                _Round (currentSize.z));
+        }
+
+        private void _UpdatePositionXLabel ()
+        {
+            m_positionXLabel.text = _Round (_currentTown.transform.position.x).ToString ();
+        }
+
+        private void _UpdatePositionZLabel ()
+        {
+            m_positionZLabel.text = _Round (_currentTown.transform.position.z).ToString ();
+        }
+
+        private double _Round (float val)
+        {
+            return System.Math.Round (val, 2);
         }
     }
 }

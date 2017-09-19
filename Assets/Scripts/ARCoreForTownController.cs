@@ -133,9 +133,12 @@ namespace GoogleARCore.HelloAR
 
                 GameObject townObject = m_townController.PlaceTown (hit.Point, anchor.transform);
 
-                // Use a plane attachment component to maintain Andy's y-offset from the plane
-                // (occurs after anchor updates).
-                townObject.GetComponent<PlaneAttachment> ().Attach (hit.Plane);
+                if (townObject != null) {
+                    // Use a plane attachment component to maintain Andy's y-offset from the plane
+                    // (occurs after anchor updates).
+                    townObject.GetComponent<PlaneAttachment> ().Attach (hit.Plane);
+                }
+
             }
         }
 
