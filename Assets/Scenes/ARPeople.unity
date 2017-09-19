@@ -112,6 +112,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &141924069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 141924071}
+  - component: {fileID: 141924070}
+  m_Layer: 0
+  m_Name: ARCoreForPeopleController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &141924070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 141924069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c53fa733ffde4c6095f4e34d83de554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_peopleController: {fileID: 627916103}
+  m_ARCoreDevice: {fileID: 1456234523}
+  m_pointCloud: {fileID: 1759795985}
+  m_firstPersonCamera: {fileID: 989943870}
+  m_trackedPlanePrefab: {fileID: 1654175882956584, guid: 6a35c744e5010405c847fad90282d2be,
+    type: 2}
+  m_searchingForPlaneUI: {fileID: 1133631540}
+--- !u!4 &141924071
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 141924069}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.7432656, y: 5.355294, z: -38.59223}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &271061980
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +239,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &487034900
 Prefab:
@@ -292,7 +339,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!1 &627916101
 GameObject:
@@ -335,13 +382,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e935dae91f174a31813f4c7a4f21c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ARCoreDevice: {fileID: 1456234523}
-  m_pointCloud: {fileID: 1759795985}
+  m_arCoreController: {fileID: 141924070}
   m_editorCamera: {fileID: 271061983}
-  m_firstPersonCamera: {fileID: 989943870}
-  m_trackedPlanePrefab: {fileID: 1654175882956584, guid: 6a35c744e5010405c847fad90282d2be,
-    type: 2}
-  m_searchingForPlaneUI: {fileID: 1133631540}
   m_characterPrefabs:
   - {fileID: 100066, guid: 7b10bd239bd6ca94e8fd30395b8a7d93, type: 2}
   - {fileID: 100066, guid: 8c45bb63569267d41b976d209ed4b636, type: 2}
@@ -391,9 +433,10 @@ MonoBehaviour:
   - {fileID: 100066, guid: bb0bbb3bd42912a4cb4ce1c044ba210d, type: 2}
   - {fileID: 100000, guid: 657efc207b24f9a44aaafc6eed64fb20, type: 2}
   - {fileID: 100066, guid: 24e1d4352595c86418932a9a904f80b6, type: 2}
-  m_adPrefab: {fileID: 1405611509293062, guid: 27e1e70ca79a643a7a474e8f37da2fef, type: 2}
   m_floorPrefab: {fileID: 1412169946545898, guid: 1500e3b4bc4214a6d95678987f173d1d,
     type: 2}
+  m_adSupported: 1
+  m_adPrefab: {fileID: 1405611509293062, guid: 27e1e70ca79a643a7a474e8f37da2fef, type: 2}
   m_adThrowForce: 10
   m_adFrequency: 3
 --- !u!82 &627916104
@@ -506,7 +549,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1133631540}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -387, z: 0}
+  m_LocalPosition: {x: 0, y: -359, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1764419356}
@@ -611,7 +654,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1456234523 stripped
 GameObject:
@@ -700,12 +743,12 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1608144853}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 767, y: 467, z: 0}
+  m_LocalPosition: {x: 665, y: 439, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1133631541}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -721,7 +764,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4892153982037908, guid: c10877f7cd5764de18d46d7b777d1faa, type: 2}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1905656715913530, guid: c10877f7cd5764de18d46d7b777d1faa, type: 2}
       propertyPath: m_IsActive
@@ -811,7 +854,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1764419355
 GameObject:
@@ -837,7 +880,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1764419355}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -687, y: 0, z: 0}
+  m_LocalPosition: {x: -585, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1133631541}
