@@ -108,13 +108,18 @@ namespace GoogleARCore.HelloAR
             if (_currentTown != null) {
                 Destroy (_currentTown);
             }
+            GetComponent<AudioSource> ().Play ();
 
             // Intanstiate town
             GameObject townObject = Instantiate (m_townPrefab, position, Quaternion.identity, parent);
             // Adjust size for prefabs
-            float sizeMultiplier = 0.1f;
+            float sizeMultiplier = 0.02f;
             townObject.transform.localScale = new Vector3 (sizeMultiplier, sizeMultiplier, sizeMultiplier);
-            GetComponent<AudioSource> ().Play ();
+
+            // Town should look at the camera but still be flush with the plane.
+            townObject.transform.LookAt (_activeCamera.transform);
+            townObject.transform.rotation = Quaternion.Euler (0.0f, townObject.transform.rotation.eulerAngles.y,
+                townObject.transform.rotation.z);
 
             _currentTown = townObject;
             return townObject;

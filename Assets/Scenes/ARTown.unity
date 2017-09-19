@@ -259,7 +259,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 115730712}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0.3, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_arCoreController: {fileID: 141924070}
   m_editorCamera: {fileID: 115730717}
-  m_townPrefab: {fileID: 1155327323009556, guid: 1a678c2bcc8b44c7d8065a8ba58439a8,
+  m_townPrefab: {fileID: 1155327323009556, guid: 3c740f884888b4fb2a0209d7652ce31e,
     type: 2}
   m_devPanel: {fileID: 1063537316}
   m_sizeLabel: {fileID: 340382195}
@@ -1620,7 +1620,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.8
+  m_Intensity: 0.5
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
