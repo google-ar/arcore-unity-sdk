@@ -391,6 +391,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4808695327587306}
+  - component: {fileID: 114767363553625088}
   m_Layer: 0
   m_Name: town-small
   m_TagString: Untagged
@@ -16960,3 +16961,14 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1376066454921786}
   m_Mesh: {fileID: 4300006, guid: aa8035fa128f0d04294a7f4e3a030e91, type: 3}
+--- !u!114 &114767363553625088
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1155327323009556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f72ee472a4654c10a96aeb3fcf25bcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

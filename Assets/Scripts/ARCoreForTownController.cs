@@ -5,7 +5,8 @@ using GoogleARCore;
 
 namespace GoogleARCore.HelloAR
 {
-    public class ARCoreForTownController : MonoBehaviour {
+    public class ARCoreForTownController : MonoBehaviour
+    {
 
         /// <summary>
         /// The Town Controller to use to place town
@@ -40,6 +41,8 @@ namespace GoogleARCore.HelloAR
         private List<TrackedPlane> m_newPlanes = new List<TrackedPlane> ();
 
         private List<TrackedPlane> m_allPlanes = new List<TrackedPlane> ();
+
+        private List<GameObject> m_allPlaneObjects = new List<GameObject> ();
 
         private Color[] m_planeColors = new Color[] {
             new Color (1.0f, 1.0f, 1.0f),
@@ -87,13 +90,14 @@ namespace GoogleARCore.HelloAR
                 // the origin with an identity rotation since the mesh for our prefab is updated in Unity World
                 // coordinates.
                 GameObject planeObject = Instantiate (m_trackedPlanePrefab, Vector3.zero, Quaternion.identity,
-                    transform);
+                                             transform);
                 planeObject.GetComponent<TrackedPlaneVisualizer> ().SetTrackedPlane (m_newPlanes [i]);
 
                 // Apply a random color and grid rotation.
                 planeObject.GetComponent<Renderer> ().material.SetColor ("_GridColor", m_planeColors [Random.Range (0,
                     m_planeColors.Length - 1)]);
                 planeObject.GetComponent<Renderer> ().material.SetFloat ("_UvRotation", Random.Range (0.0f, 360.0f));
+                m_allPlaneObjects.Add (planeObject);
             }
 
             // Disable the snackbar UI when no planes are valid.
@@ -127,6 +131,7 @@ namespace GoogleARCore.HelloAR
             TrackableHit hit;
             TrackableHitFlag raycastFilter = TrackableHitFlag.PlaneWithinBounds | TrackableHitFlag.PlaneWithinPolygon;
             if (Session.Raycast (m_firstPersonCamera.ScreenPointToRay (touch.position), raycastFilter, out hit)) {
+                Debug.Log ("Plane touched");
                 // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                 // world evolves.
                 GoogleARCore.Anchor anchor = Session.CreateAnchor (hit.Point, Quaternion.identity);
@@ -139,6 +144,12 @@ namespace GoogleARCore.HelloAR
                     townObject.GetComponent<PlaneAttachment> ().Attach (hit.Plane);
                 }
 
+                // Hide point cloud and plane grids
+                m_pointCloud.GetComponent<MeshRenderer> ().enabled = false;
+                foreach (GameObject plane in m_allPlaneObjects) {
+                    plane.GetComponent<TrackedPlaneVisualizer> ().enabled = false;
+                    plane.GetComponent<Renderer> ().enabled = false;
+                }
             }
         }
 
@@ -174,7 +185,7 @@ namespace GoogleARCore.HelloAR
                 AndroidJavaClass toastClass = new AndroidJavaClass ("android.widget.Toast");
                 unityActivity.Call ("runOnUiThread", new AndroidJavaRunnable (() => {
                     AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject> ("makeText", unityActivity,
-                        message, 0);
+                                                        message, 0);
                     toastObject.Call ("show");
                 }));
             }
