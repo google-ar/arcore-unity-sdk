@@ -18,6 +18,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY_EDITOR
 namespace GoogleARCore.HelloAR
 {
     using System.Collections.Generic;
@@ -197,3 +198,4 @@ namespace GoogleARCore.HelloAR
         }
     }
 }
+#endif
