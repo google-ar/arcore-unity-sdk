@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4892153982037908}
-  - component: {fileID: 114072643661330778}
   - component: {fileID: 114254441574086558}
   m_Layer: 0
   m_Name: ARCore Device
@@ -37,6 +36,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4923070639190690}
   - component: {fileID: 20362215073346118}
+  - component: {fileID: 114720632237736846}
+  - component: {fileID: 114923820857209294}
   m_Layer: 0
   m_Name: First Person Camera
   m_TagString: Untagged
@@ -102,17 +103,30 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
---- !u!114 &114072643661330778
+--- !u!114 &114254441574086558
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1905656715913530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ca0c6a3af6b4635b7e98c6ea0a0cf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SessionConfig: {fileID: 11400000, guid: 9586a84d6c32f46b6ab7aeb6042f160d, type: 2}
+  ConnectOnAwake: 1
+--- !u!114 &114720632237736846
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1960903772876386}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1742909100, guid: 3a84de5cd0624681b6b6dcd8921d912a, type: 3}
@@ -123,17 +137,15 @@ MonoBehaviour:
   m_TrackingType: 0
   m_UpdateType: 2
   m_UseRelativeTransform: 1
---- !u!114 &114254441574086558
+--- !u!114 &114923820857209294
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1905656715913530}
+  m_GameObject: {fileID: 1960903772876386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bf3911478e8b449181ac73714fa7424, type: 3}
+  m_Script: {fileID: 11500000, guid: eb172c260d42e4f62945afda50892c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_arSessionConfig: {fileID: 11400000, guid: ba33c039dd5b24adeb15a423efaf4497, type: 2}
-  m_firstPersonCamera: {fileID: 20362215073346118}
-  m_connectOnAwake: 1
+  BackgroundMaterial: {fileID: 2100000, guid: 03ad0130a037647aeb60218f61aca114, type: 2}

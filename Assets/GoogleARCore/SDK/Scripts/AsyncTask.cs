@@ -23,8 +23,8 @@ namespace GoogleARCore
     using System;
     using System.Collections.Generic;
     using System.Threading;
-    using UnityEngine;
     using GoogleARCoreInternal;
+    using UnityEngine;
 
     /// <summary>
     /// A class used for monitoring the status of an asynchronous task.
@@ -35,7 +35,7 @@ namespace GoogleARCore
         /// <summary>
         /// A collection of actons to perform on the main Unity thread after the task is complete.
         /// </summary>
-        private List<Action<T>> actionsUponTaskCompletion;
+        private List<Action<T>> m_ActionsUponTaskCompletion;
 
         /// @cond EXCLUDE_FROM_DOXYGEN
         /// <summary>
@@ -48,20 +48,21 @@ namespace GoogleARCore
             IsComplete = false;
             asyncOperationComplete = delegate(T result)
             {
-                Result = result;
+                this.Result = result;
                 IsComplete = true;
-                if (actionsUponTaskCompletion != null)
+                if (m_ActionsUponTaskCompletion != null)
                 {
                     AsyncTask.PerformActionInUpdate(() =>
                     {
-                        for (int i = 0; i < actionsUponTaskCompletion.Count; i++)
+                        for (int i = 0; i < m_ActionsUponTaskCompletion.Count; i++)
                         {
-                            actionsUponTaskCompletion[i](result);
+                            m_ActionsUponTaskCompletion[i](result);
                         }
                     });
                 }
             };
         }
+
         /// @endcond
 
         /// @cond EXCLUDE_FROM_DOXYGEN
@@ -74,6 +75,7 @@ namespace GoogleARCore
             Result = result;
             IsComplete = true;
         }
+
         /// @endcond
 
         /// <summary>
@@ -113,12 +115,12 @@ namespace GoogleARCore
             }
 
             // Allocate list if needed (avoids allocation if then is not used).
-            if (actionsUponTaskCompletion == null)
+            if (m_ActionsUponTaskCompletion == null)
             {
-                actionsUponTaskCompletion = new List<Action<T>>();
+                m_ActionsUponTaskCompletion = new List<Action<T>>();
             }
 
-            actionsUponTaskCompletion.Add(doAfterTaskComplete);
+            m_ActionsUponTaskCompletion.Add(doAfterTaskComplete);
             return this;
         }
     }
@@ -129,37 +131,41 @@ namespace GoogleARCore
     /// </summary>
     public class AsyncTask
     {
-        private static Queue<Action> actionQueue = new Queue<Action>();
+        private static Queue<Action> s_UpdateActionQueue = new Queue<Action>();
 
-        private static object lock_object = new object();
+        private static Queue<Action> s_UiThreadActionQueue = new Queue<Action>();
+
+        private static AndroidJavaObject s_Activity;
+
+        private static AndroidJavaRunnable s_CallOnUIThread;
+
+        private static object s_LockObject = new object();
+
+        static AsyncTask()
+        {
+            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            s_Activity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+
+            s_CallOnUIThread = new AndroidJavaRunnable(() => { OnUIThread(); });
+        }
 
         /// <summary>
-        /// Encapsulates a delegate method in a thread and returns a task that monitors completion.
+        /// Queues an action to be performed on Android UI thread. This method can be called by any thread.
         /// </summary>
-        /// <param name="taskMethod">The method to perform in a thread.</param>
-        /// <typeparam name="T">The resultant type of the task.</typeparam>
-        /// <returns>A task that will complete when the supplied method has completed.</returns>
-        public static AsyncTask<T> DoTaskInThread<T>(Func<T> taskMethod)
+        /// <param name="action">The action to perfom.</param>
+        public static void PerformActionInUIThread(Action action)
         {
-            Action<T> asyncTaskComplete;
-            var task = new AsyncTask<T>(out asyncTaskComplete);
-
-            // Spawn thread to perform the task.
-            new Thread(() =>
+            lock (s_LockObject)
             {
-                try
+                if (s_UiThreadActionQueue.Count == 0)
                 {
-                    T result = taskMethod();
-                    asyncTaskComplete(result);
+                    // Ensure that runOnUiThread is only called once if this method is called twice quickly before
+                    // the UI thread responds.
+                    s_Activity.Call("runOnUiThread", s_CallOnUIThread);
                 }
-                catch (Exception e)
-                {
-                    ARDebug.LogErrorFormat("An AsyncTask task produced an uncaught exception::{0}", e.ToString());
-                    asyncTaskComplete(default(T));
-                }
-            }).Start();
 
-            return task;
+                s_UiThreadActionQueue.Enqueue(action);
+            }
         }
 
         /// <summary>
@@ -168,24 +174,39 @@ namespace GoogleARCore
         /// <param name="action">The action to perform.</param>
         public static void PerformActionInUpdate(Action action)
         {
-            lock(lock_object)
+            lock (s_LockObject)
             {
-                actionQueue.Enqueue(action);
+                s_UpdateActionQueue.Enqueue(action);
             }
         }
 
         /// <summary>
-        /// An Update handler called from the ARCore SessionComponent in the scene.
+        /// An Update handler called each frame.
         /// </summary>
-        public static void EarlyUpdate()
+        public static void OnUpdate()
         {
-            int count = actionQueue.Count;
-            for (int i = 0; i < count; i++)
+            lock (s_LockObject)
             {
-                Action action = actionQueue.Dequeue();
-                action();
+                while (s_UpdateActionQueue.Count > 0)
+                {
+                    Action action = s_UpdateActionQueue.Dequeue();
+                    action();
+                }
+            }
+        }
+
+        private static void OnUIThread()
+        {
+            lock (s_LockObject)
+            {
+                while (s_UiThreadActionQueue.Count > 0)
+                {
+                    Action action = s_UiThreadActionQueue.Dequeue();
+                    action();
+                }
             }
         }
     }
+
     /// @endcond
 }

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="DepthCameraManager.cs" company="Google">
+// <copyright file="PointCloudManager.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
 //
@@ -20,49 +20,63 @@
 
 namespace GoogleARCoreInternal
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
     using UnityEngine;
-    using UnityTango = GoogleAR.UnityNative;
 
-    /// <summary>
-    /// A manager for the depth camera.
-    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+     Justification = "Internal")]
     public class PointCloudManager
     {
-        /// <summary>
-        /// The latest raw point cloud data.
-        /// </summary>
-        private PointCloud m_latestRawPointCloud = new PointCloud(null);
+        private NativeApi m_NativeApi;
 
-        /// <summary>
-        /// The unity frame count where <c>m_latestPose</c> was last updated.
-        /// </summary>
-        private int m_latestPointCloudFrame = 0;
+        private IntPtr m_PointCloudHandle = IntPtr.Zero;
 
-        /// <summary>
-        /// Gets the latest point cloud from the depth camera.
-        /// </summary>
-        /// <returns>The latest point cloud from the depth camera.</returns>
-        public PointCloud GetLatestPointCloud()
+        private long m_LastUpdateTimeStamp = -1;
+
+        public PointCloudManager(NativeApi nativeApi)
         {
-            // Maintain frame consistency.
-            if (Time.frameCount == m_latestPointCloudFrame)
+            m_NativeApi = nativeApi;
+        }
+
+        public void UpdateFrame(IntPtr frameHandle)
+        {
+            if (m_PointCloudHandle != IntPtr.Zero)
             {
-                return m_latestRawPointCloud;
+                // After first frame, release previous frame's point cloud.
+                m_NativeApi.PointCloud.Release(m_PointCloudHandle);
             }
 
-            // Attempt to query latest point cloud.
-            UnityTango.PointCloudData rawPointCloud = new UnityTango.PointCloudData();
-            if (!UnityTango.Device.TryGetLatestPointCloud(ref rawPointCloud))
+            m_PointCloudHandle = m_NativeApi.Frame.AcquirePointCloud(frameHandle);
+        }
+
+        public bool GetIsUpdatedThisFrame()
+        {
+            long currentTimestamp = m_NativeApi.PointCloud.GetTimestamp(m_PointCloudHandle);
+            if (m_LastUpdateTimeStamp != currentTimestamp)
             {
-                return m_latestRawPointCloud;
+                m_LastUpdateTimeStamp = currentTimestamp;
+                return true;
             }
 
-            // Update the latest point cloud.
-            m_latestRawPointCloud = new PointCloud(rawPointCloud);
-            m_latestPointCloudFrame = Time.frameCount;
+            return false;
+        }
 
-            return m_latestRawPointCloud;
+        public int GetPointCount()
+        {
+            return m_NativeApi.PointCloud.GetNumberOfPoints(m_PointCloudHandle);
+        }
+
+        public Vector4 GetPoint(int index)
+        {
+            return m_NativeApi.PointCloud.GetPoint(m_PointCloudHandle, index);
+        }
+
+        public void CopyPoints(List<Vector4> points)
+        {
+            m_NativeApi.PointCloud.CopyPoints(m_PointCloudHandle, points);
         }
     }
 }

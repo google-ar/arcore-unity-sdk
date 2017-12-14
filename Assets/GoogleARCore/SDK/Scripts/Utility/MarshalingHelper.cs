@@ -23,6 +23,7 @@ namespace GoogleARCoreInternal
     using System;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
+    using GoogleARCore;
 
     /// <summary>
     /// A helper class for mashalling data.

@@ -21,9 +21,6 @@
 namespace GoogleARCore
 {
     using UnityEngine;
-    /// @cond EXCLUDE_FROM_DOXYGEN
-    using UnityTango = GoogleAR.UnityNative;
-    /// @endcond
 
     /// <summary>
     /// An estimate of lighting conditions in the environment corresponding to
@@ -32,20 +29,26 @@ namespace GoogleARCore
     public struct LightEstimate
     {
         /// <summary>
-        /// Return an average pixel intensity. Values range from 0.0 to 1.0, where 0.0
+        /// Constructor for a LightEstimate.
+        /// </summary>
+        /// <param name="state">State of the estimate.</param>
+        /// <param name="pixelIntensity">Average pixel intensity. Values range from 0.0
+        /// to 1.0, where 0.0 represents black and 1.0 represents white.</param>
+        public LightEstimate(LightEstimateState state, float pixelIntensity)
+        {
+            State = state;
+            PixelIntensity = pixelIntensity;
+        }
+
+        /// <summary>
+        /// Gets the state of the current estimate.
+        /// </summary>
+        public LightEstimateState State { get; private set; }
+
+        /// <summary>
+        /// Gets an average pixel intensity. Values range from 0.0 to 1.0, where 0.0
         /// represents black and 1.0 represents white.
         /// </summary>
         public float PixelIntensity { get; private set; }
-
-        /// <summary>
-        /// Constructor for a LightEstimate.
-        /// </summary>
-        /// <param name="pixelIntensity">Average pixel intensity. Values range from 0.0
-        /// to 1.0, where 0.0 represents black and 1.0 represents white.
-        /// </param>
-        public LightEstimate(float pixelIntensity)
-        {
-            PixelIntensity = pixelIntensity;
-        }
     }
 }

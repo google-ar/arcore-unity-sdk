@@ -29,17 +29,28 @@ namespace GoogleARCore
     public struct AndroidPermissionsRequestResult
     {
         /// <summary>
+        /// Constructs a new AndroidPermissionsRequestResult.
+        /// </summary>
+        /// <param name="permissionNames">The value for PermissionNames.</param>
+        /// <param name="grantResults">The value for GrantResults.</param>
+        public AndroidPermissionsRequestResult(string[] permissionNames,  bool[] grantResults)
+        {
+            PermissionNames = permissionNames;
+            GrantResults = grantResults;
+        }
+
+        /// <summary>
         /// Gets a collection of permissions requested.
         /// </summary>
         public string[] PermissionNames { get; private set; }
 
         /// <summary>
-        /// Gets a collection of results corresponding to <c>PermissionNames</c>.
+        /// Gets a collection of results corresponding to {@link PermissionNames}.
         /// </summary>
         public bool[] GrantResults { get; private set; }
 
         /// <summary>
-        /// A collection of results corresponding to <c>PermissionNames</c>.
+        /// Gets a value indicating whether all permissions are granted.
         /// </summary>
         public bool IsAllGranted
         {
@@ -50,7 +61,7 @@ namespace GoogleARCore
                     return false;
                 }
 
-                for(int i = 0; i < GrantResults.Length; i++)
+                for (int i = 0; i < GrantResults.Length; i++)
                 {
                     if (!GrantResults[i])
                     {
@@ -61,17 +72,5 @@ namespace GoogleARCore
                 return true;
             }
         }
-
-        /// <summary>
-        /// Constructs a new AndroidPermissionsRequestResult.
-        /// </summary>
-        /// <param name="permissionNames">The value for <c>PermissionNames</c>.</param>
-        /// <param name="grantResults">The value for <c>GrantResults</c>.</param>
-        public AndroidPermissionsRequestResult(string[] permissionNames,  bool[] grantResults)
-        {
-            PermissionNames = permissionNames;
-            GrantResults = grantResults;
-        }
-
     }
 }

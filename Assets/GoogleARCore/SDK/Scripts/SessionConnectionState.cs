@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="SessionConnectionResult.cs" company="Google">
+// <copyright file="SessionConnectionState.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
 //
@@ -20,31 +20,39 @@
 
 namespace GoogleARCore
 {
-
     /// <summary>
     /// Possible states for the ARCore session connection.
     /// </summary>
     public enum SessionConnectionState
     {
+        /// <summary>
         /// The ARCore session has not been initialized.
+        /// </summary>
         Uninitialized = 0,
 
+        /// <summary>
         /// The ARCore session is connected.
+        /// </summary>
         Connected,
 
+        /// <summary>
         /// The ARCore session failed to connect because no configuration was supplied.
+        /// </summary>
         MissingConfiguration,
 
+        /// <summary>
         /// The ARCore session failed to connect because an invalid configuration was supplied.
+        /// </summary>
         InvalidConfiguration,
 
+        /// <summary>
         /// The ARCore session failed to connect because the user rejected at least one needed permission.
+        /// </summary>
         UserRejectedNeededPermission,
 
-        /// The ARCore session failed to connect because the device is not supported.
-        DeviceNotSupported,
-
+        /// <summary>
         /// The ARCore session failed to connect for unknown reason.
+        /// </summary>
         ConnectToServiceFailed,
     }
 }

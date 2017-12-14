@@ -22,165 +22,95 @@ namespace GoogleARCore
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.InteropServices;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCoreInternal;
     using UnityEngine;
 
     /// <summary>
-    /// A real-world plane being tracked by ARCore.
+    /// A planar surface in the real world detected and tracked by ARCore.
     /// </summary>
-    public class TrackedPlane
+    public class TrackedPlane : Trackable
     {
-        /// <summary>
-        /// Center position of the plane.
-        /// </summary>
-        public Vector3 Position { get; private set; }
+        //// @cond EXCLUDE_FROM_DOXYGEN
 
         /// <summary>
-        /// Rotation of the plane.
+        /// Construct TrackedPlane from a native handle.
         /// </summary>
-        public Quaternion Rotation { get; private set; }
-
-        /// <summary>
-        /// Bounding box size aligned with plane's x and z axis.
-        /// </summary>
-        public Vector2 Bounds
+        /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
+        /// <param name="nativeApi">The ARCore native api.</param>
+        public TrackedPlane(IntPtr nativeHandle, NativeApi nativeApi)
+            : base(nativeHandle, nativeApi)
         {
-            get
-            {
-                return new Vector2((float)m_apiPlaneData.width, (float)m_apiPlaneData.height);
-            }
+            m_TrackableNativeHandle = nativeHandle;
+            m_NativeApi = nativeApi;
         }
 
-        /// <summary>
-        /// Gets a value indicating if the plane data has been updated in the current ARCore Frame.
-        /// </summary>
-        public bool IsUpdated
-        {
-            get
-            {
-                return Time.frameCount == m_lastUpdatedFrame;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating the plane is valid. If this is false, the plane should not be rendered.
-        /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return m_apiPlaneData.isValid;
-            }
-        }
+        //// @endcond
 
         /// <summary>
         /// Gets a reference to the plane subsuming this plane, if any.  If not null, only the subsuming plane should be
         /// considered valid for rendering.
         /// </summary>
-        public TrackedPlane SubsumedBy { get; private set; }
-
-        private ApiPlaneData m_apiPlaneData;
-
-        private Matrix4x4 m_unityWorldTPlane;
-
-        private List<Vector3> m_boundaryPolygonPoints = new List<Vector3>();
-
-        private int m_lastUpdatedFrame;
-
-        private  bool m_initialized;
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Construct PlaneData from APIPlaneData.
-        /// Note that this will convert plane's pose from Tango space to Unity world space.
-        /// </summary>
-        /// <param name="apiPlaneData">ApiPlaneData source.</param>
-        /// <param name="updatePlane">A callback to update the API data of the plane.</param>
-        public TrackedPlane(ApiPlaneData apiPlaneData, out Action<ApiPlaneData, TrackedPlane, bool> updatePlane)
+        public TrackedPlane SubsumedBy
         {
-            _UpdatePlaneIfNeeded(apiPlaneData, null, true);
-            updatePlane = _UpdatePlaneIfNeeded;
+            get
+            {
+               return m_NativeApi.Plane.GetSubsumedBy(m_TrackableNativeHandle);
+            }
         }
-        /// @endcond
+
+        /// <summary>
+        /// Gets the center position of the plane.
+        /// </summary>
+        public Vector3 Position
+        {
+            get
+            {
+                return m_NativeApi.Plane.GetCenterPose(m_TrackableNativeHandle).position;
+            }
+        }
+
+        /// <summary>
+        /// Gets the rotation of the plane.
+        /// </summary>
+        public Quaternion Rotation
+        {
+            get
+            {
+                return m_NativeApi.Plane.GetCenterPose(m_TrackableNativeHandle).rotation;
+            }
+        }
+
+        /// <summary>
+        /// Gets the extent of the plane in the X dimension, centered on the plane position.
+        /// </summary>
+        public float ExtentX
+        {
+            get
+            {
+                return m_NativeApi.Plane.GetExtentX(m_TrackableNativeHandle);
+            }
+        }
+
+        /// <summary>
+        /// Gets the extent of the plane in the Z dimension, centered on the plane position.
+        /// </summary>
+        public float ExtentZ
+        {
+            get
+            {
+                return m_NativeApi.Plane.GetExtentZ(m_TrackableNativeHandle);
+            }
+        }
 
         /// <summary>
         /// Gets a list of points (in clockwise order) in Unity world space representing a boundary polygon for
         /// the plane.
         /// </summary>
         /// <param name="boundaryPolygonPoints">A list of <b>Vector3</b> to be filled by the method call.</param>
-        public void GetBoundaryPolygon(ref List<Vector3> boundaryPolygonPoints)
+        public void GetBoundaryPolygon(List<Vector3> boundaryPolygonPoints)
         {
-            if (boundaryPolygonPoints == null)
-            {
-                boundaryPolygonPoints = new List<Vector3>();
-            }
-
-            boundaryPolygonPoints.Clear();
-            boundaryPolygonPoints.AddRange(m_boundaryPolygonPoints);
-        }
-
-        /// <summary>
-        /// Update the plane's data with APIPlaneData
-        /// Note that this will convert plane's pose from Tango space to Unity world space.
-        /// </summary>
-        /// <param name="apiPlaneData">ApiPlaneData source.</param>
-        /// <param name="subsumedBy">The plane subsuming this plane or null.</param>
-        /// <param name="forceUpdate">Force to update.</param>
-        private void _UpdatePlaneIfNeeded(ApiPlaneData apiPlaneData, TrackedPlane subsumedBy, bool forceUpdate)
-        {
-            if (m_initialized && apiPlaneData.id != m_apiPlaneData.id)
-            {
-                ARDebug.LogError("Cannot update plane with mismatched id.");
-                return;
-            }
-            else if (m_initialized && ! forceUpdate && apiPlaneData.timestamp == m_apiPlaneData.timestamp)
-            {
-                return;
-            }
-
-            if (subsumedBy != null)
-            {
-                SubsumedBy = subsumedBy;
-            }
-
-            m_apiPlaneData = apiPlaneData;
-            m_initialized = true;
-            m_lastUpdatedFrame = Time.frameCount;
-
-            Matrix4x4 startServiceTplane = Matrix4x4.TRS(apiPlaneData.pose.translation.ToVector3(),
-                apiPlaneData.pose.orientation.ToQuaternion(), Vector3.one);
-
-            // Because startServiceTplane is a Pose (position, orientation), the multiplication of the first two terms
-            // rotates plane orientation.  This must be undone with the last term (inverse) of the equation.
-            m_unityWorldTPlane = Constants.UNITY_WORLD_T_START_SERVICE * startServiceTplane *
-                Constants.UNITY_WORLD_T_START_SERVICE.inverse;
-
-            Position = m_unityWorldTPlane.GetColumn(3);
-            Position += new Vector3((float)apiPlaneData.centerX, 0.0f, (float)apiPlaneData.centerY);
-
-            Quaternion yaw = Quaternion.Euler(0.0f, -Mathf.Rad2Deg * (float)apiPlaneData.yaw, 0.0f);
-            Rotation = yaw * Quaternion.LookRotation(m_unityWorldTPlane.GetColumn(2), m_unityWorldTPlane.GetColumn(1));
-
-            m_boundaryPolygonPoints.Clear();
-            int boudaryLength = m_apiPlaneData.boundaryPointNum;
-            if (boudaryLength != 0)
-            {
-                double[] apiBoundaryPolygon = new double[boudaryLength * 2];
-                Marshal.Copy(m_apiPlaneData.boundaryPolygon, apiBoundaryPolygon, 0, boudaryLength * 2);
-
-                m_boundaryPolygonPoints.Clear();
-                for(int i = 0; i < boudaryLength; ++i)
-                {
-                    Vector3 localPoint = new Vector3((float)apiBoundaryPolygon[2 * i],
-                        0.0f, (float)apiBoundaryPolygon[2*i+1]);
-                    m_boundaryPolygonPoints.Add(m_unityWorldTPlane.MultiplyPoint3x4(localPoint));
-                }
-            }
-
-            // Reverse the m_boundaryPolygonPoints because the raw data is in counter-clockwise.
-            // As Unity is left handed system, this should be clockwise.
-            m_boundaryPolygonPoints.Reverse();
+            m_NativeApi.Plane.GetPolygon(m_TrackableNativeHandle, boundaryPolygonPoints);
         }
     }
 }

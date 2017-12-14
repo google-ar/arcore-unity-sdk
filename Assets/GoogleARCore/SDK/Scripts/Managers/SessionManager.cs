@@ -20,106 +20,86 @@
 
 namespace GoogleARCoreInternal
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
     using UnityEngine;
-    using UnityTango = GoogleAR.UnityNative;
 
-    /// <summary>
-    /// A container for internal ARCore session managers.
-    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+     Justification = "Internal")]
     public class SessionManager
     {
-        private static SessionManager m_instance;
+        private NativeApi m_NativeApi;
 
-        private static SessionConnectionState m_connectionState = SessionConnectionState.Uninitialized;
-
-        public static SessionManager Instance
+        private SessionManager()
         {
-            get
-            {
-                if (m_instance == null)
-                {
-                    throw new InvalidSessionAccessException(
-                        "Attempted to access the ARCore Session while not connected.");
-                }
+        }
 
-                return m_instance;
+        ~SessionManager()
+        {
+            Destroy();
+        }
+
+        public SessionConnectionState ConnectionState { get; set; }
+
+        public FrameManager FrameManager { get; private set; }
+
+        public static SessionManager CreateSession()
+        {
+            var sessionManager = new SessionManager();
+            sessionManager.m_NativeApi = NativeApi.CreateSession();
+            if (sessionManager.m_NativeApi != null)
+            {
+                sessionManager.FrameManager = new FrameManager(sessionManager.m_NativeApi);
+                sessionManager.ConnectionState = SessionConnectionState.Uninitialized;
+            }
+            else
+            {
+                // Eventually we will provide more detail here: ARCore not installed, device not
+                // supported, ARCore version not supported, etc.; however the API to support these
+                // details does not exist yet.
+                //
+                // For now, just bundle all the possible errors into a generic connection failed.
+                sessionManager.ConnectionState = SessionConnectionState.ConnectToServiceFailed;
+            }
+
+            return sessionManager;
+        }
+
+        public void Destroy()
+        {
+            if (m_NativeApi != null)
+            {
+                m_NativeApi.Destroy();
+                m_NativeApi = null;
             }
         }
 
-        public static SessionConnectionState ConnectionState
+        public bool CheckSupported(ARCoreSessionConfig config)
         {
-            get
-            {
-                return m_connectionState;
-            }
-            set
-            {
-                if (value == SessionConnectionState.Connected)
-                {
-                    m_instance = new SessionManager();
-                }
-
-                Debug.LogFormat("Connection state became {0}", value);
-                m_connectionState = value;
-            }
+            return m_NativeApi.Session.CheckSupported(config) == ApiArStatus.Success;
         }
 
-        private Queue<ApiTangoEvent> m_eventQueue = new Queue<ApiTangoEvent>();
-
-        private object m_eventQueueLockObject = new object();
-
-        public AnchorManager AnchorManager { get; private set; }
-
-        public LightEstimateManager LightEstimateManager { get; private set; }
-
-        public MotionTrackingManager MotionTrackingManager { get; private set; }
-
-        public PointCloudManager PointCloudManager { get; private set; }
-
-        public RaycastManager RaycastManager { get; private set; }
-
-        public TrackedPlaneManager TrackedPlaneManager { get; private set; }
-
-        public List<ApiTangoEvent> TangoEvents { get; private set; }
-
-        public SessionManager()
+        public bool SetConfiguration(ARCoreSessionConfig config)
         {
-            AnchorManager = new AnchorManager();
-            LightEstimateManager = new LightEstimateManager();
-            MotionTrackingManager = new MotionTrackingManager();
-            PointCloudManager = new PointCloudManager();
-            RaycastManager = new RaycastManager();
-            TrackedPlaneManager = new TrackedPlaneManager();
-            TangoEvents = new List<ApiTangoEvent>();
-            TangoClientApi.ConnectOnEventAvailable(m_eventQueue, m_eventQueueLockObject);
+            return m_NativeApi.Session.SetConfiguration(config);
         }
 
-        public void EarlyUpdate()
+        public bool Resume()
         {
-            _ProcessEventQueue();
-            MotionTrackingManager.EarlyUpdate();
-            AnchorManager.EarlyUpdate();
-            TrackedPlaneManager.EarlyUpdate();
+            return m_NativeApi.Resume(_EarlyUpdate);
         }
 
-        public void OnApplicationPause(bool isPaused)
+        public Anchor CreateWorldAnchor(Pose pose)
         {
-            AnchorManager.OnApplicationPause(isPaused);
-            TrackedPlaneManager.OnApplicationPause(isPaused);
+            return m_NativeApi.Session.CreateAnchor(pose);
         }
 
-        private void _ProcessEventQueue()
+        private void _EarlyUpdate(IntPtr frameHandle, int textureId)
         {
-            TangoEvents.Clear();
-            lock (m_eventQueueLockObject)
-            {
-                while (m_eventQueue.Count > 0)
-                {
-                    TangoEvents.Add(m_eventQueue.Dequeue());
-                }
-            }
+            m_NativeApi.Session.SetDisplayGeometry(Screen.orientation, Screen.width, Screen.height);
+            FrameManager.UpdateFrame(frameHandle, (uint)textureId);
         }
     }
 }

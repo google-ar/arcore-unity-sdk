@@ -27,43 +27,44 @@ namespace GoogleARCore
     /// </summary>
     public struct TrackableHit
     {
-        /// <summary>
-        /// The location where the raycast hit the object in Unity world coordinates.
-        /// </summary>
-        public Vector3 Point { get; private set; }
+        //// @cond EXCLUDE_FROM_DOXYGEN
 
         /// <summary>
-        /// The normal of the hit.
+        /// Constructs a TrackableHit.
         /// </summary>
-        public Vector3 Normal { get; private set; }
+        /// <param name="pose">Hit's pose.</param>
+        /// <param name="distance">Hit's distance from the origin of the ray to the hit.</param>
+        /// <param name="flags">Type of the hit.</param>
+        /// <param name="trackable">Trackable object of the hit.</param>
+        public TrackableHit(Pose pose, float distance, TrackableHitFlags flags, Trackable trackable)
+        {
+            Pose = pose;
+            Distance = distance;
+            Flags = flags;
+            Trackable = trackable;
+        }
+
+        //// @endcond
 
         /// <summary>
-        /// The distance from the origin of the ray to the hit.
+        /// Gets the pose where the raycast hit the object in Unity world coordinates.
+        /// </summary>
+        public Pose Pose { get; private set; }
+
+        /// <summary>
+        /// Gets the distance from the origin of the ray to the hit.
         /// </summary>
         public float Distance { get; private set; }
 
         /// <summary>
-        /// A bitmask where set TrackableHitFlag flags correspond to categories of objects the hit belongs to.
+        /// Gets a bitmask where set TrackableHitFlag flags correspond to categories of objects
+        /// the hit belongs to.
         /// </summary>
-        public TrackableHitFlag Flags { get; private set; }
+        public TrackableHitFlags Flags { get; private set; }
 
         /// <summary>
-        /// Gets the TrackedPlane intersected by the Raycast if one exists, otherwise gets <c>null</c>.
+        /// Gets the hit's trackable object.
         /// </summary>
-        public TrackedPlane Plane { get; private set; }
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Constructs a TrackableHit.
-        /// </summary>
-        public TrackableHit(Vector3 point, Vector3 normal, float distance, TrackableHitFlag flags, TrackedPlane plane)
-        {
-            Point = point;
-            Normal = normal;
-            Distance = distance;
-            Flags = flags;
-            Plane = plane;
-        }
-        /// @endcond
+        public Trackable Trackable { get; private set; }
     }
 }

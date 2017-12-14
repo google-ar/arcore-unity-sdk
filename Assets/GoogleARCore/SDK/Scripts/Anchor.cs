@@ -22,92 +22,101 @@ namespace GoogleARCore
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using GoogleARCoreInternal;
     using UnityEngine;
-    /// @cond EXCLUDE_FROM_DOXYGEN
-    using UnityTango = GoogleAR.UnityNative;
-    /// @endcond
 
     /// <summary>
-    /// Anchors a gameobject to a position/rotation in the Unity world relative to ARCore's understanding of the
-    /// physical world; Created using <c>Session.CreateAnchor(Vector3, Quaternion)</c>.
-    /// ARCore may periodically perform operations that affect the mapping of Unity world coordinates to the
-    /// physical world; an example of such being drift correction. Anchors allow GameObjects to retain their
-    /// physical world location when these operations occur. If ARCore is unable to track an anchor for any reason,
-    /// the attached GameObject will be set inactive until tracking resumes.
+    /// Attaches a GameObject to an ARCore {@link Trackable}.  The transform of the GameObject will be updated to
+    /// maintain the semantics of the attachment relationship, which varies between sub-types of Trackable.
     /// </summary>
     public class Anchor : MonoBehaviour
     {
-        private Matrix4x4 m_poseTAnchor;
+        private static Dictionary<IntPtr, Anchor> s_AnchorDict = new Dictionary<IntPtr, Anchor>();
 
-        private double m_creationTimestamp;
+        private IntPtr m_AnchorNativeHandle = IntPtr.Zero;
 
-        private ScreenOrientation m_creationScreenOrientation;
+        private NativeApi m_NativeApi;
 
-        /// <summary>
-        /// Gets a unique identifier for the anchor.
-        /// </summary>
-        public string Id { get; private set; }
+        private TrackingState m_LastFrameTrackingState = TrackingState.Stopped;
 
         /// <summary>
         /// Gets the tracking state of the anchor.
         /// </summary>
-        public AnchorTrackingState TrackingState { get; private set; }
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Instantiates a new GameObject with an Anchor component attached.
-        /// </summary>
-        /// <param name="position">The unity world position to instantiate the anchor GameObject.</param>
-        /// <param name="rotation">The unity world rotation to instantiate the anchor GameObject.</param>
-        /// <param name="updateTracking">A callback to update the anchor's position based on latest
-        /// estimation of the physical world pose from ARCore.</param>
-        /// <param name="updateTrackingState">A callback to update the private tracking state of the anchor.</param>
-        /// <returns>A GameObject with an Anchor component attached.</returns>
-        public static Anchor InstantiateAnchor(Vector3 position, Quaternion rotation,
-            out Action<double> updateTracking, out Action<AnchorTrackingState> updateTrackingState)
+        public TrackingState TrackingState
         {
+            get
+            {
+                return m_NativeApi.Anchor.GetTrackingState(m_AnchorNativeHandle);
+            }
+        }
+
+        //// @cond EXCLUDE_FROM_DOXYGEN
+
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+        Justification = "Internal")]
+        public static Anchor AnchorFactory(IntPtr anchorNativeHandle, NativeApi nativeApi)
+        {
+            if (anchorNativeHandle == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            Anchor result;
+            if (s_AnchorDict.TryGetValue(anchorNativeHandle, out result))
+            {
+                // Release acquired handle and return cached result
+                result.m_NativeApi.Anchor.Release(anchorNativeHandle);
+                return result;
+            }
+
             Anchor anchor = (new GameObject()).AddComponent<Anchor>();
             anchor.gameObject.name = "Anchor";
-            anchor.Id = Guid.NewGuid().ToString();
-            anchor.TrackingState = AnchorTrackingState.Tracking;
-            anchor.transform.position = position;
-            anchor.transform.rotation = rotation;
-            var cameraPose = Frame.Pose;
-            anchor.m_poseTAnchor = Matrix4x4.TRS(cameraPose.position, cameraPose.rotation, Vector3.one).inverse *
-                Matrix4x4.TRS(position, rotation, Vector3.one);
-            anchor.m_creationTimestamp = Frame.Timestamp;
-            anchor.m_creationScreenOrientation = Screen.orientation;
-            updateTracking = anchor._UpdateTracking;
-            updateTrackingState = anchor._UpdateTrackingState;
+            anchor.m_AnchorNativeHandle = anchorNativeHandle;
+            anchor.m_NativeApi = nativeApi;
+            anchor.Update();
+
+            s_AnchorDict.Add(anchorNativeHandle, anchor);
             return anchor;
         }
-        /// @endcond
 
-        private void _UpdateTracking(double earliestTimestamp)
+        //// @endcond
+
+        private void Update()
         {
-            if (m_creationTimestamp < earliestTimestamp)
+            if (m_AnchorNativeHandle == IntPtr.Zero)
             {
+                Debug.LogError("Anchor components instantiated outside of ARCore are not supported. " +
+                    "Please use a 'Create' method within ARCore to instantiate anchors.");
                 return;
             }
 
-            UnityTango.PoseData poseData;
-            bool getPoseSuccess = UnityTango.InputTracking.TryGetPoseAtTime(
-                out poseData, UnityTango.CoordinateFrame.StartOfService, UnityTango.CoordinateFrame.CameraColor,
-                m_creationTimestamp, m_creationScreenOrientation);
-            if (!getPoseSuccess || poseData.statusCode != UnityTango.PoseStatus.Valid)
-            {
-                return;
-            }
+            var pose = m_NativeApi.Anchor.GetPose(m_AnchorNativeHandle);
+            transform.position = pose.position;
+            transform.rotation = pose.rotation;
 
-            var unityWorldAnchor = Matrix4x4.TRS(poseData.position, poseData.rotation, Vector3.one) * m_poseTAnchor;
-            transform.position = unityWorldAnchor.GetColumn(3);
-            transform.rotation = Quaternion.LookRotation(unityWorldAnchor.GetColumn(2), unityWorldAnchor.GetColumn(1));
+            TrackingState currentFrameTrackingState = TrackingState;
+            if (m_LastFrameTrackingState != currentFrameTrackingState)
+            {
+                bool isAnchorTracking = currentFrameTrackingState == TrackingState.Tracking;
+                foreach (Transform child in transform)
+                {
+                    child.gameObject.SetActive(isAnchorTracking);
+                }
+
+                m_LastFrameTrackingState = currentFrameTrackingState;
+            }
         }
 
-        private void _UpdateTrackingState(AnchorTrackingState trackingState)
+        private void OnDestroy()
         {
-            TrackingState = trackingState;
-            gameObject.SetActive(TrackingState == AnchorTrackingState.Tracking);
+            if (m_AnchorNativeHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            s_AnchorDict.Remove(m_AnchorNativeHandle);
+            m_NativeApi.Anchor.Release(m_AnchorNativeHandle);
         }
     }
 }

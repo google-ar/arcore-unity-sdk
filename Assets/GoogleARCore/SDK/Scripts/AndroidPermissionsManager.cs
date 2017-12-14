@@ -29,51 +29,21 @@ namespace GoogleARCore
     /// </summary>
     public class AndroidPermissionsManager : AndroidJavaProxy
     {
-        private static AndroidPermissionsManager m_instance;
-        private static AndroidJavaObject m_Activity;
-        private static AndroidJavaObject m_PermissionService;
-        private static AsyncTask<AndroidPermissionsRequestResult> m_currentRequest = null;
-        private static Action<AndroidPermissionsRequestResult> m_onPermissionsRequestFinished;
+        private static AndroidPermissionsManager s_Instance;
+        private static AndroidJavaObject s_Activity;
+        private static AndroidJavaObject s_PermissionService;
+        private static AsyncTask<AndroidPermissionsRequestResult> s_CurrentRequest = null;
+        private static Action<AndroidPermissionsRequestResult> s_OnPermissionsRequestFinished;
 
-        private static AndroidPermissionsManager Instance
+        /// @cond EXCLUDE_FROM_DOXYGEN
+        /// <summary>
+        /// Constructs a new AndroidPermissionsManager.
+        /// </summary>
+        public AndroidPermissionsManager() : base("com.unity3d.plugin.UnityAndroidPermissions$IPermissionRequestResult")
         {
-            get
-            {
-                if (m_instance == null)
-                {
-                    m_instance = new AndroidPermissionsManager();
-                }
-
-                return m_instance;
-            }
         }
 
-        private static AndroidJavaObject UnityActivity
-        {
-            get
-            {
-                if (m_Activity == null)
-                {
-                    AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                    m_Activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-                }
-
-                return m_Activity;
-            }
-        }
-
-        private static AndroidJavaObject PermissionsService
-        {
-            get
-            {
-                if (m_PermissionService == null)
-                {
-                    m_PermissionService = new AndroidJavaObject("com.unity3d.player.UnityAndroidPermissions");
-                }
-
-                return m_PermissionService;
-            }
-        }
+        /// @endcond
 
         /// <summary>
         /// Checks if an Android permission is granted to the application.
@@ -84,40 +54,30 @@ namespace GoogleARCore
         /// <c>false</c>.</returns>
         public static bool IsPermissionGranted(string permissionName)
         {
-            return PermissionsService.Call<bool>("IsPermissionGranted", UnityActivity, permissionName);
+            return GetPermissionsService().Call<bool>("IsPermissionGranted", GetUnityActivity(), permissionName);
         }
 
         /// <summary>
-        /// Requests a set of Android permissions from the user.
+        /// Requests an Android permission from the user.
         /// </summary>
-        /// <param name="permissionNames">A collection of permissions to be requested (e.g. android.permission.CAMERA).
-        /// <b>Currently only the first permission in the collection will be requested. The behavior of this parameter
-        /// will change in later versions.</b>
-        /// </param>
-        /// <returns>An asynchronous task the completes when the user has accepted/rejected all requested permissions
-        /// and yields a <c>AndroidPermissionsRequestResult</c> that summarizes the result.  If this method is called
+        /// <param name="permissionName">The permission to be requested (e.g. android.permission.CAMERA).</param>
+        /// <returns>An asynchronous task the completes when the user has accepted/rejected the requested permission
+        /// and yields a {@link AndroidPermissionsRequestResult} that summarizes the result.  If this method is called
         /// when another permissions request is pending <c>null</c> will be returned instead.</returns>
-        public static AsyncTask<AndroidPermissionsRequestResult> RequestPermission(string[] permissionNames)
+        public static AsyncTask<AndroidPermissionsRequestResult> RequestPermission(string permissionName)
         {
-            if (m_currentRequest != null)
+            if (s_CurrentRequest != null)
             {
                 ARDebug.LogError("Attempted to make simultaneous Android permissions requests.");
                 return null;
             }
 
-            // TODO (mtsmall): We currently only allow one permission to be requested because of the callback structure.
-            PermissionsService.Call("RequestPermissionAsync", UnityActivity, new [] { permissionNames[0] }, Instance);
-            m_currentRequest = new AsyncTask<AndroidPermissionsRequestResult>(out m_onPermissionsRequestFinished);
+            GetPermissionsService().Call("RequestPermissionAsync", GetUnityActivity(),
+                new[] { permissionName }, GetInstance());
+            s_CurrentRequest = new AsyncTask<AndroidPermissionsRequestResult>(out s_OnPermissionsRequestFinished);
 
-            return m_currentRequest;
+            return s_CurrentRequest;
         }
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Constructs a new AndroidPermissionsManager.
-        /// </summary>
-        public AndroidPermissionsManager() : base("com.unity3d.player.UnityAndroidPermissions$IPermissionRequestResult") {}
-        /// @endcond
 
         /// @cond EXCLUDE_FROM_DOXYGEN
         /// <summary>
@@ -128,6 +88,7 @@ namespace GoogleARCore
         {
             _OnPermissionResult(permissionName, true);
         }
+
         /// @endcond
 
         /// @cond EXCLUDE_FROM_DOXYGEN
@@ -139,18 +100,58 @@ namespace GoogleARCore
         {
             _OnPermissionResult(permissionName, false);
         }
+
         /// @endcond
 
         /// @cond EXCLUDE_FROM_DOXYGEN
         /// <summary>
         /// Callback fired on an Android activity result (unused part of UnityAndroidPermissions interface).
         /// </summary>
-        public virtual void OnActivityResult() {}
+        public virtual void OnActivityResult()
+        {
+        }
+
+        private static AndroidPermissionsManager GetInstance()
+        {
+            if (s_Instance == null)
+            {
+                s_Instance = new AndroidPermissionsManager();
+            }
+
+            return s_Instance;
+        }
+
+        private static AndroidJavaObject GetUnityActivity()
+        {
+            if (s_Activity == null)
+            {
+                AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                s_Activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            }
+
+            return s_Activity;
+        }
+
+        private static AndroidJavaObject GetPermissionsService()
+        {
+            if (s_PermissionService == null)
+            {
+                s_PermissionService = new AndroidJavaObject("com.unity3d.plugin.UnityAndroidPermissions");
+            }
+
+            return s_PermissionService;
+        }
+
         /// @endcond
 
+        /// <summary>
+        /// Callback fired on an Android permission result.
+        /// </summary>
+        /// <param name="permissionName">The name of the permission.</param>
+        /// <param name="granted">If permission is granted or not.</param>
         private void _OnPermissionResult(string permissionName, bool granted)
         {
-            if (m_onPermissionsRequestFinished == null)
+            if (s_OnPermissionsRequestFinished == null)
             {
                 Debug.LogErrorFormat("AndroidPermissionsManager received an unexpected permissions result {0}",
                     permissionName);
@@ -158,9 +159,9 @@ namespace GoogleARCore
             }
 
             // Cache completion method and reset request state.
-            var onRequestFinished = m_onPermissionsRequestFinished;
-            m_currentRequest = null;
-            m_onPermissionsRequestFinished = null;
+            var onRequestFinished = s_OnPermissionsRequestFinished;
+            s_CurrentRequest = null;
+            s_OnPermissionsRequestFinished = null;
 
             onRequestFinished(new AndroidPermissionsRequestResult(new string[] { permissionName },
                 new bool[] { granted }));

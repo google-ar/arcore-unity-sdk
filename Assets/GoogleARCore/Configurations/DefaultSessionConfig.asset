@@ -8,8 +8,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c267d21797034e5a82bfd30dcc038ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 53ac32fab2599402fb6d154adf4c1e40, type: 3}
   m_Name: DefaultSessionConfig
   m_EditorClassIdentifier: 
-  m_enableARBackground: 1
-  m_synchronizeApplicationFramerateWithColorCamera: 0
+  m_matchCameraFramerate: 1
+  m_enablePlaneFinding: 1
+  m_enableLightEstimation: 1
