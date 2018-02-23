@@ -38,11 +38,11 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
         /// <param name="nativeApi">The ARCore native api.</param>
-        public TrackedPlane(IntPtr nativeHandle, NativeApi nativeApi)
+        public TrackedPlane(IntPtr nativeHandle, NativeSession nativeApi)
             : base(nativeHandle, nativeApi)
         {
             m_TrackableNativeHandle = nativeHandle;
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeApi;
         }
 
         //// @endcond
@@ -55,29 +55,18 @@ namespace GoogleARCore
         {
             get
             {
-               return m_NativeApi.Plane.GetSubsumedBy(m_TrackableNativeHandle);
+               return m_NativeSession.PlaneApi.GetSubsumedBy(m_TrackableNativeHandle);
             }
         }
 
         /// <summary>
-        /// Gets the center position of the plane.
+        /// Gets the position and orientation of the plane's center.
         /// </summary>
-        public Vector3 Position
+        public Pose CenterPose
         {
             get
             {
-                return m_NativeApi.Plane.GetCenterPose(m_TrackableNativeHandle).position;
-            }
-        }
-
-        /// <summary>
-        /// Gets the rotation of the plane.
-        /// </summary>
-        public Quaternion Rotation
-        {
-            get
-            {
-                return m_NativeApi.Plane.GetCenterPose(m_TrackableNativeHandle).rotation;
+                return m_NativeSession.PlaneApi.GetCenterPose(m_TrackableNativeHandle);
             }
         }
 
@@ -88,7 +77,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeApi.Plane.GetExtentX(m_TrackableNativeHandle);
+                return m_NativeSession.PlaneApi.GetExtentX(m_TrackableNativeHandle);
             }
         }
 
@@ -99,7 +88,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeApi.Plane.GetExtentZ(m_TrackableNativeHandle);
+                return m_NativeSession.PlaneApi.GetExtentZ(m_TrackableNativeHandle);
             }
         }
 
@@ -110,7 +99,7 @@ namespace GoogleARCore
         /// <param name="boundaryPolygonPoints">A list of <b>Vector3</b> to be filled by the method call.</param>
         public void GetBoundaryPolygon(List<Vector3> boundaryPolygonPoints)
         {
-            m_NativeApi.Plane.GetPolygon(m_TrackableNativeHandle, boundaryPolygonPoints);
+            m_NativeSession.PlaneApi.GetPolygon(m_TrackableNativeHandle, boundaryPolygonPoints);
         }
     }
 }

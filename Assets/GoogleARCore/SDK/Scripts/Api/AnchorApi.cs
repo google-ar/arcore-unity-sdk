@@ -31,33 +31,33 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public class AnchorApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
-        public AnchorApi(NativeApi nativeApi)
+        public AnchorApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
         public Pose GetPose(IntPtr anchorHandle)
         {
-            var poseHandle = m_NativeApi.Pose.Create();
-            ExternApi.ArAnchor_getPose(m_NativeApi.SessionHandle, anchorHandle, poseHandle);
-            Pose resultPose = m_NativeApi.Pose.ExtractPoseValue(poseHandle);
-            m_NativeApi.Pose.Destroy(poseHandle);
+            var poseHandle = m_NativeSession.PoseApi.Create();
+            ExternApi.ArAnchor_getPose(m_NativeSession.SessionHandle, anchorHandle, poseHandle);
+            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            m_NativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
         public TrackingState GetTrackingState(IntPtr anchorHandle)
         {
             ApiTrackingState trackingState = ApiTrackingState.Stopped;
-            ExternApi.ArAnchor_getTrackingState(m_NativeApi.SessionHandle, anchorHandle,
+            ExternApi.ArAnchor_getTrackingState(m_NativeSession.SessionHandle, anchorHandle,
                 ref trackingState);
             return trackingState.ToTrackingState();
         }
 
         public void Detach(IntPtr anchorHandle)
         {
-            ExternApi.ArAnchor_detach(m_NativeApi.SessionHandle, anchorHandle);
+            ExternApi.ArAnchor_detach(m_NativeSession.SessionHandle, anchorHandle);
         }
 
         public void Release(IntPtr anchorHandle)
@@ -68,21 +68,21 @@ namespace GoogleARCoreInternal
         public IntPtr CreateList()
         {
             IntPtr listHandle = IntPtr.Zero;
-            ExternApi.ArAnchorList_create(m_NativeApi.SessionHandle, ref listHandle);
+            ExternApi.ArAnchorList_create(m_NativeSession.SessionHandle, ref listHandle);
             return listHandle;
         }
 
         public int GetListSize(IntPtr anchorListHandle)
         {
             int size = 0;
-            ExternApi.ArAnchorList_getSize(m_NativeApi.SessionHandle, anchorListHandle, ref size);
+            ExternApi.ArAnchorList_getSize(m_NativeSession.SessionHandle, anchorListHandle, ref size);
             return size;
         }
 
         public IntPtr AcquireListItem(IntPtr anchorListHandle, int index)
         {
             IntPtr anchorHandle = IntPtr.Zero;
-            ExternApi.ArAnchorList_acquireItem(m_NativeApi.SessionHandle, anchorListHandle, index, 
+            ExternApi.ArAnchorList_acquireItem(m_NativeSession.SessionHandle, anchorListHandle, index,
                 ref anchorHandle);
             return anchorHandle;
         }

@@ -30,7 +30,10 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public class TrackableManager
     {
-        private NativeApi m_NativeApi;
+        private Dictionary<IntPtr, Trackable> m_TrackableDict =
+            new Dictionary<IntPtr, Trackable>(new IntPtrEqualityComparer());
+
+        private NativeSession m_NativeSession;
 
         private int m_LastUpdateFrame = -1;
 
@@ -38,19 +41,64 @@ namespace GoogleARCoreInternal
 
         private List<Trackable> m_AllTrackables  = new List<Trackable>();
 
+        private List<Trackable> m_UpdatedTrackables  = new List<Trackable>();
+
         private HashSet<Trackable> m_OldTrackables  = new HashSet<Trackable>();
 
-        public TrackableManager(NativeApi nativeApi)
+        public TrackableManager(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
+        }
+
+        /// <summary>
+        /// Factory method for creating and reusing TrackedPlane references from native handles.
+        /// </summary>
+        /// <param name="nativeHandle">A native handle to a plane that has been acquired.  RELEASE WILL BE HANDLED BY
+        /// THIS METHOD.</param>
+        /// <returns>A reference to a tracked plane. </returns>
+        public Trackable TrackableFactory(IntPtr nativeHandle)
+        {
+            if (nativeHandle == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            Trackable result;
+            if (m_TrackableDict.TryGetValue(nativeHandle, out result))
+            {
+                // Release aquired handle and return cached result.
+                m_NativeSession.TrackableApi.Release(nativeHandle);
+                return result;
+            }
+
+            ApiTrackableType trackableType = m_NativeSession.TrackableApi.GetType(nativeHandle);
+            if (trackableType == ApiTrackableType.Plane)
+            {
+                result = new TrackedPlane(nativeHandle, m_NativeSession);
+            }
+            else if (trackableType == ApiTrackableType.Point)
+            {
+                result = new TrackedPoint(nativeHandle, m_NativeSession);
+            }
+            else
+            {
+                UnityEngine.Debug.LogFormat("Cant find {0}", trackableType);
+                throw new NotImplementedException("TrackableFactory:: No constructor for requested trackable type.");
+            }
+
+            m_TrackableDict.Add(nativeHandle, result);
+            return result;
         }
 
         public void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter) where T : Trackable
         {
             if (m_LastUpdateFrame < Time.frameCount)
             {
+                // Get trackables updated this frame.
+                m_NativeSession.FrameApi.GetUpdatedTrackables(m_UpdatedTrackables);
+
                 // Get all the trackables in the session.
-                m_NativeApi.Session.GetAllTrackables(m_AllTrackables);
+                m_NativeSession.SessionApi.GetAllTrackables(m_AllTrackables);
 
                 // Find trackables that are not in the hashset (new).
                 m_NewTrackables.Clear();
@@ -81,6 +129,13 @@ namespace GoogleARCoreInternal
                 for (int i = 0; i < m_NewTrackables.Count; i++)
                 {
                     _SafeAdd<T>(m_NewTrackables[i], trackables);
+                }
+            }
+            else if (filter == TrackableQueryFilter.Updated)
+            {
+                for (int i = 0; i < m_NewTrackables.Count; i++)
+                {
+                    _SafeAdd<T>(m_UpdatedTrackables[i], trackables);
                 }
             }
         }

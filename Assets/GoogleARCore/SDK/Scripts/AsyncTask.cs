@@ -132,41 +132,7 @@ namespace GoogleARCore
     public class AsyncTask
     {
         private static Queue<Action> s_UpdateActionQueue = new Queue<Action>();
-
-        private static Queue<Action> s_UiThreadActionQueue = new Queue<Action>();
-
-        private static AndroidJavaObject s_Activity;
-
-        private static AndroidJavaRunnable s_CallOnUIThread;
-
         private static object s_LockObject = new object();
-
-        static AsyncTask()
-        {
-            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            s_Activity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
-
-            s_CallOnUIThread = new AndroidJavaRunnable(() => { OnUIThread(); });
-        }
-
-        /// <summary>
-        /// Queues an action to be performed on Android UI thread. This method can be called by any thread.
-        /// </summary>
-        /// <param name="action">The action to perfom.</param>
-        public static void PerformActionInUIThread(Action action)
-        {
-            lock (s_LockObject)
-            {
-                if (s_UiThreadActionQueue.Count == 0)
-                {
-                    // Ensure that runOnUiThread is only called once if this method is called twice quickly before
-                    // the UI thread responds.
-                    s_Activity.Call("runOnUiThread", s_CallOnUIThread);
-                }
-
-                s_UiThreadActionQueue.Enqueue(action);
-            }
-        }
 
         /// <summary>
         /// Queues an action to be performed on Unity thread in Update().  This method can be called by any thread.
@@ -190,18 +156,6 @@ namespace GoogleARCore
                 while (s_UpdateActionQueue.Count > 0)
                 {
                     Action action = s_UpdateActionQueue.Dequeue();
-                    action();
-                }
-            }
-        }
-
-        private static void OnUIThread()
-        {
-            lock (s_LockObject)
-            {
-                while (s_UiThreadActionQueue.Count > 0)
-                {
-                    Action action = s_UiThreadActionQueue.Dequeue();
                     action();
                 }
             }

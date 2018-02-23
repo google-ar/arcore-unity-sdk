@@ -40,7 +40,7 @@ namespace GoogleARCore.TextureReader
         /// Background renderer to inject our texture into.
         /// </summary>
         public ARCoreBackgroundRenderer BackgroundRenderer;
-        
+
         /// <summary>
         /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
         /// </summary>
@@ -71,6 +71,11 @@ namespace GoogleARCore.TextureReader
         /// </summary>
         public void Update()
         {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
             _QuitOnConnectionErrors();
             _HandleTouchInput();
         }
@@ -179,7 +184,7 @@ namespace GoogleARCore.TextureReader
                     return 0;
             }
         }
-        
+
         /// <summary>
         /// Actually quit the application.
         /// </summary>
@@ -199,13 +204,13 @@ namespace GoogleARCore.TextureReader
             }
 
             // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
-            if (Session.ConnectionState == SessionConnectionState.UserRejectedNeededPermission)
+            if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
                 m_IsQuitting = true;
                 Invoke("DoQuit", 0.5f);
             }
-            else if (Session.ConnectionState == SessionConnectionState.ConnectToServiceFailed)
+            else if (Session.Status == SessionStatus.FatalError)
             {
                 _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;

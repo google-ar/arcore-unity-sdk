@@ -26,9 +26,6 @@ namespace GoogleARCore
     using UnityEngine;
     using UnityEngine.XR;
 
-    //// TODO (mtsmall): Consider if this component is the best way to expose background rendering and discuss approach
-    //// with Unity.
-
     /// <summary>
     /// Renders the device's camera as a background to the attached Unity camera component.
     /// </summary>
@@ -47,12 +44,6 @@ namespace GoogleARCore
 
         private void OnEnable()
         {
-            if (Application.isEditor)
-            {
-                enabled = false;
-                return;
-            }
-
             if (BackgroundMaterial == null)
             {
                 Debug.LogError("ArCameraBackground:: No material assigned.");
@@ -64,24 +55,21 @@ namespace GoogleARCore
 
         private void OnDisable()
         {
-            if (m_BackgroundRenderer != null)
-            {
-                m_BackgroundRenderer.camera = null;
-                m_BackgroundRenderer = null;
-            }
+            Disable();
         }
 
         private void Update()
         {
             if (BackgroundMaterial == null)
             {
-                // A background rending material has not been assigned.
+                Disable();
                 return;
             }
-            else if (Frame.CameraImage.Texture == null)
+
+            Texture backgroundTexture = Frame.CameraImage.Texture;
+            if (backgroundTexture == null)
             {
-                // TODO (mtsmall): Consider rendering a default background in this case.
-                // No texture is available.
+                Disable();
                 return;
             }
 
@@ -89,16 +77,16 @@ namespace GoogleARCore
             const string topLeftRightVar = "_UvTopLeftRight";
             const string bottomLeftRightVar = "_UvBottomLeftRight";
 
-            BackgroundMaterial.SetTexture(mainTexVar, Frame.CameraImage.Texture);
+            BackgroundMaterial.SetTexture(mainTexVar, backgroundTexture);
 
-            ApiDisplayUvCoords uvQuad = Frame.CameraImage.DisplayUvCoords;
-
+            var uvQuad = Frame.CameraImage.DisplayUvCoords;
             BackgroundMaterial.SetVector(topLeftRightVar,
                 new Vector4(uvQuad.TopLeft.x, uvQuad.TopLeft.y, uvQuad.TopRight.x, uvQuad.TopRight.y));
             BackgroundMaterial.SetVector(bottomLeftRightVar,
                 new Vector4(uvQuad.BottomLeft.x, uvQuad.BottomLeft.y, uvQuad.BottomRight.x, uvQuad.BottomRight.y));
 
-            m_Camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(m_Camera.nearClipPlane, m_Camera.farClipPlane);
+            m_Camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(
+                m_Camera.nearClipPlane, m_Camera.farClipPlane);
 
             if (m_BackgroundRenderer == null)
             {
@@ -106,6 +94,15 @@ namespace GoogleARCore
                 m_BackgroundRenderer.backgroundMaterial = BackgroundMaterial;
                 m_BackgroundRenderer.camera = m_Camera;
                 m_BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
+            }
+        }
+
+        private void Disable()
+        {
+            if (m_BackgroundRenderer != null)
+            {
+                m_BackgroundRenderer.camera = null;
+                m_BackgroundRenderer = null;
             }
         }
     }

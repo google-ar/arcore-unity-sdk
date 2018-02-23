@@ -31,17 +31,17 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public class SessionConfigApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
-        public SessionConfigApi(NativeApi nativeApi)
+        public SessionConfigApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
         public IntPtr Create()
         {
             IntPtr configHandle = IntPtr.Zero;
-            ExternApi.ArConfig_create(m_NativeApi.SessionHandle, ref configHandle);
+            ExternApi.ArConfig_create(m_NativeSession.SessionHandle, ref configHandle);
             return configHandle;
         }
 
@@ -58,7 +58,7 @@ namespace GoogleARCoreInternal
                 lightingMode = ApiLightEstimationMode.AmbientIntensity;
             }
 
-            ExternApi.ArConfig_setLightEstimationMode(m_NativeApi.SessionHandle, configHandle, lightingMode);
+            ExternApi.ArConfig_setLightEstimationMode(m_NativeSession.SessionHandle, configHandle, lightingMode);
 
             var planeFindingMode = ApiPlaneFindingMode.Disabled;
             if (arCoreSessionConfig.EnablePlaneFinding)
@@ -66,7 +66,7 @@ namespace GoogleARCoreInternal
                 planeFindingMode = ApiPlaneFindingMode.Horizontal;
             }
 
-            ExternApi.ArConfig_setPlaneFindingMode(m_NativeApi.SessionHandle, configHandle, planeFindingMode);
+            ExternApi.ArConfig_setPlaneFindingMode(m_NativeSession.SessionHandle, configHandle, planeFindingMode);
 
             var updateMode = ApiUpdateMode.LatestCameraImage;
             if (arCoreSessionConfig.MatchCameraFramerate)
@@ -77,7 +77,7 @@ namespace GoogleARCoreInternal
                QualitySettings.vSyncCount = 0;
             }
 
-            ExternApi.ArConfig_setUpdateMode(m_NativeApi.SessionHandle, configHandle, updateMode);
+            ExternApi.ArConfig_setUpdateMode(m_NativeSession.SessionHandle, configHandle, updateMode);
         }
 
         private struct ExternApi

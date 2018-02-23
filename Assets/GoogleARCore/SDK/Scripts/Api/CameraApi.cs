@@ -31,17 +31,17 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public class CameraApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
-        public CameraApi(NativeApi nativeApi)
+        public CameraApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
         public TrackingState GetTrackingState(IntPtr cameraHandle)
         {
             ApiTrackingState apiTrackingState = ApiTrackingState.Stopped;
-            ExternApi.ArCamera_getTrackingState(m_NativeApi.SessionHandle,
+            ExternApi.ArCamera_getTrackingState(m_NativeSession.SessionHandle,
                 cameraHandle, ref apiTrackingState);
             return apiTrackingState.ToTrackingState();
         }
@@ -53,18 +53,18 @@ namespace GoogleARCoreInternal
                 return Pose.identity;
             }
 
-            IntPtr poseHandle = m_NativeApi.Pose.Create();
-            ExternApi.ArCamera_getDisplayOrientedPose(m_NativeApi.SessionHandle, cameraHandle,
+            IntPtr poseHandle = m_NativeSession.PoseApi.Create();
+            ExternApi.ArCamera_getDisplayOrientedPose(m_NativeSession.SessionHandle, cameraHandle,
                 poseHandle);
-            Pose resultPose = m_NativeApi.Pose.ExtractPoseValue(poseHandle);
-            m_NativeApi.Pose.Destroy(poseHandle);
+            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            m_NativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
         public Matrix4x4 GetProjectionMatrix(IntPtr cameraHandle, float near, float far)
         {
             Matrix4x4 matrix = Matrix4x4.identity;
-            ExternApi.ArCamera_getProjectionMatrix(m_NativeApi.SessionHandle, cameraHandle,
+            ExternApi.ArCamera_getProjectionMatrix(m_NativeSession.SessionHandle, cameraHandle,
                 near, far, ref matrix);
             return matrix;
         }

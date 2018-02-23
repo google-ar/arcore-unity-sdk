@@ -54,6 +54,11 @@ namespace GoogleARCore
         /// <c>false</c>.</returns>
         public static bool IsPermissionGranted(string permissionName)
         {
+            if (Application.isEditor)
+            {
+                return true;
+            }
+
             return GetPermissionsService().Call<bool>("IsPermissionGranted", GetUnityActivity(), permissionName);
         }
 
@@ -66,6 +71,12 @@ namespace GoogleARCore
         /// when another permissions request is pending <c>null</c> will be returned instead.</returns>
         public static AsyncTask<AndroidPermissionsRequestResult> RequestPermission(string permissionName)
         {
+            if (AndroidPermissionsManager.IsPermissionGranted(permissionName))
+            {
+                return new AsyncTask<AndroidPermissionsRequestResult>(new AndroidPermissionsRequestResult(
+                    new string[] { permissionName }, new bool[] { true }));
+            }
+
             if (s_CurrentRequest != null)
             {
                 ARDebug.LogError("Attempted to make simultaneous Android permissions requests.");

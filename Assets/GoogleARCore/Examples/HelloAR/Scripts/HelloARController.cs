@@ -25,6 +25,10 @@ namespace GoogleARCore.HelloAR
     using UnityEngine;
     using UnityEngine.Rendering;
 
+#if UNITY_EDITOR
+    using Input = InstantPreviewInput;
+#endif
+
     /// <summary>
     /// Controls the HelloAR example.
     /// </summary>
@@ -80,17 +84,22 @@ namespace GoogleARCore.HelloAR
             _QuitOnConnectionErrors();
 
             // Check that motion tracking is tracking.
-            if (Frame.TrackingState != TrackingState.Tracking)
+            if (Session.Status != SessionStatus.Tracking)
             {
                 const int lostTrackingSleepTimeout = 15;
                 Screen.sleepTimeout = lostTrackingSleepTimeout;
+                if (!m_IsQuitting && Session.Status.IsValid())
+                {
+                    SearchingForPlaneUI.SetActive(true);
+                }
+
                 return;
             }
 
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
             // Iterate over planes found in this frame and instantiate corresponding GameObjects to visualize them.
-            Frame.GetPlanes(m_NewPlanes, TrackableQueryFilter.New);
+            Session.GetTrackables<TrackedPlane>(m_NewPlanes, TrackableQueryFilter.New);
             for (int i = 0; i < m_NewPlanes.Count; i++)
             {
                 // Instantiate a plane visualization prefab and set it to track the new plane. The transform is set to
@@ -102,7 +111,7 @@ namespace GoogleARCore.HelloAR
             }
 
             // Disable the snackbar UI when no planes are valid.
-            Frame.GetPlanes(m_AllPlanes);
+            Session.GetTrackables<TrackedPlane>(m_AllPlanes);
             bool showSearchingUI = true;
             for (int i = 0; i < m_AllPlanes.Count; i++)
             {
@@ -124,9 +133,10 @@ namespace GoogleARCore.HelloAR
 
             // Raycast against the location the player touched to search for planes.
             TrackableHit hit;
-            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinBounds | TrackableHitFlags.PlaneWithinPolygon;
+            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-            if (Session.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
                 var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
 
@@ -135,9 +145,15 @@ namespace GoogleARCore.HelloAR
                 var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
                 // Andy should look at the camera but still be flush with the plane.
-                andyObject.transform.LookAt(FirstPersonCamera.transform);
-                andyObject.transform.rotation = Quaternion.Euler(0.0f,
-                    andyObject.transform.rotation.eulerAngles.y, andyObject.transform.rotation.z);
+                if ((hit.Flags & TrackableHitFlags.PlaneWithinPolygon) != TrackableHitFlags.None)
+                {
+                    // Get the camera position and match the y-component with the hit position.
+                    Vector3 cameraPositionSameY = FirstPersonCamera.transform.position;
+                    cameraPositionSameY.y = hit.Pose.position.y;
+
+                    // Have Andy look toward the camera respecting his "up" perspective, which may be from ceiling.
+                    andyObject.transform.LookAt(cameraPositionSameY, andyObject.transform.up);
+                }
 
                 // Make Andy model a child of the anchor.
                 andyObject.transform.parent = anchor.transform;
@@ -155,24 +171,24 @@ namespace GoogleARCore.HelloAR
             }
 
             // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
-            if (Session.ConnectionState == SessionConnectionState.UserRejectedNeededPermission)
+            if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
-            else if (Session.ConnectionState == SessionConnectionState.ConnectToServiceFailed)
+            else if (Session.Status.IsError())
             {
                 _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
         }
 
         /// <summary>
         /// Actually quit the application.
         /// </summary>
-        private void DoQuit()
+        private void _DoQuit()
         {
             Application.Quit();
         }

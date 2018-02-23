@@ -31,35 +31,34 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public class PointCloudApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
         private float[] m_CachedVector = new float[4];
 
-        public PointCloudApi(NativeApi nativeApi)
+        public PointCloudApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
         public long GetTimestamp(IntPtr pointCloudHandle)
         {
             long timestamp = 0;
-            ExternApi.ArPointCloud_getTimestamp(m_NativeApi.SessionHandle, pointCloudHandle, ref timestamp);
+            ExternApi.ArPointCloud_getTimestamp(m_NativeSession.SessionHandle, pointCloudHandle, ref timestamp);
             return timestamp;
         }
 
         public int GetNumberOfPoints(IntPtr pointCloudHandle)
         {
             int pointCount = 0;
-            ExternApi.ArPointCloud_getNumberOfPoints(m_NativeApi.SessionHandle, pointCloudHandle, ref pointCount);
+            ExternApi.ArPointCloud_getNumberOfPoints(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCount);
 
-            // TODO (xuguo): remove the divide by 4 after b/69389164 is fixed.
-            return pointCount / 4;
+            return pointCount;
         }
 
         public Vector4 GetPoint(IntPtr pointCloudHandle, int index)
         {
             IntPtr pointCloudNativeHandle = IntPtr.Zero;
-            ExternApi.ArPointCloud_getData(m_NativeApi.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
+            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
             IntPtr pointHandle = new IntPtr(pointCloudNativeHandle.ToInt64() +
                                             (Marshal.SizeOf(typeof(Vector4)) * index));
             Marshal.Copy(pointHandle, m_CachedVector, 0, 4);
@@ -75,7 +74,7 @@ namespace GoogleARCoreInternal
             IntPtr pointCloudNativeHandle = IntPtr.Zero;
             int pointCloudSize = GetNumberOfPoints(pointCloudHandle);
 
-            ExternApi.ArPointCloud_getData(m_NativeApi.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
+            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
 
             MarshalingHelper.AddUnmanagedStructArrayToList<Vector4>(pointCloudNativeHandle,
                     pointCloudSize, points);

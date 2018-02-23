@@ -31,8 +31,13 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public static class ApiConstants
     {
+#if !UNITY_EDITOR
         public const string ARCoreNativeApi = "arcore_sdk";
         public const string ARCoreShimApi = "arcore_unity_api";
+#else
+        public const string ARCoreNativeApi = InstantPreviewManager.InstantPreviewNativeApi;
+        public const string ARCoreShimApi = InstantPreviewManager.InstantPreviewNativeApi;
+#endif
 
         // NDK camera API is a system API after Android 24.
         public const string NdkCameraApi = "camera2ndk";

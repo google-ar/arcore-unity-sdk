@@ -31,87 +31,83 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public class FrameApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
-        public FrameApi(NativeApi nativeApi)
+        public FrameApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
-        public long GetTimestamp(IntPtr frameHandle)
+        public long GetTimestamp()
         {
             long timestamp = 0;
-            ExternApi.ArFrame_getTimestamp(m_NativeApi.SessionHandle, frameHandle,
+            ExternApi.ArFrame_getTimestamp(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ref timestamp);
             return timestamp;
         }
 
-        public IntPtr AcquireCamera(IntPtr frameHandle)
+        public IntPtr AcquireCamera()
         {
-            if (frameHandle == IntPtr.Zero)
-            {
-                return IntPtr.Zero;
-            }
-
             IntPtr cameraHandle = IntPtr.Zero;
-            ExternApi.ArFrame_acquireCamera(m_NativeApi.SessionHandle, frameHandle,
+            ExternApi.ArFrame_acquireCamera(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ref cameraHandle);
             return cameraHandle;
         }
 
-        public IntPtr AcquirePointCloud(IntPtr frameHandle)
+        public IntPtr AcquirePointCloud()
         {
             IntPtr pointCloudHandle = IntPtr.Zero;
-            ExternApi.ArFrame_acquirePointCloud(m_NativeApi.SessionHandle, frameHandle,
+            ExternApi.ArFrame_acquirePointCloud(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ref pointCloudHandle);
             return pointCloudHandle;
         }
 
-        public IntPtr AcquireImageMetadata(IntPtr frameHandle)
+        public IntPtr AcquireImageMetadata()
         {
             IntPtr imageMetadataHandle = IntPtr.Zero;
-            ExternApi.ArFrame_acquireImageMetadata(m_NativeApi.SessionHandle, frameHandle, ref imageMetadataHandle);
+            ExternApi.ArFrame_acquireImageMetadata(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
+                ref imageMetadataHandle);
             return imageMetadataHandle;
         }
 
-        public LightEstimate GetLightEstimate(IntPtr frameHandle)
+        public LightEstimate GetLightEstimate()
         {
-            IntPtr lightEstimateHandle = m_NativeApi.LightEstimate.Create();
-            ExternApi.ArFrame_getLightEstimate(m_NativeApi.SessionHandle, frameHandle,
+            IntPtr lightEstimateHandle = m_NativeSession.LightEstimateApi.Create();
+            ExternApi.ArFrame_getLightEstimate(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 lightEstimateHandle);
 
-            LightEstimateState state = m_NativeApi.LightEstimate.GetState(lightEstimateHandle);
-            float pixelIntensity = m_NativeApi.LightEstimate.GetPixelIntensity(lightEstimateHandle);
+            LightEstimateState state = m_NativeSession.LightEstimateApi.GetState(lightEstimateHandle);
+            float pixelIntensity = m_NativeSession.LightEstimateApi.GetPixelIntensity(lightEstimateHandle);
 
-            m_NativeApi.LightEstimate.Destroy(lightEstimateHandle);
+            m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
 
             return new LightEstimate(state, pixelIntensity);
         }
 
-        public void TransformDisplayUvCoords(IntPtr frameHandle, ref ApiDisplayUvCoords uv)
+        public void TransformDisplayUvCoords(ref ApiDisplayUvCoords uv)
         {
             ApiDisplayUvCoords uvOut = new ApiDisplayUvCoords();
-            ExternApi.ArFrame_transformDisplayUvCoords(m_NativeApi.SessionHandle, frameHandle,
+            ExternApi.ArFrame_transformDisplayUvCoords(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ApiDisplayUvCoords.NumFloats, ref uv, ref uvOut);
 
             uv = uvOut;
         }
 
-        public void GetUpdatedTrackables(IntPtr frameHandle, List<Trackable> trackables)
+        public void GetUpdatedTrackables(List<Trackable> trackables)
         {
-            IntPtr listHandle = m_NativeApi.TrackableList.Create();
-            ExternApi.ArFrame_getUpdatedTrackables(m_NativeApi.SessionHandle, frameHandle,
+            IntPtr listHandle = m_NativeSession.TrackableListApi.Create();
+            ExternApi.ArFrame_getUpdatedTrackables(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ApiTrackableType.BaseTrackable, listHandle);
 
             trackables.Clear();
-            int count = m_NativeApi.TrackableList.GetCount(listHandle);
+            int count = m_NativeSession.TrackableListApi.GetCount(listHandle);
             for (int i = 0; i < count; i++)
             {
-                IntPtr trackableHandle = m_NativeApi.TrackableList.AcquireItem(listHandle, i);
-                trackables.Add(m_NativeApi.TrackableFactory(trackableHandle));
+                IntPtr trackableHandle = m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
+                trackables.Add(m_NativeSession.TrackableFactory(trackableHandle));
             }
 
-            m_NativeApi.TrackableList.Destroy(listHandle);
+            m_NativeSession.TrackableListApi.Destroy(listHandle);
         }
 
         private struct ExternApi

@@ -31,11 +31,11 @@ namespace GoogleARCoreInternal
     Justification = "Internal")]
     public class PoseApi
     {
-        private NativeApi m_NativeApi;
+        private NativeSession m_NativeSession;
 
-        public PoseApi(NativeApi nativeApi)
+        public PoseApi(NativeSession nativeSession)
         {
-            m_NativeApi = nativeApi;
+            m_NativeSession = nativeSession;
         }
 
         public IntPtr Create()
@@ -48,7 +48,7 @@ namespace GoogleARCoreInternal
             ApiPoseData rawPose = new ApiPoseData(pose);
 
             IntPtr poseHandle = IntPtr.Zero;
-            ExternApi.ArPose_create(m_NativeApi.SessionHandle, ref rawPose, ref poseHandle);
+            ExternApi.ArPose_create(m_NativeSession.SessionHandle, ref rawPose, ref poseHandle);
             return poseHandle;
         }
 
@@ -60,7 +60,7 @@ namespace GoogleARCoreInternal
         public Pose ExtractPoseValue(IntPtr poseHandle)
         {
             ApiPoseData poseValue = new ApiPoseData(Pose.identity);
-            ExternApi.ArPose_getPoseRaw(m_NativeApi.SessionHandle, poseHandle, ref poseValue);
+            ExternApi.ArPose_getPoseRaw(m_NativeSession.SessionHandle, poseHandle, ref poseValue);
             return poseValue.ToUnityPose();
         }
 

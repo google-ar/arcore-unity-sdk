@@ -38,20 +38,31 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
         /// <param name="nativeApi">The ARCore native api.</param>
-        public TrackedPoint(IntPtr nativeHandle, NativeApi nativeApi) : base(nativeHandle, nativeApi)
+        public TrackedPoint(IntPtr nativeHandle, NativeSession nativeApi) : base(nativeHandle, nativeApi)
         {
         }
 
         //// @endcond
 
         /// <summary>
-        /// Gets the pose of the point.
+        /// Gets the pose of the TrackedPoint.
         /// </summary>
         public Pose Pose
         {
             get
             {
-                return m_NativeApi.Point.GetPose(m_TrackableNativeHandle);
+                return m_NativeSession.PointApi.GetPose(m_TrackableNativeHandle);
+            }
+        }
+
+        /// <summary>
+        /// Gets the orientation mode of the TrackedPoint.
+        /// </summary>
+        public TrackedPointOrientationMode OrientationMode
+        {
+            get
+            {
+                return m_NativeSession.PointApi.GetOrientationMode(m_TrackableNativeHandle);
             }
         }
     }

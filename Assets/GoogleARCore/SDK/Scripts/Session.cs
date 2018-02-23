@@ -33,127 +33,80 @@ namespace GoogleARCore
     /// </summary>
     public static class Session
     {
-        //// @cond EXCLUDE_FROM_DOXYGEN
-
         /// <summary>
-        /// Gets the manager for the sttatic session.
+        /// Gets current session status.
         /// </summary>
-        public static SessionManager SessionManager { get; private set; }
-
-        //// @endcond
-
-        /// <summary>
-        /// Gets current connection state.
-        ///
-        /// Members of the Session class (apart from ConnectionState itself) are only considered valid for access when
-        /// Session.ConnectionState == SessionConnectionState.Connected.  Access to members of Session outside of this
-        /// state is considered undefined and may use stale data or throw an exception.
-        /// </summary>
-        public static SessionConnectionState ConnectionState
+        public static SessionStatus Status
         {
             get
             {
-                if (SessionManager == null)
-                {
-                    return SessionConnectionState.Uninitialized;
-                }
-
-                return SessionManager.ConnectionState;
+                return LifecycleManager.Instance.SessionStatus;
             }
         }
 
         /// <summary>
-        /// Creates a new anchor at a world pose. As ARCore updates its understading of the space, it will update the
+        /// Creates a new Anchor at the given <c>Pose</c> that is attached to the <c>Trackable</c>.
+        /// If trackable is null, it creates a new anchor at a world pose.
+        /// As ARCore updates its understading of the space, it will update the
         /// virtual pose of the of the anchor to attempt to keep the anchor in the same real world location.
         /// </summary>
         /// <param name="pose">The Unity world pose where the anchor is to be creates.</param>
+        /// <param name="trackable">The Trackable to attach the Anchor to.</param>
         /// <returns>The newly created anchor or null.</returns>
-        public static Anchor CreateWorldAnchor(Pose pose)
+        public static Anchor CreateAnchor(Pose pose, Trackable trackable = null)
         {
-            if (SessionManager == null)
+            var nativeSession = LifecycleManager.Instance.NativeSession;
+            if (nativeSession == null)
             {
                 return null;
             }
 
-            return SessionManager.CreateWorldAnchor(pose);
-        }
-
-        /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
-        /// Output the closest hit from the camera.
-        /// Note that the Unity's screen coordinate (0, 0)
-        /// starts from bottom left.
-        /// </summary>
-        /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
-        /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each {@link TrackableHitFlag} which is set represents a category
-        /// of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
-        /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
-        public static bool Raycast(float x, float y, TrackableHitFlags filter,
-            out TrackableHit hitResult)
-        {
-            if (SessionManager == null)
+            if (trackable == null)
             {
-                hitResult = new TrackableHit();
-                return false;
+                return nativeSession.SessionApi.CreateAnchor(pose);
             }
-
-            return SessionManager.FrameManager.Raycast(x, y, filter, out hitResult);
-        }
-
-        /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
-        /// Output all hits from the camera.
-        /// Note that the Unity's screen coordinate (0, 0)
-        /// starts from bottom left.
-        /// </summary>
-        /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
-        /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each {@link TrackableHitFlag} which is set represents a category
-        /// of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast is successful.</param>
-        /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
-        public static bool RaycastAll(float x, float y, TrackableHitFlags filter, List<TrackableHit> hitResults)
-        {
-            if (SessionManager == null)
+            else
             {
-                hitResults.Clear();
-                return false;
-            }
-
-            return SessionManager.FrameManager.RaycastAll(x, Screen.height - y, filter, hitResults);
-        }
-
-        //// @cond EXCLUDE_FROM_DOXYGEN
-
-        /// <summary>
-        /// Initialized the static session.
-        /// </summary>
-        /// <param name="sessionManager">The manaager for the static session.</param>
-        public static void Initialize(SessionManager sessionManager)
-        {
-            if (Session.SessionManager != null)
-            {
-                Debug.LogWarning("Cleaning up old session that was not destroyed.");
-                Session.SessionManager.Destroy();
-            }
-
-            Session.SessionManager = sessionManager;
-        }
-
-        /// <summary>
-        /// Destroys the context of the static session class.
-        /// </summary>
-        public static void Destroy()
-        {
-            if (SessionManager != null)
-            {
-                SessionManager.Destroy();
-                SessionManager = null;
+                return trackable.CreateAnchor(pose);
             }
         }
 
-        //// @endcond
+        /// <summary>
+        /// Gets Trackables ARCore has tracked.
+        /// </summary>
+        /// <typeparam name="T">The Trackable type to get.</typeparam>
+        /// <param name="trackables">A reference to a list of T that will be filled by the method call.</param>
+        /// <param name="filter">A filter on the type of data to return.</param>
+        public static void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter = TrackableQueryFilter.All) where T : Trackable
+        {
+            trackables.Clear();
+            var nativeSession = LifecycleManager.Instance.NativeSession;
+            if (nativeSession == null)
+            {
+                return;
+            }
+
+            nativeSession.GetTrackables<T>(trackables, filter);
+        }
+
+        /// <summary>
+        /// Checks the availability of the ARCore APK on the device.
+        /// </summary>
+        /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability is known.</returns>
+        public static AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
+        {
+            return LifecycleManager.Instance.CheckApkAvailability();
+        }
+
+        /// <summary>
+        /// Requests an installation of the ARCore APK on the device.
+        /// </summary>
+        /// <param name="userRequested">Whether the installation was requested explicity by a user action.</param>
+        /// <returns>An AsyncTask that completes with an ApkInstallationStatus when the installation
+        /// status is resolved.</returns>
+        public static AsyncTask<ApkInstallationStatus> RequestApkInstallation(bool userRequested)
+        {
+            return LifecycleManager.Instance.RequestApkInstallation(userRequested);
+        }
     }
 }

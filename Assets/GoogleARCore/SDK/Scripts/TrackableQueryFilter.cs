@@ -39,5 +39,10 @@ namespace GoogleARCore
         /// Indicates new trackables detected in the current ARCore Frame.
         /// </summary>
         New,
+
+        /// <summary>
+        /// Indicates trackables that were updated in the current ARCore Frame.
+        /// </summary>
+        Updated,
     }
 }
