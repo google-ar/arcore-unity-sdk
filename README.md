@@ -14,7 +14,7 @@ See the [Getting Started with Unity](//developers.google.com/ar/develop/unity/ge
 
 ## API Reference
 
-See the [ARCore for Android SDK API Reference](//developers.google.com/ar/reference/unity).
+See the [ARCore SDK for Unity API Reference](//developers.google.com/ar/reference/unity).
 
 
 ## Release Notes
