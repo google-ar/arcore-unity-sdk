@@ -133,7 +133,7 @@ namespace GoogleARCoreInternal
             }
             else if (filter == TrackableQueryFilter.Updated)
             {
-                for (int i = 0; i < m_NewTrackables.Count; i++)
+                for (int i = 0; i < m_UpdatedTrackables.Count; i++)
                 {
                     _SafeAdd<T>(m_UpdatedTrackables[i], trackables);
                 }
