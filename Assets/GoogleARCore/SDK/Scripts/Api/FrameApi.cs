@@ -54,12 +54,33 @@ namespace GoogleARCoreInternal
             return cameraHandle;
         }
 
-        public IntPtr AcquirePointCloud()
+        public CameraImageBytes AcquireCameraImageBytes()
         {
-            IntPtr pointCloudHandle = IntPtr.Zero;
-            ExternApi.ArFrame_acquirePointCloud(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
-                ref pointCloudHandle);
-            return pointCloudHandle;
+            IntPtr cameraImageHandle = IntPtr.Zero;
+            ApiArStatus status = ExternApi.ArFrame_acquireCameraImage(m_NativeSession.SessionHandle,
+                m_NativeSession.FrameHandle, ref cameraImageHandle);
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogWarningFormat("Failed to acquire camera image with status {0}", status);
+                return new CameraImageBytes(IntPtr.Zero);
+            }
+
+            m_NativeSession.MarkHandleAcquired(cameraImageHandle);
+            return new CameraImageBytes(cameraImageHandle);
+        }
+
+        public bool TryAcquirePointCloudHandle(out IntPtr pointCloudHandle)
+        {
+            pointCloudHandle = IntPtr.Zero;
+            ApiArStatus status = ExternApi.ArFrame_acquirePointCloud(m_NativeSession.SessionHandle,
+                m_NativeSession.FrameHandle, ref pointCloudHandle);
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogWarningFormat("Failed to acquire point cloud with status {0}", status);
+                return false;
+            }
+
+            return true;
         }
 
         public IntPtr AcquireImageMetadata()
@@ -77,11 +98,12 @@ namespace GoogleARCoreInternal
                 lightEstimateHandle);
 
             LightEstimateState state = m_NativeSession.LightEstimateApi.GetState(lightEstimateHandle);
-            float pixelIntensity = m_NativeSession.LightEstimateApi.GetPixelIntensity(lightEstimateHandle);
+            Color colorCorrection = m_NativeSession.LightEstimateApi.GetColorCorrection(lightEstimateHandle);
 
             m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
 
-            return new LightEstimate(state, pixelIntensity);
+            return new LightEstimate(state, colorCorrection.a,
+                new Color(colorCorrection.r, colorCorrection.g, colorCorrection.b, 1f));
         }
 
         public void TransformDisplayUvCoords(ref ApiDisplayUvCoords uv)
@@ -117,11 +139,15 @@ namespace GoogleARCoreInternal
                 IntPtr frame, ref long timestamp);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern int ArFrame_acquireCamera(IntPtr sessionHandle, IntPtr frameHandle,
+            public static extern void ArFrame_acquireCamera(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr cameraHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern int ArFrame_acquirePointCloud(IntPtr sessionHandle, IntPtr frameHandle,
+            public static extern ApiArStatus ArFrame_acquireCameraImage(IntPtr sessionHandle, IntPtr frameHandle,
+                ref IntPtr imageHandle);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArFrame_acquirePointCloud(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr pointCloudHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]

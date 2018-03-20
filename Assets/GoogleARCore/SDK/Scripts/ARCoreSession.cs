@@ -35,9 +35,9 @@ namespace GoogleARCore
         public ARCoreSessionConfig SessionConfig;
 
         /// <summary>
-        /// Unity Awake.
+        /// Unity Start.
         /// </summary>
-        public void Awake()
+        public void Start()
         {
             LifecycleManager.Instance.CreateSession(this);
         }

@@ -71,7 +71,7 @@ namespace GoogleARCore
                 var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
                 if (nativeSession == null || !isTracking)
                 {
-                    return new LightEstimate(LightEstimateState.NotValid, 0.0f);
+                    return new LightEstimate(LightEstimateState.NotValid, 0.0f, Color.black);
                 }
 
                 return nativeSession.FrameApi.GetLightEstimate();
@@ -229,23 +229,27 @@ namespace GoogleARCore
             }
 
             /// <summary>
-            /// Gets a point from the point cloud collection at an index.
+            /// Gets a point from the point cloud at a given index.
+            /// The point returned will be a Vector4 in the form <x,y,z,c> where the first three dimensions describe
+            /// the position of the point in the world and the last represents a confidence estimation in the range [0, 1).
             /// </summary>
             /// <param name="index">The index of the point cloud point to get.</param>
-            /// <returns>The point from the point cloud at <c>index</c>.</returns>
-            public static Vector3 GetPoint(int index)
+            /// <returns>The point from the point cloud at <c>index</c> along with its confidence.</returns>
+            public static Vector4 GetPoint(int index)
             {
                 var nativeSession = LifecycleManager.Instance.NativeSession;
                 if (nativeSession == null)
                 {
-                    return Vector3.zero;
+                    return Vector4.zero;
                 }
 
                 return nativeSession.PointCloudApi.GetPoint(nativeSession.PointCloudHandle, index);
             }
 
             /// <summary>
-            /// Copies the point cloud for a frame into a supplied list reference.
+            /// Copies the point cloud into the supplied parameter <c>points</c>.
+            /// Each point will be a Vector4 in the form <x,y,z,c> where the first three dimensions describe the position
+            /// of the point in the world and the last represents a confidence estimation in the range [0, 1).
             /// </summary>
             /// <param name="points">A list that will be filled with point cloud points by this method call.</param>
             public static void CopyPoints(List<Vector4> points)
@@ -278,9 +282,10 @@ namespace GoogleARCore
             }
 
             /// <summary>
-            /// Gets a ApiDisplayUvCoords to properly display the camera texture.
+            /// Gets UVs that map the orienation and aspect ratio of <c>Frame.CameraImage.Texture</c> that of the
+            /// device's display.
             /// </summary>
-            public static ApiDisplayUvCoords DisplayUvCoords
+            public static DisplayUvCoords DisplayUvCoords
             {
                 get
                 {
@@ -290,12 +295,28 @@ namespace GoogleARCore
                     var nativeSession = LifecycleManager.Instance.NativeSession;
                     if (nativeSession == null || Texture == null)
                     {
-                        return displayUvCoords;
+                        return displayUvCoords.ToDisplayUvCoords();
                     }
 
                     nativeSession.FrameApi.TransformDisplayUvCoords(ref displayUvCoords);
-                    return displayUvCoords;
+                    return displayUvCoords.ToDisplayUvCoords();
                 }
+            }
+
+            /// <summary>
+            /// Attempts to acquire the camera image for CPU access.
+            /// </summary>
+            /// <returns>A <c>CameraImageBytes</c> struct with <c>IsAvailable</c> property set to <c>true</c> if
+            /// successful and <c>false</c> if the image could not be acquired.</returns>
+            public static GoogleARCore.CameraImageBytes AcquireCameraImageBytes()
+            {
+                var nativeSession = LifecycleManager.Instance.NativeSession;
+                if (nativeSession == null)
+                {
+                    return new CameraImageBytes(IntPtr.Zero);
+                }
+
+                return nativeSession.FrameApi.AcquireCameraImageBytes();
             }
 
             /// <summary>

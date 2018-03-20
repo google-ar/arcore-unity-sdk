@@ -44,6 +44,11 @@ namespace GoogleARCore
 
         private void OnEnable()
         {
+            if (m_BackgroundRenderer == null)
+            {
+                m_BackgroundRenderer = new ARBackgroundRenderer();
+            }
+
             if (BackgroundMaterial == null)
             {
                 Debug.LogError("ArCameraBackground:: No material assigned.");
@@ -51,6 +56,9 @@ namespace GoogleARCore
             }
 
             m_Camera = GetComponent<Camera>();
+            m_BackgroundRenderer.backgroundMaterial = BackgroundMaterial;
+            m_BackgroundRenderer.camera = m_Camera;
+            m_BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
         }
 
         private void OnDisable()
@@ -62,14 +70,12 @@ namespace GoogleARCore
         {
             if (BackgroundMaterial == null)
             {
-                Disable();
                 return;
             }
 
             Texture backgroundTexture = Frame.CameraImage.Texture;
             if (backgroundTexture == null)
             {
-                Disable();
                 return;
             }
 
@@ -87,14 +93,6 @@ namespace GoogleARCore
 
             m_Camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(
                 m_Camera.nearClipPlane, m_Camera.farClipPlane);
-
-            if (m_BackgroundRenderer == null)
-            {
-                m_BackgroundRenderer = new ARBackgroundRenderer();
-                m_BackgroundRenderer.backgroundMaterial = BackgroundMaterial;
-                m_BackgroundRenderer.camera = m_Camera;
-                m_BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
-            }
         }
 
         private void Disable()
@@ -102,7 +100,7 @@ namespace GoogleARCore
             if (m_BackgroundRenderer != null)
             {
                 m_BackgroundRenderer.camera = null;
-                m_BackgroundRenderer = null;
+                m_BackgroundRenderer.mode = ARRenderMode.StandardBackground;
             }
         }
     }

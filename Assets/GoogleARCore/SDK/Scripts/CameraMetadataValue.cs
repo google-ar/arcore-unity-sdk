@@ -27,9 +27,9 @@ namespace GoogleARCore
 
     /// <summary>
     /// Struct to contain camera metadata's value. When querying data from the struct, caller is responsible 
-    /// for making sure the querying data type matches the m_type.
+    /// for making sure the querying data type matches the ValueType.
     ///
-    /// For example: if m_type is NdkCameraMetadataType.Byte, caller should only use
+    /// For example: if ValueType is typeof(byte), caller should only use
     /// CameraMetadataValue.AsByte() to access the value.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
@@ -150,6 +150,33 @@ namespace GoogleARCore
 
             m_Type = NdkCameraMetadataType.Rational;
             m_RationalValue = rationalValue;
+        }
+
+        /// <summary>
+        /// Gets the Type of the CameraMetadataValue. This Type must be used to call the proper query function.
+        /// </summary>
+        public Type ValueType 
+        {
+            get
+            {
+                switch (m_Type)
+                {
+                case NdkCameraMetadataType.Byte:
+                    return typeof(Byte);
+                case NdkCameraMetadataType.Int32:
+                    return typeof(int);
+                case NdkCameraMetadataType.Float:
+                    return typeof(float);
+                case NdkCameraMetadataType.Int64:
+                    return typeof(long);
+                case NdkCameraMetadataType.Double:
+                    return typeof(double);
+                case NdkCameraMetadataType.Rational:
+                    return typeof(CameraMetadataRational);
+                default:
+                    return null;
+                }
+            }
         }
 
         /// <summary>

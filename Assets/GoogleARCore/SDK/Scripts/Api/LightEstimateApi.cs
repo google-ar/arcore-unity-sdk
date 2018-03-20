@@ -24,6 +24,7 @@ namespace GoogleARCoreInternal
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using UnityEngine;
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
     Justification = "Internal")]
@@ -63,6 +64,14 @@ namespace GoogleARCoreInternal
             return pixelIntensity;
         }
 
+        public Color GetColorCorrection(IntPtr lightEstimateHandle)
+        {
+            Color colorCorrection = Color.black;
+            ExternApi.ArLightEstimate_getColorCorrection(m_NativeSession.SessionHandle,
+                lightEstimateHandle, ref colorCorrection);
+            return colorCorrection;
+        }
+
         private struct ExternApi
         {
             [DllImport(ApiConstants.ARCoreNativeApi)]
@@ -79,6 +88,10 @@ namespace GoogleARCoreInternal
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_getPixelIntensity(IntPtr sessionHandle,
                 IntPtr lightEstimateHandle, ref float pixelIntensity);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArLightEstimate_getColorCorrection(IntPtr sessionHandle,
+                IntPtr lightEstimateHandle, ref Color colorCorrection);
         }
     }
 }

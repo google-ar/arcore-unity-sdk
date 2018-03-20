@@ -29,7 +29,7 @@
         sampler2D _MainTex;
         sampler2D _BumpMap;
         half _Shininess;
-        fixed _GlobalLightEstimation;
+        fixed3 _GlobalColorCorrection;
 
         struct Input
         {
@@ -38,7 +38,7 @@
 
         void lightEstimation(Input IN, SurfaceOutput o, inout fixed4 color)
         {
-            color *= _GlobalLightEstimation;
+            color.rgb *= _GlobalColorCorrection;
         }
 
         void surf (Input IN, inout SurfaceOutput o)

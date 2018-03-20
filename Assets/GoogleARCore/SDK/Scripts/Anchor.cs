@@ -32,13 +32,15 @@ namespace GoogleARCore
     /// </summary>
     public class Anchor : MonoBehaviour
     {
-        private static Dictionary<IntPtr, Anchor> s_AnchorDict = new Dictionary<IntPtr, Anchor>();
+        private static Dictionary<IntPtr, Anchor> s_AnchorDict = new Dictionary<IntPtr, Anchor>(new IntPtrEqualityComparer());
 
         private IntPtr m_AnchorNativeHandle = IntPtr.Zero;
 
         private NativeSession m_NativeSession;
 
         private TrackingState m_LastFrameTrackingState = TrackingState.Stopped;
+
+        private bool m_IsSessionDestroyed = false;
 
         /// <summary>
         /// Gets the tracking state of the anchor.
@@ -48,9 +50,8 @@ namespace GoogleARCore
             get
             {
                 // TODO (b/73256094): Remove isTracking when fixed.
-                var nativeSession = LifecycleManager.Instance.NativeSession;
                 var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
-                if (nativeSession != m_NativeSession)
+                if (_IsSessionDestroyed())
                 {
                     // Anchors from another session are considered stopped.
                     return TrackingState.Stopped;
@@ -110,6 +111,11 @@ namespace GoogleARCore
                 return;
             }
 
+            if (_IsSessionDestroyed())
+            {
+                return;
+            }
+
             var pose = m_NativeSession.AnchorApi.GetPose(m_AnchorNativeHandle);
             transform.position = pose.position;
             transform.rotation = pose.rotation;
@@ -135,7 +141,29 @@ namespace GoogleARCore
             }
 
             s_AnchorDict.Remove(m_AnchorNativeHandle);
+            if (!_IsSessionDestroyed())
+            {
+                m_NativeSession.AnchorApi.Detach(m_AnchorNativeHandle);
+            }
+
             m_NativeSession.AnchorApi.Release(m_AnchorNativeHandle);
+        }
+
+        private bool _IsSessionDestroyed()
+        {
+            if (!m_IsSessionDestroyed)
+            {
+                var nativeSession = LifecycleManager.Instance.NativeSession;
+                if (nativeSession != m_NativeSession)
+                {
+                    Debug.LogErrorFormat("The session which created this anchor has been destroyed. " +
+                    "The anchor on GameObject {0} can no longer update.",
+                        this.gameObject != null ? this.gameObject.name : "Unknown");
+                    m_IsSessionDestroyed = true;
+                }
+            }
+
+            return m_IsSessionDestroyed;
         }
     }
 }

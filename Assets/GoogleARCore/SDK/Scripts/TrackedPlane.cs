@@ -55,7 +55,13 @@ namespace GoogleARCore
         {
             get
             {
-               return m_NativeSession.PlaneApi.GetSubsumedBy(m_TrackableNativeHandle);
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("SubsumedBy:: Trying to access a session that has already been destroyed.");
+                    return null;
+                }
+
+                return m_NativeSession.PlaneApi.GetSubsumedBy(m_TrackableNativeHandle);
             }
         }
 
@@ -66,6 +72,12 @@ namespace GoogleARCore
         {
             get
             {
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("CenterPose:: Trying to access a session that has already been destroyed.");
+                    return new Pose();
+                }
+
                 return m_NativeSession.PlaneApi.GetCenterPose(m_TrackableNativeHandle);
             }
         }
@@ -77,6 +89,12 @@ namespace GoogleARCore
         {
             get
             {
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("ExtentX:: Trying to access a session that has already been destroyed.");
+                    return 0f;
+                }
+
                 return m_NativeSession.PlaneApi.GetExtentX(m_TrackableNativeHandle);
             }
         }
@@ -88,6 +106,12 @@ namespace GoogleARCore
         {
             get
             {
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("ExtentZ:: Trying to access a session that has already been destroyed.");
+                    return 0f;
+                }
+
                 return m_NativeSession.PlaneApi.GetExtentZ(m_TrackableNativeHandle);
             }
         }
@@ -99,6 +123,12 @@ namespace GoogleARCore
         /// <param name="boundaryPolygonPoints">A list of <b>Vector3</b> to be filled by the method call.</param>
         public void GetBoundaryPolygon(List<Vector3> boundaryPolygonPoints)
         {
+            if (_IsSessionDestroyed())
+            {
+                Debug.LogError("GetBoundaryPolygon:: Trying to access a session that has already been destroyed.");
+                return;
+            }
+
             m_NativeSession.PlaneApi.GetPolygon(m_TrackableNativeHandle, boundaryPolygonPoints);
         }
     }

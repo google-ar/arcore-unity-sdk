@@ -42,8 +42,6 @@ namespace GoogleARCoreInternal
                     return ApkInstallationStatus.Error;
                 case ApiApkInstallationStatus.ErrorDeviceNotCompatible:
                     return ApkInstallationStatus.ErrorDeviceNotCompatible;
-                case ApiApkInstallationStatus.ErrorAndroidVersionNotSupported:
-                    return ApkInstallationStatus.ErrorAndroidVersionNotSupported;
                 case ApiApkInstallationStatus.ErrorUserDeclined:
                     return ApkInstallationStatus.ErrorUserDeclined;
                 default:

@@ -46,10 +46,17 @@ namespace GoogleARCoreInternal
             Debug.LogFormat("Building application with {0} ARCore support.",
                 isARCoreRequired ? "REQUIRED" : "OPTIONAL");
 
-            const string k_RequiredAARPath = "Assets/GoogleARCore/SDK/Plugins/google_ar_required.aar";
-            const string k_OptionalAARPath = "Assets/GoogleARCore/SDK/Plugins/google_ar_optional.aar";
-            PluginImporter arRequiredAAR = AssetImporter.GetAtPath(k_RequiredAARPath) as PluginImporter;
-            PluginImporter arOptionalAAR = AssetImporter.GetAtPath(k_OptionalAARPath) as PluginImporter;
+            string[] requiredAarGuid = AssetDatabase.FindAssets("google_ar_required");
+            string[] optionalAarGuid = AssetDatabase.FindAssets("google_ar_optional");
+            if (requiredAarGuid.Length != 1 || optionalAarGuid.Length != 1)
+            {
+                throw new UnityEditor.Build.BuildFailedException(
+                    "Not finding google_ar_required.aar and google_ar_optional.aar files needed for ARCore support. " +
+                    "Were they moved from the ARCore SDK?");
+            }
+
+            PluginImporter arRequiredAAR = AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(requiredAarGuid[0])) as PluginImporter;
+            PluginImporter arOptionalAAR = AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(optionalAarGuid[0])) as PluginImporter;
 
             if (arRequiredAAR == null || arOptionalAAR == null)
             {

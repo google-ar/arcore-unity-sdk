@@ -14,7 +14,7 @@
         #pragma surface surf Lambert noforwardadd finalcolor:lightEstimation
 
         sampler2D _MainTex;
-        fixed _GlobalLightEstimation;
+        fixed3 _GlobalColorCorrection;
 
         struct Input
         {
@@ -23,7 +23,7 @@
 
         void lightEstimation(Input IN, SurfaceOutput o, inout fixed4 color)
         {
-            color *= _GlobalLightEstimation;
+            color.rgb *= _GlobalColorCorrection;
         }
 
         void surf (Input IN, inout SurfaceOutput o)

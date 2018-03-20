@@ -51,6 +51,12 @@ namespace GoogleARCore
         {
             get
             {
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("Pose:: Trying to access a session that has already been destroyed.");
+                    return new Pose();
+                }
+
                 return m_NativeSession.PointApi.GetPose(m_TrackableNativeHandle);
             }
         }
@@ -62,6 +68,12 @@ namespace GoogleARCore
         {
             get
             {
+                if (_IsSessionDestroyed())
+                {
+                    Debug.LogError("OrientationMode:: Trying to access a session that has already been destroyed.");
+                    return TrackedPointOrientationMode.Identity;
+                }
+
                 return m_NativeSession.PointApi.GetOrientationMode(m_TrackableNativeHandle);
             }
         }

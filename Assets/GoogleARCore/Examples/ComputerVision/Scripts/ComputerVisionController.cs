@@ -24,46 +24,69 @@ namespace GoogleARCore.TextureReader
     using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
-    using UnityEngine.Rendering;
+    using UnityEngine.UI;
+
+    #if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
+    using Input = InstantPreviewInput;
+    #endif  // UNITY_EDITOR
 
     /// <summary>
-    /// Controlls the ComputerVision example.
+    /// Controller for the ComputerVision example that accesses the CPU camera image (i.e. image bytes), performs
+    /// edge detection on the image, and renders an overlay to the screen.
     /// </summary>
     public class ComputerVisionController : MonoBehaviour
     {
         /// <summary>
-        /// The TextureReader component instance.
+        /// An image using a material with EdgeDetectionBackground.shader to render a
+        /// percentage of the edge detection background to the screen over the standard camera background.
         /// </summary>
-        public TextureReader TextureReaderComponent;
+        public Image EdgeDetectionBackgroundImage;
 
         /// <summary>
-        /// Background renderer to inject our texture into.
+        /// When false, uses ARCore's <c>CameraImage.TryAcquireCameraImage</c> for CPU image access at the default
+        /// resolution (640x480). When true, enables the attached TextureReader component to copy the camera texture
+        /// to the CPU at a custom resolution set on the component. This has the advantage of providing a custom
+        /// resolution CPU camera image but incurs latency for the blit to complete.
         /// </summary>
-        public ARCoreBackgroundRenderer BackgroundRenderer;
+        public bool UseCustomResolutionImage = false;
 
         /// <summary>
-        /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
+        /// A buffer that stores the result of performing edge detection on the camera image each frame.
         /// </summary>
+        private byte[] m_EdgeDetectionResultImage = null;
+
+        /// <summary>
+        /// Texture created from the result of running edge detection on the camera image bytes.
+        /// </summary>
+        private Texture2D m_EdgeDetectionBackgroundTexture = null;
+
+        /// <summary>
+        /// These UVs are applied to the background material to crop and rotate 'm_EdgeDetectionBackgroundTexture'
+        /// to match the aspect ratio and rotation of the device display.
+        /// </summary>
+        private DisplayUvCoords m_CameraImageToDisplayUvTransformation;
+
+        private TextureReader m_CachedTextureReader;
+        private float m_SwipeMomentum = 0.0f;
+        private ScreenOrientation m_CachedOrientation = ScreenOrientation.Unknown;
+        private Vector2 m_CachedScreenDimensions = Vector2.zero;
         private bool m_IsQuitting = false;
 
         /// <summary>
-        /// Texture created from filtered camera image.
+        /// Instant Preview Input does not support deltaPosition, so we keep track of the most recent
+        /// touch position and calculate deltas based on this.
+        /// TODO (b/74777449): Remove when deltaPosition is fixed.
         /// </summary>
-        private Texture2D m_TextureToRender = null;
-        private int m_ImageWidth = 0;
-        private int m_ImageHeight = 0;
-        private byte[] m_EdgeImage = null;
-        private float m_SwipeMomentum = 0.0f;
+        private Vector2 m_PreviousTouch = Vector2.zero;
 
         /// <summary>
-        /// Start is called on the frame when a script is enabled just before
-        /// any of the Update methods is called the first time.
+        /// The Unity Start() method.
         /// </summary>
         public void Start()
         {
-            // Registers the TextureReader callback.
-            TextureReaderComponent.OnImageAvailableCallback += OnImageAvailable;
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            m_CachedTextureReader = GetComponent<TextureReader>();
         }
 
         /// <summary>
@@ -77,68 +100,53 @@ namespace GoogleARCore.TextureReader
             }
 
             _QuitOnConnectionErrors();
-            _HandleTouchInput();
-        }
+            _HandleSwipeInput();
 
-        /// <summary>
-        /// TextureReader callback handler.
-        /// </summary>
-        /// <param name="format">The format of the image.</param>
-        /// <param name="width">Width of the image, in pixels.</param>
-        /// <param name="height">Height of the image, in pixels.</param>
-        /// <param name="pixelBuffer">Pointer to raw image buffer.</param>
-        /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
-        public void OnImageAvailable(TextureReaderApi.ImageFormatType format, int width, int height, IntPtr pixelBuffer, int bufferSize)
-        {
-            if (format != TextureReaderApi.ImageFormatType.ImageFormatGrayscale)
+            if (!Session.Status.IsValid())
             {
-                Debug.Log("No edge detected due to incorrect image format.");
                 return;
             }
 
-            if (m_TextureToRender == null || m_EdgeImage == null || m_ImageWidth != width || m_ImageHeight != height)
+            if (UseCustomResolutionImage)
             {
-                m_TextureToRender = new Texture2D(width, height, TextureFormat.R8, false, false);
-                m_EdgeImage = new byte[width * height];
-                m_ImageWidth = width;
-                m_ImageHeight = height;
+                return;
             }
 
-            // Detect edges within the image.
-            if (EdgeDetector.Detect(m_EdgeImage, pixelBuffer, width, height))
+            using (var image = Frame.CameraImage.AcquireCameraImageBytes())
             {
-                // Update the rendering texture with the edge image.
-                m_TextureToRender.LoadRawTextureData(m_EdgeImage);
-                m_TextureToRender.Apply();
-                BackgroundRenderer.BackgroundMaterial.SetTexture("_ImageTex", m_TextureToRender);
-            }
-        }
-
-        /// <summary>
-        /// Show an Android toast message.
-        /// </summary>
-        /// <param name="message">Message string to show in the toast.</param>
-        private static void _ShowAndroidToastMessage(string message)
-        {
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-            if (unityActivity != null)
-            {
-                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                if (!image.IsAvailable)
                 {
-                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
-                        message, 0);
-                    toastObject.Call("show");
-                }));
+                    return;
+                }
+
+                _OnImageAvailable(TextureReaderApi.ImageFormatType.ImageFormatGrayscale,
+                    image.Width, image.Height, image.Y, 0);
             }
         }
 
         /// <summary>
-        /// Handles detecting touch input to control the edge detection effect.
+        /// Handles the custom resolution checkbox toggle changing.
         /// </summary>
-        private void _HandleTouchInput()
+        /// <param name="newValue">The new value for the checkbox.</param>
+        public void OnCustomResolutionCheckboxValueChanged(bool newValue)
+        {
+            UseCustomResolutionImage = newValue;
+            if (newValue == true)
+            {
+                m_CachedTextureReader.enabled = true;
+                m_CachedTextureReader.OnImageAvailableCallback += _OnImageAvailable;
+            }
+            else
+            {
+                m_CachedTextureReader.enabled = false;
+                m_CachedTextureReader.OnImageAvailableCallback -= _OnImageAvailable;
+            }
+        }
+
+        /// <summary>
+        /// Adjusts the percentage of the edge detection overlay shown based on user swipes.
+        /// </summary>
+        private void _HandleSwipeInput()
         {
             const float SWIPE_SCALING_FACTOR = 1.15f;
             const float INTERTIAL_CANCELING_FACTOR = 2.0f;
@@ -159,9 +167,9 @@ namespace GoogleARCore.TextureReader
                 m_SwipeMomentum = 0;
             }
 
-            var overlayPercentage = BackgroundRenderer.BackgroundMaterial.GetFloat("_OverlayPercentage");
+            var overlayPercentage = EdgeDetectionBackgroundImage.material.GetFloat("_OverlayPercentage");
             overlayPercentage -= m_SwipeMomentum;
-            BackgroundRenderer.BackgroundMaterial.SetFloat("_OverlayPercentage", Mathf.Clamp(overlayPercentage, 0.0f, 1.0f));
+            EdgeDetectionBackgroundImage.material.SetFloat("_OverlayPercentage", Mathf.Clamp(overlayPercentage, 0.0f, 1.0f));
         }
 
         /// <summary>
@@ -170,27 +178,211 @@ namespace GoogleARCore.TextureReader
         /// <returns>The delta touch as a percentage of the screen.</returns>
         private float _GetTouchDelta()
         {
+            Vector2 newTouch = Input.GetTouch(0).position;
+            Vector2 deltaPosition = newTouch - m_PreviousTouch;
+            m_PreviousTouch = newTouch;
+            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+              return 0;
+            }
+
             switch (Screen.orientation)
             {
                 case ScreenOrientation.LandscapeLeft:
-                    return -Input.GetTouch(0).deltaPosition.x / Screen.width;
+                    return -deltaPosition.x / Screen.width;
                 case ScreenOrientation.LandscapeRight:
-                    return Input.GetTouch(0).deltaPosition.x / Screen.width;
+                    return deltaPosition.x / Screen.width;
                 case ScreenOrientation.Portrait:
-                    return Input.GetTouch(0).deltaPosition.y / Screen.height;
+                    return deltaPosition.y / Screen.height;
                 case ScreenOrientation.PortraitUpsideDown:
-                    return -Input.GetTouch(0).deltaPosition.y / Screen.height;
+                    return -deltaPosition.y / Screen.height;
                 default:
                     return 0;
             }
         }
 
         /// <summary>
-        /// Actually quit the application.
+        /// Handles a new CPU image.
         /// </summary>
-        private void DoQuit()
+        /// <param name="format">The format of the image.</param>
+        /// <param name="width">Width of the image, in pixels.</param>
+        /// <param name="height">Height of the image, in pixels.</param>
+        /// <param name="pixelBuffer">Pointer to raw image buffer.</param>
+        /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
+        private void _OnImageAvailable(TextureReaderApi.ImageFormatType format, int width, int height, IntPtr pixelBuffer, int bufferSize)
         {
-            Application.Quit();
+            if (format != TextureReaderApi.ImageFormatType.ImageFormatGrayscale)
+            {
+                Debug.Log("No edge detected due to incorrect image format.");
+                return;
+            }
+
+            if (m_EdgeDetectionBackgroundTexture == null || m_EdgeDetectionResultImage == null ||
+                m_EdgeDetectionBackgroundTexture.width != width || m_EdgeDetectionBackgroundTexture.height != height)
+            {
+                m_EdgeDetectionBackgroundTexture = new Texture2D(width, height, TextureFormat.R8, false, false);
+                m_EdgeDetectionResultImage = new byte[width * height];
+                _UpdateCameraImageToDisplayUVs();
+            }
+
+            if (m_CachedOrientation != Screen.orientation || m_CachedScreenDimensions.x != Screen.width ||
+                m_CachedScreenDimensions.y != Screen.height)
+            {
+                _UpdateCameraImageToDisplayUVs();
+                m_CachedOrientation = Screen.orientation;
+                m_CachedScreenDimensions = new Vector2(Screen.width, Screen.height);
+            }
+
+            // Detect edges within the image.
+            if (EdgeDetector.Detect(m_EdgeDetectionResultImage, pixelBuffer, width, height))
+            {
+                // Update the rendering texture with the edge image.
+                m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
+                m_EdgeDetectionBackgroundTexture.Apply();
+                EdgeDetectionBackgroundImage.material.SetTexture("_ImageTex", m_EdgeDetectionBackgroundTexture);
+
+                const string TOP_LEFT_RIGHT = "_UvTopLeftRight";
+                const string BOTTOM_LEFT_RIGHT = "_UvBottomLeftRight";
+                EdgeDetectionBackgroundImage.material.SetVector(TOP_LEFT_RIGHT, new Vector4(
+                    m_CameraImageToDisplayUvTransformation.TopLeft.x,
+                    m_CameraImageToDisplayUvTransformation.TopLeft.y,
+                    m_CameraImageToDisplayUvTransformation.TopRight.x,
+                    m_CameraImageToDisplayUvTransformation.TopRight.y));
+                EdgeDetectionBackgroundImage.material.SetVector(BOTTOM_LEFT_RIGHT, new Vector4(
+                    m_CameraImageToDisplayUvTransformation.BottomLeft.x,
+                    m_CameraImageToDisplayUvTransformation.BottomLeft.y,
+                    m_CameraImageToDisplayUvTransformation.BottomRight.x,
+                    m_CameraImageToDisplayUvTransformation.BottomRight.y));
+            }
+        }
+
+        /// <summary>
+        /// Updates the uv transformation from the camera image orientation and aspect to the display's.
+        /// </summary>
+        private void _UpdateCameraImageToDisplayUVs()
+        {
+            int cameraToDisplayRotation = _GetCameraImageToDisplayRotation();
+
+            float uBorder;
+            float vBorder;
+            _GetUvBorders(out uBorder, out vBorder);
+
+            switch (cameraToDisplayRotation)
+            {
+            case 90:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(uBorder, 1 - vBorder);
+                break;
+            case 180:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(uBorder, vBorder);
+                break;
+            case 270:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(1 - uBorder, vBorder);
+                break;
+            default:
+            case 0:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(1 - uBorder, 1 - vBorder);
+                break;
+            }
+        }
+
+        /// <summary>
+        /// Gets the rotation that needs to be applied to the device camera image in order for it to match
+        /// the current orientation of the display.
+        /// </summary>
+        /// <returns>The needed rotation.</returns>
+        private int _GetCameraImageToDisplayRotation()
+        {
+#if !UNITY_EDITOR
+            AndroidJavaClass cameraClass = new AndroidJavaClass("android.hardware.Camera");
+            AndroidJavaClass cameraInfoClass = new AndroidJavaClass("android.hardware.Camera$CameraInfo");
+            AndroidJavaObject cameraInfo = new AndroidJavaObject("android.hardware.Camera$CameraInfo");
+            cameraClass.CallStatic("getCameraInfo", cameraInfoClass.GetStatic<int>("CAMERA_FACING_BACK"),
+                cameraInfo);
+            int cameraRotationToNaturalDisplayOrientation = cameraInfo.Get<int>("orientation");
+
+            AndroidJavaClass contextClass = new AndroidJavaClass("android.content.Context");
+            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject windowManager =
+                unityActivity.Call<AndroidJavaObject>("getSystemService",
+                contextClass.GetStatic<string>("WINDOW_SERVICE"));
+
+            AndroidJavaClass surfaceClass = new AndroidJavaClass("android.view.Surface");
+            int displayRotationFromNaturalEnum = windowManager
+                .Call<AndroidJavaObject>("getDefaultDisplay").Call<int>("getRotation");
+
+            int displayRotationFromNatural = 0;
+            if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_90"))
+            {
+                displayRotationFromNatural = 90;
+            }
+            else if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_180"))
+            {
+                displayRotationFromNatural = 180;
+            }
+            else if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_270"))
+            {
+                displayRotationFromNatural = 270;
+            }
+
+            return (cameraRotationToNaturalDisplayOrientation + displayRotationFromNatural) % 360;
+#else  // !UNITY_EDITOR
+            // Using Instant Preview in the Unity Editor, the display orientation is always portrait.
+            return 0;
+#endif  // !UNITY_EDITOR
+        }
+
+        /// <summary>
+        /// Gets the percentage of space needed to be cropped on the device camera image to match the display
+        /// aspect ratio.
+        /// </summary>
+        /// <param name="uBorder">The cropping of the 'u' dimension.</param>
+        /// <param name="vBorder">The cropping of the 'v' dimension.<</param>
+        private void _GetUvBorders(out float uBorder, out float vBorder)
+        {
+            int imageWidth = m_EdgeDetectionBackgroundTexture.width;
+            int imageHeight = m_EdgeDetectionBackgroundTexture.height;
+
+            float screenAspectRatio;
+            var cameraToDisplayRotation = _GetCameraImageToDisplayRotation();
+            if (cameraToDisplayRotation == 90 || cameraToDisplayRotation == 270)
+            {
+                screenAspectRatio = (float)Screen.height / Screen.width;
+            }
+            else
+            {
+                screenAspectRatio = (float)Screen.width / Screen.height;
+            }
+
+            var imageAspectRatio = (float)imageWidth / imageHeight;
+            var croppedWidth = 0.0f;
+            var croppedHeight = 0.0f;
+
+            if (screenAspectRatio < imageAspectRatio)
+            {
+                croppedWidth = imageHeight * screenAspectRatio;
+                croppedHeight = imageHeight;
+            }
+            else
+            {
+                croppedWidth = imageWidth;
+                croppedHeight = imageWidth / screenAspectRatio;
+            }
+
+            uBorder = (imageWidth - croppedWidth) / imageWidth / 2.0f;
+            vBorder = (imageHeight - croppedHeight) / imageHeight / 2.0f;
         }
 
         /// <summary>
@@ -208,14 +400,43 @@ namespace GoogleARCore.TextureReader
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
             else if (Session.Status == SessionStatus.FatalError)
             {
                 _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
+        }
+
+        /// <summary>
+        /// Show an Android toast message.
+        /// </summary>
+        /// <param name="message">Message string to show in the toast.</param>
+        private void _ShowAndroidToastMessage(string message)
+        {
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            if (unityActivity != null)
+            {
+                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                {
+                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
+                        message, 0);
+                    toastObject.Call("show");
+                }));
+            }
+        }
+
+        /// <summary>
+        /// Actually quit the application.
+        /// </summary>
+        private void _DoQuit()
+        {
+            Application.Quit();
         }
     }
 }

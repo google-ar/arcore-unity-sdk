@@ -30,7 +30,10 @@ namespace GoogleARCore
         Success = 100,
         Error = 200,
         ErrorDeviceNotCompatible = 201,
+
+        [System.Obsolete("Merged with ErrorDeviceNotCompatible. Use that instead.")]
         ErrorAndroidVersionNotSupported = 202,
+
         ErrorUserDeclined = 203,
     }
 }

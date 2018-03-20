@@ -33,7 +33,7 @@ namespace GoogleARCoreInternal
         public string Version;
         public bool IsARCoreRequired;
         public bool IsInstantPreviewEnabled;
-        private const string k_VersionString = "V1.0.0";
+        private const string k_VersionString = "V1.1.0";
         private const string k_ProjectSettingsPath = "ProjectSettings/ARCoreProjectSettings.json";
 
         static ARCoreProjectSettings()
@@ -56,7 +56,7 @@ namespace GoogleARCoreInternal
         {
             Version = k_VersionString;
             IsARCoreRequired = true;
-            IsInstantPreviewEnabled = false;
+            IsInstantPreviewEnabled = true;
 
             if (File.Exists(k_ProjectSettingsPath))
             {
@@ -64,6 +64,14 @@ namespace GoogleARCoreInternal
                     File.ReadAllText(k_ProjectSettingsPath));
                 Version = settings.Version;
                 IsARCoreRequired = settings.IsARCoreRequired;
+                IsInstantPreviewEnabled = settings.IsInstantPreviewEnabled;
+            }
+
+            // Upgrades settings from v1.0.0 to v1.1.0
+            if (Version.Equals("V1.0.0"))
+            {
+                IsInstantPreviewEnabled = true;
+                Version = k_VersionString;
             }
         }
 

@@ -31,7 +31,6 @@ namespace GoogleARCoreInternal
         Success = 100,
         Error = 200,
         ErrorDeviceNotCompatible = 201,
-        ErrorAndroidVersionNotSupported = 202,
         ErrorUserDeclined = 203,
     }
 }

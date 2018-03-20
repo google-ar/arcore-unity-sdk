@@ -41,6 +41,9 @@ namespace GoogleARCoreInternal
 
         private TrackableManager m_TrackableManager = null;
 
+        private Dictionary<IntPtr, int> m_AcquiredHandleCounts = new Dictionary<IntPtr, int>(
+            new IntPtrEqualityComparer());
+
         public NativeSession(IntPtr sessionHandle, IntPtr frameHandle)
         {
             m_SessionHandle = sessionHandle;
@@ -52,6 +55,7 @@ namespace GoogleARCoreInternal
             CameraMetadataApi = new CameraMetadataApi(this);
             FrameApi = new FrameApi(this);
             HitTestApi = new HitTestApi(this);
+            ImageApi = new ImageApi(this);
             LightEstimateApi = new LightEstimateApi(this);
             PlaneApi = new PlaneApi(this);
             PointApi = new PointApi(this);
@@ -113,6 +117,8 @@ namespace GoogleARCoreInternal
 
         public HitTestApi HitTestApi { get; private set; }
 
+        public ImageApi ImageApi { get; private set; }
+
         public LightEstimateApi LightEstimateApi { get; private set; }
 
         public PlaneApi PlaneApi { get; private set; }
@@ -130,6 +136,42 @@ namespace GoogleARCoreInternal
         public TrackableApi TrackableApi { get; private set; }
 
         public TrackableListApi TrackableListApi { get; private set; }
+
+        public void MarkHandleAcquired(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                Debug.LogError("MarkHandleAcquired::Attempted to mark a null handle acquired.");
+                return;
+            }
+
+            int acquireCount;
+            m_AcquiredHandleCounts.TryGetValue(handle, out acquireCount);
+            m_AcquiredHandleCounts[handle] = ++acquireCount;
+        }
+
+        public void MarkHandleReleased(IntPtr handle)
+        {
+            int acquireCount;
+            if (m_AcquiredHandleCounts.TryGetValue(handle, out acquireCount))
+            {
+                if (--acquireCount > 0)
+                {
+                    m_AcquiredHandleCounts[handle] = acquireCount;
+                }
+                else
+                {
+                    m_AcquiredHandleCounts.Remove(handle);
+                }
+            }
+        }
+
+        public bool IsHandleAcquired(IntPtr handle)
+        {
+            int acquireCount;
+            m_AcquiredHandleCounts.TryGetValue(handle, out acquireCount);
+            return acquireCount > 0;
+        }
 
         public Trackable TrackableFactory(IntPtr nativeHandle)
         {
@@ -154,7 +196,7 @@ namespace GoogleARCoreInternal
             // TODO (b/73256094): Remove when fixed.
             if (LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking)
             {
-                m_PointCloudHandle = FrameApi.AcquirePointCloud();
+                 FrameApi.TryAcquirePointCloudHandle(out m_PointCloudHandle);
             }
         }
     }

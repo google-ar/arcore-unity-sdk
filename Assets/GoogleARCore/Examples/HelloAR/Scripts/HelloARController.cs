@@ -26,6 +26,7 @@ namespace GoogleARCore.HelloAR
     using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
     using Input = InstantPreviewInput;
 #endif
 
@@ -76,6 +77,7 @@ namespace GoogleARCore.HelloAR
         /// </summary>
         public void Update()
         {
+            // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
                 Application.Quit();
@@ -110,7 +112,7 @@ namespace GoogleARCore.HelloAR
                 planeObject.GetComponent<TrackedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
             }
 
-            // Disable the snackbar UI when no planes are valid.
+            // Hide snackbar when currently tracking at least one plane.
             Session.GetTrackables<TrackedPlane>(m_AllPlanes);
             bool showSearchingUI = true;
             for (int i = 0; i < m_AllPlanes.Count; i++)

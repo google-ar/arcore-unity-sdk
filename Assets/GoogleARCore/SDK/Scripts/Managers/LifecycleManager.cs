@@ -139,10 +139,16 @@ namespace GoogleARCoreInternal
             }
 
             m_SessionComponent = session;
+            EnableSession();
         }
 
         public void EnableSession()
         {
+            if (m_SessionComponent == null)
+            {
+                return;
+            }
+
             var config = m_SessionComponent.SessionConfig;
             if (config != null)
             {
@@ -160,6 +166,8 @@ namespace GoogleARCoreInternal
         public void DestroySession()
         {
             m_SessionComponent = null;
+            m_NativeSession = null;
+            ExternApi.ArPresto_reset();
         }
 
         public AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
@@ -254,12 +262,23 @@ namespace GoogleARCoreInternal
             AsyncTask.OnUpdate();
             _UpdateTextureIfNeeded();
 
+            if (m_SessionComponent != null)
+            {
+                var config = m_SessionComponent.SessionConfig;
+                if (config != null)
+                {
+                    ExternApi.ArPresto_setConfiguration(new ApiPrestoConfig(config));
+                }
+            }
+
             if (m_NativeSession != null)
             {
                 m_NativeSession.SessionApi.SetDisplayGeometry(
                     Screen.orientation, Screen.width, Screen.height);
                 m_NativeSession.OnUpdate();
             }
+
+            InstantPreviewManager.OnEarlyUpdate(m_SessionComponent);
         }
 
         private void _OnCheckApkAvailabilityResult(ApkAvailabilityStatus status)
@@ -356,6 +375,9 @@ namespace GoogleARCoreInternal
 
             [DllImport(ApiConstants.ARCoreShimApi)]
             public static extern void ArPresto_getStatus(ref ApiPrestoStatus prestoStatus);
+
+            [DllImport(ApiConstants.ARCoreShimApi)]
+            public static extern void ArPresto_reset();
         }
     }
 }
