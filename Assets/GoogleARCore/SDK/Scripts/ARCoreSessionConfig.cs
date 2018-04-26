@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ARCoreSessionConfig.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -21,6 +21,7 @@
 namespace GoogleARCore
 {
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// Holds settings that are used to configure the session.
@@ -37,15 +38,93 @@ namespace GoogleARCore
         public bool MatchCameraFramerate = true;
 
         /// <summary>
-        /// Toggles whether plane finding is enabled.
+        /// Chooses which plane finding mode will be used.
         /// </summary>
-        [Tooltip("Toggles whether plane finding is enabled.")]
-        public bool EnablePlaneFinding = true;
+        [Tooltip("Chooses which plane finding mode will be used.")]
+        [FormerlySerializedAs("EnablePlaneFinding")]
+        public DetectedPlaneFindingMode PlaneFindingMode = DetectedPlaneFindingMode.HorizontalAndVertical;
 
         /// <summary>
         /// Toggles whether light estimation is enabled.
         /// </summary>
         [Tooltip("Toggles whether light estimation is enabled.")]
         public bool EnableLightEstimation = true;
+
+        /// <summary>
+        /// Toggles whether cloud anchor is enabled.
+        /// </summary>
+        [Tooltip("Toggles whether cloud anchor is enabled.")]
+        public bool EnableCloudAnchor = false;
+
+        /// <summary>
+        /// The database to use for detecting AugmentedImage Trackables.
+        /// </summary>
+        [Tooltip("The database to use for detecting AugmentedImage Trackables.")]
+        public AugmentedImageDatabase AugmentedImageDatabase;
+
+        /// <summary>
+        ///  Gets or sets a value indicating whether PlaneFinding is enabled.
+        /// </summary>
+        [System.Obsolete("This field has be replaced by GoogleARCore.DetectedPlaneFindingMode. See https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
+        public bool EnablePlaneFinding
+        {
+            get
+            {
+                return PlaneFindingMode != DetectedPlaneFindingMode.Disabled;
+            }
+
+            set
+            {
+                PlaneFindingMode = value ? DetectedPlaneFindingMode.HorizontalAndVertical :
+                    DetectedPlaneFindingMode.Disabled;
+            }
+        }
+
+        /// <summary>
+        /// ValueType check if two SessionConfig objects are equal.
+        /// </summary>
+        /// <param name="other">The other SessionConfig.</param>
+        /// <returns>True if the two SessionConfig objects are value-type equal, otherwise false.</returns>
+        public override bool Equals(object other)
+        {
+            ARCoreSessionConfig otherConfig = other as ARCoreSessionConfig;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (MatchCameraFramerate != otherConfig.MatchCameraFramerate ||
+                PlaneFindingMode != otherConfig.PlaneFindingMode ||
+                EnableLightEstimation != otherConfig.EnableLightEstimation ||
+                EnableCloudAnchor != otherConfig.EnableCloudAnchor ||
+                AugmentedImageDatabase != otherConfig.AugmentedImageDatabase)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Return a hash code for this object.
+        /// </summary>
+        /// <returns>A hash code value.</returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        /// ValueType copy from another SessionConfig object into this one.
+        /// </summary>
+        /// <param name="other">The SessionConfig to copy from.</param>
+        public void CopyFrom(ARCoreSessionConfig other)
+        {
+            MatchCameraFramerate = other.MatchCameraFramerate;
+            PlaneFindingMode = other.PlaneFindingMode;
+            EnableLightEstimation = other.EnableLightEstimation;
+            EnableCloudAnchor = other.EnableCloudAnchor;
+            AugmentedImageDatabase = other.AugmentedImageDatabase;
+        }
     }
 }

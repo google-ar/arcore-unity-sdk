@@ -21,13 +21,17 @@
 namespace GoogleARCoreInternal
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
     using GoogleARCore;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public class ImageApi
+#if UNITY_IOS
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
+
+    internal class ImageApi
     {
         private NativeSession m_NativeSession;
 
@@ -80,27 +84,29 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+#pragma warning disable 626
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImage_getNdkImage(IntPtr imageHandle, ref IntPtr ndkImage);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImage_release(IntPtr imageHandle);
 
-            [DllImport(ApiConstants.MediaNdk)]
+            [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getWidth(IntPtr ndkImageHandle, ref int width);
 
-            [DllImport(ApiConstants.MediaNdk)]
+            [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getHeight(IntPtr ndkImageHandle, ref int height);
 
-            [DllImport(ApiConstants.MediaNdk)]
+            [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getPlaneData(IntPtr imageHandle, int planeIdx, ref IntPtr data,
                 ref int dataLength);
 
-            [DllImport(ApiConstants.MediaNdk)]
+            [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getPlanePixelStride(IntPtr imageHandle, int planeIdx, ref int pixelStride);
 
-            [DllImport(ApiConstants.MediaNdk)]
+            [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getPlaneRowStride(IntPtr imageHandle, int planeIdx, ref int rowStride);
+#pragma warning restore 626
         }
     }
 }

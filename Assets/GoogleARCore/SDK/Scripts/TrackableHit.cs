@@ -27,8 +27,6 @@ namespace GoogleARCore
     /// </summary>
     public struct TrackableHit
     {
-        //// @cond EXCLUDE_FROM_DOXYGEN
-
         /// <summary>
         /// Constructs a TrackableHit.
         /// </summary>
@@ -36,15 +34,13 @@ namespace GoogleARCore
         /// <param name="distance">Hit's distance from the origin of the ray to the hit.</param>
         /// <param name="flags">Type of the hit.</param>
         /// <param name="trackable">Trackable object of the hit.</param>
-        public TrackableHit(Pose pose, float distance, TrackableHitFlags flags, Trackable trackable)
+        internal TrackableHit(Pose pose, float distance, TrackableHitFlags flags, Trackable trackable)
         {
             Pose = pose;
             Distance = distance;
             Flags = flags;
             Trackable = trackable;
         }
-
-        //// @endcond
 
         /// <summary>
         /// Gets the pose where the raycast hit the object in Unity world coordinates.

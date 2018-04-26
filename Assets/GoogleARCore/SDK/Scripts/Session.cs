@@ -40,7 +40,7 @@ namespace GoogleARCore
         {
             get
             {
-                return LifecycleManager.Instance.SessionStatus;
+                return ARCoreAndroidLifecycleManager.Instance.SessionStatus;
             }
         }
 
@@ -95,7 +95,7 @@ namespace GoogleARCore
         /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability is known.</returns>
         public static AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
-            return LifecycleManager.Instance.CheckApkAvailability();
+            return ARPrestoCallbackManager.Instance.CheckApkAvailability();
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace GoogleARCore
         /// status is resolved.</returns>
         public static AsyncTask<ApkInstallationStatus> RequestApkInstallation(bool userRequested)
         {
-            return LifecycleManager.Instance.RequestApkInstallation(userRequested);
+            return ARPrestoCallbackManager.Instance.RequestApkInstallation(userRequested);
         }
     }
 }

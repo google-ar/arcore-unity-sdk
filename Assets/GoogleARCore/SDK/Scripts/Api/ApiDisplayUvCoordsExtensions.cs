@@ -21,12 +21,9 @@
 namespace GoogleARCoreInternal
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-        Justification = "Internal")]
     internal static class ApiDisplayUvCoordsExtensions
     {
         public static DisplayUvCoords ToDisplayUvCoords(this ApiDisplayUvCoords apiCoords)

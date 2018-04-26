@@ -18,12 +18,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace GoogleARCore.HelloAR
+namespace GoogleARCore.Examples.HelloAR
 {
     using System.Collections.Generic;
     using GoogleARCore;
+    using GoogleARCore.Examples.Common;
     using UnityEngine;
-    using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
     // Set up touch input propagation while using Instant Preview in the editor.
@@ -43,7 +43,7 @@ namespace GoogleARCore.HelloAR
         /// <summary>
         /// A prefab for tracking and visualizing detected planes.
         /// </summary>
-        public GameObject TrackedPlanePrefab;
+        public GameObject DetectedPlanePrefab;
 
         /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
@@ -56,16 +56,15 @@ namespace GoogleARCore.HelloAR
         public GameObject SearchingForPlaneUI;
 
         /// <summary>
-        /// A list to hold new planes ARCore began tracking in the current frame. This object is used across
-        /// the application to avoid per-frame allocations.
+        /// The rotation in degrees need to apply to model when the Andy model is placed.
         /// </summary>
-        private List<TrackedPlane> m_NewPlanes = new List<TrackedPlane>();
+        private const float k_ModelRotation = 180.0f;
 
         /// <summary>
         /// A list to hold all planes ARCore is tracking in the current frame. This object is used across
         /// the application to avoid per-frame allocations.
         /// </summary>
-        private List<TrackedPlane> m_AllPlanes = new List<TrackedPlane>();
+        private List<DetectedPlane> m_AllPlanes = new List<DetectedPlane>();
 
         /// <summary>
         /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
@@ -77,43 +76,10 @@ namespace GoogleARCore.HelloAR
         /// </summary>
         public void Update()
         {
-            // Exit the app when the 'back' button is pressed.
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                Application.Quit();
-            }
-
-            _QuitOnConnectionErrors();
-
-            // Check that motion tracking is tracking.
-            if (Session.Status != SessionStatus.Tracking)
-            {
-                const int lostTrackingSleepTimeout = 15;
-                Screen.sleepTimeout = lostTrackingSleepTimeout;
-                if (!m_IsQuitting && Session.Status.IsValid())
-                {
-                    SearchingForPlaneUI.SetActive(true);
-                }
-
-                return;
-            }
-
-            Screen.sleepTimeout = SleepTimeout.NeverSleep;
-
-            // Iterate over planes found in this frame and instantiate corresponding GameObjects to visualize them.
-            Session.GetTrackables<TrackedPlane>(m_NewPlanes, TrackableQueryFilter.New);
-            for (int i = 0; i < m_NewPlanes.Count; i++)
-            {
-                // Instantiate a plane visualization prefab and set it to track the new plane. The transform is set to
-                // the origin with an identity rotation since the mesh for our prefab is updated in Unity World
-                // coordinates.
-                GameObject planeObject = Instantiate(TrackedPlanePrefab, Vector3.zero, Quaternion.identity,
-                    transform);
-                planeObject.GetComponent<TrackedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
-            }
+            _UpdateApplicationLifecycle();
 
             // Hide snackbar when currently tracking at least one plane.
-            Session.GetTrackables<TrackedPlane>(m_AllPlanes);
+            Session.GetTrackables<DetectedPlane>(m_AllPlanes);
             bool showSearchingUI = true;
             for (int i = 0; i < m_AllPlanes.Count; i++)
             {
@@ -140,33 +106,54 @@ namespace GoogleARCore.HelloAR
 
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
-                var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
-
-                // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
-                // world evolves.
-                var anchor = hit.Trackable.CreateAnchor(hit.Pose);
-
-                // Andy should look at the camera but still be flush with the plane.
-                if ((hit.Flags & TrackableHitFlags.PlaneWithinPolygon) != TrackableHitFlags.None)
+                // Use hit pose and camera pose to check if hittest is from the
+                // back of the plane, if it is, no need to create the anchor.
+                if ((hit.Trackable is DetectedPlane) &&
+                    Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                        hit.Pose.rotation * Vector3.up) < 0)
                 {
-                    // Get the camera position and match the y-component with the hit position.
-                    Vector3 cameraPositionSameY = FirstPersonCamera.transform.position;
-                    cameraPositionSameY.y = hit.Pose.position.y;
-
-                    // Have Andy look toward the camera respecting his "up" perspective, which may be from ceiling.
-                    andyObject.transform.LookAt(cameraPositionSameY, andyObject.transform.up);
+                    Debug.Log("Hit at back of the current DetectedPlane");
                 }
+                else
+                {
+                    // Instantiate Andy model at the hit pose.
+                    var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
 
-                // Make Andy model a child of the anchor.
-                andyObject.transform.parent = anchor.transform;
+                    // Compensate for the hitPose rotation facing away from the raycast (i.e. camera).
+                    andyObject.transform.Rotate(0, k_ModelRotation, 0, Space.Self);
+
+                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
+                    // world evolves.
+                    var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+
+                    // Make Andy model a child of the anchor.
+                    andyObject.transform.parent = anchor.transform;
+                }
             }
         }
 
         /// <summary>
-        /// Quit the application if there was a connection error for the ARCore session.
+        /// Check and update the application lifecycle.
         /// </summary>
-        private void _QuitOnConnectionErrors()
+        private void _UpdateApplicationLifecycle()
         {
+            // Exit the app when the 'back' button is pressed.
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
+            // Only allow the screen to sleep when not tracking.
+            if (Session.Status != SessionStatus.Tracking)
+            {
+                const int lostTrackingSleepTimeout = 15;
+                Screen.sleepTimeout = lostTrackingSleepTimeout;
+            }
+            else
+            {
+                Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            }
+
             if (m_IsQuitting)
             {
                 return;

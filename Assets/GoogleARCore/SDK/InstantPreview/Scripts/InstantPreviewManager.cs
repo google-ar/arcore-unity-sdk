@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="InstantPreviewManager.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -22,8 +22,8 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
-    using System.Runtime.InteropServices;
     using System.Text;
     using System.Threading;
     using GoogleARCore;
@@ -31,8 +31,20 @@ namespace GoogleARCoreInternal
     using UnityEngine.Rendering;
     using UnityEngine.SpatialTracking;
 
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
+
+#if UNITY_IOS
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
+
     /// <summary>
-    /// Contains methods for managing communication to the Instant Preview 
+    /// Contains methods for managing communication to the Instant Preview
     /// plugin.
     /// </summary>
     public static class InstantPreviewManager
@@ -58,9 +70,9 @@ namespace GoogleARCoreInternal
         private static bool s_DisabledPlaneFindingWarned = false;
 
         /// <summary>
-        /// Coroutine method that communicates to the Instant Preview plugin 
+        /// Coroutine method that communicates to the Instant Preview plugin
         /// every frame.
-        /// 
+        ///
         /// If not running in the editor, this does nothing.
         /// </summary>
         /// <returns>Enumerator for a coroutine that updates Instant Preview
@@ -74,17 +86,48 @@ namespace GoogleARCoreInternal
             }
 
             // User may have explicitly disabled Instant Preview.
-            if (ARCoreProjectSettings.Instance != null && 
+            if (ARCoreProjectSettings.Instance != null &&
                 !ARCoreProjectSettings.Instance.IsInstantPreviewEnabled)
             {
                 yield break;
             }
 
+#if UNITY_EDITOR
+            // Determine if any augmented image databases need a rebuild.
+            List<AugmentedImageDatabase> databases = new List<AugmentedImageDatabase>();
+            bool shouldRebuild = false;
+
+            var augmentedImageDatabaseGuids = AssetDatabase.FindAssets("t:AugmentedImageDatabase");
+            foreach (var databaseGuid in augmentedImageDatabaseGuids)
+            {
+                var database = AssetDatabase.LoadAssetAtPath<AugmentedImageDatabase>(
+                    AssetDatabase.GUIDToAssetPath(databaseGuid));
+                databases.Add(database);
+
+                shouldRebuild = shouldRebuild || database.IsBuildNeeded();
+            }
+
+            // If the preference is to ask the user to rebuild, ask now.
+            if (shouldRebuild && PromptToRebuildAugmentedImagesDatabase())
+            {
+                foreach (var database in databases)
+                {
+                    string error;
+                    database.BuildIfNeeded(out error);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Debug.LogWarning("Failed to rebuild augmented " +
+                                            "image database: " + error);
+                    }
+                }
+            }
+#endif
+
             var adbPath = InstantPreviewManager.GetAdbPath();
             if (adbPath == null)
             {
                 Debug.LogError("Instant Preview requires your Unity Android SDK path to be set. Please set it under " +
-                               "Preferences/External Tools/Android. You may need to install the Android SDK first.");
+                               "'Preferences > External Tools > Android'. You may need to install the Android SDK first.");
                 yield break;
             }
             else if (!File.Exists(adbPath))
@@ -101,7 +144,7 @@ namespace GoogleARCoreInternal
 
             yield return InstallApkAndRunIfConnected(adbPath, localVersion);
 
-            yield return UpdateLoop();
+            yield return UpdateLoop(adbPath);
         }
 
         /// <summary>
@@ -111,7 +154,7 @@ namespace GoogleARCoreInternal
         /// </summary>
         /// <param name="backgroundTexture">Texture variable to store the latest
         /// Instant Preview video frame.</param>
-        /// <returns>True if InstantPreview updated the background texture, 
+        /// <returns>True if InstantPreview updated the background texture,
         /// false if it did not and the texture still needs updating.</returns>
         public static bool UpdateBackgroundTextureIfNeeded(ref Texture2D backgroundTexture)
         {
@@ -143,9 +186,9 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Handles Instant Preview logic when ARCore's EarlyUpdate method is called.
         /// </summary>
-        /// <param name="session">Relevant ARCoreSession object being updated.</param>
-        public static void OnEarlyUpdate(ARCoreSession session)
+        public static void OnEarlyUpdate()
         {
+            var session = LifecycleManager.Instance.SessionComponent;
             if (Application.isEditor || session == null)
             {
                 return;
@@ -169,14 +212,14 @@ namespace GoogleARCoreInternal
                 s_DisabledLightEstimationWarned = true;
             }
 
-            if (!s_DisabledPlaneFindingWarned && !config.EnablePlaneFinding)
+            if (!s_DisabledPlaneFindingWarned && config.PlaneFindingMode == DetectedPlaneFindingMode.Disabled)
             {
                 Debug.LogWarning("ARCore plane finding cannot be disabled in editor.");
                 s_DisabledPlaneFindingWarned = true;
             }
         }
 
-        private static IEnumerator UpdateLoop()
+        private static IEnumerator UpdateLoop(string adbPath)
         {
             var renderEventFunc = NativeApi.GetRenderEventFunc();
             var shouldConvertToBgra = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11;
@@ -186,25 +229,59 @@ namespace GoogleARCoreInternal
             // because it might be incorrect when first querying it.
             yield return k_WaitForEndOfFrame;
 
-            // Creates a target texture to capture the preview window onto.
-            // Some video encoders prefer the dimensions to be a multiple of 16.
-            var targetWidth = RoundUpToNearestMultipleOf16(Screen.width);
-            var targetHeight = RoundUpToNearestMultipleOf16(Screen.height);
-            var screenTexture = new RenderTexture(targetWidth, targetHeight, 0);
-            var targetTexture = screenTexture;
+            var currentWidth = 0;
+            var currentHeight = 0;
+            var needToStartActivity = true;
+            var prevFrameLandscape = false;
+
+            RenderTexture screenTexture = null;
+            RenderTexture targetTexture = null;
             RenderTexture bgrTexture = null;
 
-            if (shouldConvertToBgra)
-            {
-                bgrTexture = new RenderTexture(screenTexture.width, screenTexture.height, 0, RenderTextureFormat.BGRA32);
-                targetTexture = bgrTexture;
-            }
-
-            // Begins update loop. The coroutine will cease when the 
+            // Begins update loop. The coroutine will cease when the
             // ARCoreSession component it's called from is destroyed.
             for (;;)
             {
                 yield return k_WaitForEndOfFrame;
+
+                var curFrameLandscape = Screen.width > Screen.height;
+                if (prevFrameLandscape != curFrameLandscape)
+                {
+                    needToStartActivity = true;
+                }
+
+                prevFrameLandscape = curFrameLandscape;
+                if (needToStartActivity)
+                {
+                    string activityName = curFrameLandscape ? "InstantPreviewLandscapeActivity" :
+                        "InstantPreviewActivity";
+                    string output;
+                    string errors;
+                    ShellHelper.RunCommand(adbPath,
+                        "shell am start -S -n com.google.ar.core.instantpreview/." + activityName,
+                        out output, out errors);
+                    needToStartActivity = false;
+                }
+
+                // Creates a target texture to capture the preview window onto.
+                // Some video encoders prefer the dimensions to be a multiple of 16.
+                var targetWidth = RoundUpToNearestMultipleOf16(Screen.width);
+                var targetHeight = RoundUpToNearestMultipleOf16(Screen.height);
+
+                if (targetWidth != currentWidth || targetHeight != currentHeight)
+                {
+                    screenTexture = new RenderTexture(targetWidth, targetHeight, 0);
+                    targetTexture = screenTexture;
+
+                    if (shouldConvertToBgra)
+                    {
+                        bgrTexture = new RenderTexture(screenTexture.width, screenTexture.height, 0, RenderTextureFormat.BGRA32);
+                        targetTexture = bgrTexture;
+                    }
+
+                    currentWidth = targetWidth;
+                    currentHeight = targetHeight;
+                }
 
                 NativeApi.Update();
                 InstantPreviewInput.Update();
@@ -230,8 +307,8 @@ namespace GoogleARCoreInternal
                     if (Mathf.Abs(sourceAspectRatio - destinationAspectRatio) >
                         k_MaxTolerableAspectRatioDifference)
                     {
-                        Debug.LogWarning(string.Format(k_MismatchedAspectRatioWarningFormatString, sourceWidth,
-                                                       sourceHeight));
+                        Debug.LogWarningFormat(k_MismatchedAspectRatioWarningFormatString, sourceWidth,
+                                               sourceHeight);
                         loggedAspectRatioWarning = true;
                     }
                 }
@@ -297,9 +374,8 @@ namespace GoogleARCoreInternal
             // Early outs if set to install but the apk can't be found.
             if (!File.Exists(apkPath))
             {
-                Debug.LogError(
-                    string.Format("Trying to install Instant Preview apk but reference to InstantPreview.apk is " +
-                                  "broken. Couldn't find an asset with .meta file guid={0}", k_ApkGuid));
+                Debug.LogErrorFormat("Trying to install Instant Preview APK but reference to InstantPreview.apk is " +
+                                     "broken. Couldn't find an asset with .meta file guid={0}.", k_ApkGuid);
                 yield break;
             }
 
@@ -312,8 +388,9 @@ namespace GoogleARCoreInternal
                 string errors;
 
                 // Gets version of installed apk.
-                RunAdbCommand(adbPath, "shell dumpsys package com.google.ar.core.instantpreview | grep versionName",
-                              out output, out errors);
+                ShellHelper.RunCommand(adbPath,
+                    "shell dumpsys package com.google.ar.core.instantpreview | grep versionName",
+                    out output, out errors);
                 string installedVersion = null;
                 if (!string.IsNullOrEmpty(output) && string.IsNullOrEmpty(errors))
                 {
@@ -335,15 +412,15 @@ namespace GoogleARCoreInternal
 
                 if (installedVersion == null)
                 {
-                    Debug.Log(string.Format(
-                        "Instant Preview: app not found on device, attempting to install it from {0}.",
-                        apkPath));
+                    Debug.LogFormat(
+                        "Instant Preview app not installed on device.",
+                        apkPath);
                 }
                 else if (installedVersion != localVersion)
                 {
-                    Debug.Log(string.Format(
-                        "Instant Preview: installed version \"{0}\" does not match local version \"{1}\", attempting upgrade.",
-                        installedVersion, localVersion));
+                    Debug.LogFormat(
+                        "Instant Preview installed version \"{0}\" does not match local version \"{1}\".",
+                        installedVersion, localVersion);
                 }
 
                 res.ShouldPromptForInstall = installedVersion != localVersion;
@@ -364,30 +441,27 @@ namespace GoogleARCoreInternal
                         string output;
                         string errors;
 
-                        RunAdbCommand(adbPath,
+                        Debug.LogFormat(
+                            "Installing Instant Preview app version {0}.",
+                            localVersion);
+
+                        ShellHelper.RunCommand(adbPath,
                             string.Format("uninstall com.google.ar.core.instantpreview", apkPath),
                             out output, out errors);
 
-                        RunAdbCommand(adbPath,
+                        ShellHelper.RunCommand(adbPath,
                             string.Format("install \"{0}\"", apkPath),
                             out output, out errors);
 
                         // Prints any output from trying to install.
                         if (!string.IsNullOrEmpty(output))
                         {
-                            Debug.Log(output);
+                            Debug.LogFormat("Instant Preview installation\n{0}", output);
                         }
 
                         if (!string.IsNullOrEmpty(errors))
                         {
-                            if (string.Equals(errors, "Success"))
-                            {
-                                Debug.Log("Successfully installed Instant Preview app.");
-                            }
-                            else
-                            {
-                                Debug.LogError(errors);
-                            }
+                            Debug.LogErrorFormat("Failed to install Instant Preview app:\n{0}", errors);
                         }
                     });
                     installThread.Start();
@@ -402,19 +476,6 @@ namespace GoogleARCoreInternal
                     yield break;
                 }
             }
-
-            if (!NativeApi.IsConnected())
-            {
-                string activityName = Screen.width < Screen.height ? "InstantPreviewActivity" : "InstantPreviewLandscapeActivity";
-                new Thread(() =>
-                {
-                    string output;
-                    string errors;
-                    RunAdbCommand(adbPath,
-                        "shell am start -n com.google.ar.core.instantpreview/." + activityName,
-                        out output, out errors);
-                }).Start();
-            }
         }
 
         private static bool PromptToInstall()
@@ -423,39 +484,23 @@ namespace GoogleARCoreInternal
             return UnityEditor.EditorUtility.DisplayDialog("Instant Preview",
                         "To instantly reflect your changes on device, the " +
                         "Instant Preview app will be installed on your " +
-                        "connected phone.\n\nTo permanently disable Instant Preview, " +
-                        "uncheck the InstantPreviewEnabled checkbox in Edit/Project Settings/ARCore Instant Preview Enabled.", "Okay", "Don't Install This Time");
+                        "connected device.\n\nTo disable Instant Preview, " +
+                        "uncheck 'Instant Preview Enabled' under 'Edit > Project Settings > ARCore'.", "Okay", "Don't Install This Time");
 #else
             return false;
 #endif
         }
 
-        private static void RunAdbCommand(string fileName, string arguments, out string output, out string errors)
+        private static bool PromptToRebuildAugmentedImagesDatabase()
         {
-            using (var process = new System.Diagnostics.Process())
-            {
-                var startInfo = new System.Diagnostics.ProcessStartInfo(fileName, arguments);
-                startInfo.UseShellExecute = false;
-                startInfo.RedirectStandardError = true;
-                startInfo.RedirectStandardOutput = true;
-                startInfo.CreateNoWindow = true;
-                process.StartInfo = startInfo;
-
-                var outputBuilder = new StringBuilder();
-                var errorBuilder = new StringBuilder();
-                process.OutputDataReceived += (sender, ef) => outputBuilder.Append(ef.Data);
-                process.ErrorDataReceived += (sender, ef) => errorBuilder.Append(ef.Data);
-
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
-                process.Close();
-
-                // Trims the output strings to make comparison easier.
-                output = outputBuilder.ToString().Trim();
-                errors = errorBuilder.ToString().Trim();
-            }
+#if UNITY_EDITOR
+            return UnityEditor.EditorUtility.DisplayDialog("Augmented Images",
+                        "The Augmented Images database is out of date, " +
+                        "rebuild it now?",
+                        "Build", "Don't Build This Time");
+#else
+            return false;
+#endif
         }
 
         private static bool StartServer(string adbPath, out string version)
@@ -467,13 +512,16 @@ namespace GoogleARCoreInternal
                                                              versionStringBuilder.Capacity);
             if (!started)
             {
-                Debug.LogErrorFormat("Couldn't start Instant Preview server with adb path: {0}.", adbPath);
+                Debug.LogErrorFormat("Couldn't start Instant Preview server with adb path \"{0}\".", adbPath);
                 version = null;
                 return false;
             }
 
             version = versionStringBuilder.ToString();
-            Debug.Log("Instant Preview Version: " + version);
+            Debug.LogFormat("Instant Preview version {0}\n" +
+                            "To disable Instant Preview, " +
+                            "uncheck 'Instant Preview Enabled' under 'Edit > Project Settings > ARCore'.",
+                            version);
             return true;
         }
 
@@ -484,28 +532,30 @@ namespace GoogleARCoreInternal
 
         private struct NativeApi
         {
-            [DllImport(InstantPreviewNativeApi)]
+#pragma warning disable 626
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern bool InitializeInstantPreview(
                 string adbPath, StringBuilder version, int versionStringLength);
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern void Update();
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern IntPtr GetRenderEventFunc();
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern void SendFrame(IntPtr renderTexture);
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern bool LockCameraTexture(out IntPtr pixelBytes, out int width,
                 out int height);
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern void UnlockCameraTexture();
 
-            [DllImport(InstantPreviewNativeApi)]
+            [AndroidImport(InstantPreviewNativeApi)]
             public static extern bool IsConnected();
+#pragma warning restore 626
         }
 
         private class Result

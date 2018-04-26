@@ -21,6 +21,7 @@
 namespace GoogleARCore
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCoreInternal;
@@ -33,6 +34,7 @@ namespace GoogleARCore
     public static class InstantPreviewInput
     {
         private static Touch[] s_Touches = new Touch[0];
+        private static List<Touch> s_TouchList = new List<Touch>();
 
         /// <summary>
         /// Gets the available touch inputs from Instant Preview since the last
@@ -149,25 +151,60 @@ namespace GoogleARCore
                 return;
             }
 
+            // Removes ended touches, and converts moves to stationary.
+            for (int i = 0; i < s_TouchList.Count; ++i)
+            {
+                if (s_TouchList[i].phase == TouchPhase.Ended)
+                {
+                    s_TouchList.RemoveAt(i);
+                    --i;
+                    continue;
+                }
+
+                var curTouch = s_TouchList[i];
+                curTouch.phase = TouchPhase.Stationary;
+                curTouch.deltaPosition = Vector2.zero;
+                s_TouchList[i] = curTouch;
+            }
+
+            // Updates touches.
             IntPtr nativeTouchesPtr;
             int nativeTouchCount;
             NativeApi.GetTouches(out nativeTouchesPtr, out nativeTouchCount);
 
             var structSize = Marshal.SizeOf(typeof(NativeTouch));
-            s_Touches = new Touch[nativeTouchCount];
             for (var i = 0; i < nativeTouchCount; ++i)
             {
                 var source = new IntPtr(nativeTouchesPtr.ToInt64() + (i * structSize));
                 var nativeTouch = (NativeTouch)Marshal.PtrToStructure(source, typeof(NativeTouch));
 
-                s_Touches[i] = new Touch()
+                var newTouch = new Touch()
                 {
+                    fingerId = nativeTouch.Id,
                     phase = nativeTouch.Phase,
+                    pressure = nativeTouch.Pressure,
 
+                    // NativeTouch values are normalized and must be converted to screen coordinates.
                     // Note that the Unity's screen coordinate (0, 0) starts from bottom left.
-                    position = new Vector2(nativeTouch.X, Screen.height - nativeTouch.Y),
+                    position = new Vector2(Screen.width * nativeTouch.X, Screen.height * (1f - nativeTouch.Y)),
                 };
+
+                var index = s_TouchList.FindIndex(touch => touch.fingerId == newTouch.fingerId);
+
+                // Adds touch if not found, otherwise updates it.
+                if (index < 0)
+                {
+                    s_TouchList.Add(newTouch);
+                }
+                else
+                {
+                    var prevTouch = s_TouchList[index];
+                    newTouch.deltaPosition += newTouch.position - prevTouch.position;
+                    s_TouchList[index] = newTouch;
+                }
             }
+
+            s_Touches = s_TouchList.ToArray();
         }
 
         private struct NativeTouch
@@ -175,6 +212,8 @@ namespace GoogleARCore
             public TouchPhase Phase;
             public float X;
             public float Y;
+            public float Pressure;
+            public int Id;
         }
 
         private struct NativeApi

@@ -30,33 +30,23 @@ namespace GoogleARCore
     /// </summary>
     public abstract class Trackable
     {
-        //// @cond EXCLUDE_FROM_DOXYGEN
-
         /// <summary>
         /// A native handle for the ARCore trackable.
         /// </summary>
-        protected IntPtr m_TrackableNativeHandle = IntPtr.Zero;
+        internal IntPtr m_TrackableNativeHandle = IntPtr.Zero;
 
         /// <summary>
         /// The native api for ARCore.
         /// </summary>
-        protected NativeSession m_NativeSession;
+        internal NativeSession m_NativeSession;
 
         private bool m_IsSessionDestroyed = false;
 
-        /// <summary>
-        /// Constructs a new ARCore Trackable.
-        /// </summary>
-        protected Trackable()
+        internal Trackable()
         {
         }
 
-        /// <summary>
-        /// Constructs a new ARCore Trackable.
-        /// </summary>
-        /// <param name="trackableNativeHandle">The native handle.</param>
-        /// <param name="nativeSession">The native session.</param>
-        protected Trackable(IntPtr trackableNativeHandle, NativeSession nativeSession)
+        internal Trackable(IntPtr trackableNativeHandle, NativeSession nativeSession)
         {
             m_TrackableNativeHandle = trackableNativeHandle;
             m_NativeSession = nativeSession;
@@ -67,8 +57,6 @@ namespace GoogleARCore
             m_NativeSession.TrackableApi.Release(m_TrackableNativeHandle);
         }
 
-        //// @endcond
-
         /// <summary>
         /// Gets the tracking state of for the Trackable in the current frame.
         /// </summary>
@@ -78,7 +66,7 @@ namespace GoogleARCore
             get
             {
                 // TODO (b/73256094): Remove isTracking when fixed.
-                var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
+                var isTracking = LifecycleManager.Instance.IsTracking;
                 if (_IsSessionDestroyed())
                 {
                     // Trackables from another session are considered stopped.
@@ -96,7 +84,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// Creates an Anchor at the given <c>Pose</c> that is attached to the Trackable where semantics of the
-        /// attachment relationship are defined by the subcass of Trackable (e.g. TrackedPlane).   Note that the
+        /// attachment relationship are defined by the subcass of Trackable (e.g. DetectedPlane).   Note that the
         /// relative offset between the Pose of multiple Anchors attached to the same Trackable may change
         /// over time as ARCore refines its understanding of the world.
         /// </summary>
@@ -117,7 +105,7 @@ namespace GoogleARCore
                 return null;
             }
 
-            return Anchor.AnchorFactory(anchorHandle, m_NativeSession);
+            return Anchor.Factory(m_NativeSession, anchorHandle);
         }
 
         /// <summary>

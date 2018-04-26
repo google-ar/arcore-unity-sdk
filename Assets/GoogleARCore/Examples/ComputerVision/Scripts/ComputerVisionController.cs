@@ -18,10 +18,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace GoogleARCore.TextureReader
+namespace GoogleARCore.Examples.ComputerVision
 {
     using System;
-    using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
     using UnityEngine.UI;
@@ -68,17 +67,9 @@ namespace GoogleARCore.TextureReader
         private DisplayUvCoords m_CameraImageToDisplayUvTransformation;
 
         private TextureReader m_CachedTextureReader;
-        private float m_SwipeMomentum = 0.0f;
         private ScreenOrientation m_CachedOrientation = ScreenOrientation.Unknown;
         private Vector2 m_CachedScreenDimensions = Vector2.zero;
         private bool m_IsQuitting = false;
-
-        /// <summary>
-        /// Instant Preview Input does not support deltaPosition, so we keep track of the most recent
-        /// touch position and calculate deltas based on this.
-        /// TODO (b/74777449): Remove when deltaPosition is fixed.
-        /// </summary>
-        private Vector2 m_PreviousTouch = Vector2.zero;
 
         /// <summary>
         /// The Unity Start() method.
@@ -100,7 +91,12 @@ namespace GoogleARCore.TextureReader
             }
 
             _QuitOnConnectionErrors();
-            _HandleSwipeInput();
+
+            // Toggle background to edge detection.
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                EdgeDetectionBackgroundImage.enabled = !EdgeDetectionBackgroundImage.enabled;
+            }
 
             if (!Session.Status.IsValid())
             {
@@ -144,64 +140,6 @@ namespace GoogleARCore.TextureReader
         }
 
         /// <summary>
-        /// Adjusts the percentage of the edge detection overlay shown based on user swipes.
-        /// </summary>
-        private void _HandleSwipeInput()
-        {
-            const float SWIPE_SCALING_FACTOR = 1.15f;
-            const float INTERTIAL_CANCELING_FACTOR = 2.0f;
-            const float MINIMUM_MOMENTUM = .01f;
-
-            if (Input.touchCount == 0)
-            {
-                m_SwipeMomentum /= INTERTIAL_CANCELING_FACTOR;
-            }
-            else
-            {
-                m_SwipeMomentum = _GetTouchDelta();
-                m_SwipeMomentum *= SWIPE_SCALING_FACTOR;
-            }
-
-            if (Mathf.Abs(m_SwipeMomentum) < MINIMUM_MOMENTUM)
-            {
-                m_SwipeMomentum = 0;
-            }
-
-            var overlayPercentage = EdgeDetectionBackgroundImage.material.GetFloat("_OverlayPercentage");
-            overlayPercentage -= m_SwipeMomentum;
-            EdgeDetectionBackgroundImage.material.SetFloat("_OverlayPercentage", Mathf.Clamp(overlayPercentage, 0.0f, 1.0f));
-        }
-
-        /// <summary>
-        /// Gets the delta touch as a percentage of the screen.
-        /// </summary>
-        /// <returns>The delta touch as a percentage of the screen.</returns>
-        private float _GetTouchDelta()
-        {
-            Vector2 newTouch = Input.GetTouch(0).position;
-            Vector2 deltaPosition = newTouch - m_PreviousTouch;
-            m_PreviousTouch = newTouch;
-            if (Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-              return 0;
-            }
-
-            switch (Screen.orientation)
-            {
-                case ScreenOrientation.LandscapeLeft:
-                    return -deltaPosition.x / Screen.width;
-                case ScreenOrientation.LandscapeRight:
-                    return deltaPosition.x / Screen.width;
-                case ScreenOrientation.Portrait:
-                    return deltaPosition.y / Screen.height;
-                case ScreenOrientation.PortraitUpsideDown:
-                    return -deltaPosition.y / Screen.height;
-                default:
-                    return 0;
-            }
-        }
-
-        /// <summary>
         /// Handles a new CPU image.
         /// </summary>
         /// <param name="format">The format of the image.</param>
@@ -211,6 +149,11 @@ namespace GoogleARCore.TextureReader
         /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
         private void _OnImageAvailable(TextureReaderApi.ImageFormatType format, int width, int height, IntPtr pixelBuffer, int bufferSize)
         {
+            if (!EdgeDetectionBackgroundImage.enabled)
+            {
+                return;
+            }
+
             if (format != TextureReaderApi.ImageFormatType.ImageFormatGrayscale)
             {
                 Debug.Log("No edge detected due to incorrect image format.");
@@ -349,7 +292,7 @@ namespace GoogleARCore.TextureReader
         /// aspect ratio.
         /// </summary>
         /// <param name="uBorder">The cropping of the 'u' dimension.</param>
-        /// <param name="vBorder">The cropping of the 'v' dimension.<</param>
+        /// <param name="vBorder">The cropping of the 'v' dimension.</param>
         private void _GetUvBorders(out float uBorder, out float vBorder)
         {
             int imageWidth = m_EdgeDetectionBackgroundTexture.width;

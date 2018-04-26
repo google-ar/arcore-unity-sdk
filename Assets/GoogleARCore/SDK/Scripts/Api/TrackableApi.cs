@@ -22,14 +22,18 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-     Justification = "Internal")]
-    public class TrackableApi
+#if UNITY_IOS
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
+
+    internal class TrackableApi
     {
         private NativeSession m_NativeSession;
 
@@ -78,7 +82,7 @@ namespace GoogleARCoreInternal
             for (int i = 0; i < anchorCount; i++)
             {
                 IntPtr anchorHandle = m_NativeSession.AnchorApi.AcquireListItem(anchorListHandle, i);
-                Anchor anchor = Anchor.AnchorFactory(anchorHandle, m_NativeSession, false);
+                Anchor anchor = Anchor.Factory(m_NativeSession, anchorHandle, false);
                 if (anchor == null)
                 {
                     Debug.LogFormat("Unable to find Anchor component for handle {0}", anchorHandle);
@@ -94,24 +98,26 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+#pragma warning disable 626
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArTrackable_getType(IntPtr sessionHandle, IntPtr trackableHandle,
                 ref ApiTrackableType trackableType);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArTrackable_getTrackingState(IntPtr sessionHandle,
                 IntPtr trackableHandle, ref ApiTrackingState trackingState);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern int ArTrackable_acquireNewAnchor(IntPtr sessionHandle, IntPtr trackableHandle,
                 IntPtr poseHandle, ref IntPtr anchorHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArTrackable_release(IntPtr trackableHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArTrackable_getAnchors(IntPtr sessionHandle, IntPtr trackableHandle,
                 IntPtr outputListHandle);
+#pragma warning restore 626
         }
     }
 }

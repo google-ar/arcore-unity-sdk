@@ -20,11 +20,7 @@
 
 namespace GoogleARCoreInternal
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public enum ApiAvailability
+    internal enum ApiAvailability
     {
         UnknownError = 0,
         UnknownChecking = 1,

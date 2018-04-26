@@ -22,26 +22,39 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public static class ApiConstants
+    internal static class ApiConstants
     {
-#if !UNITY_EDITOR
-        public const string ARCoreNativeApi = "arcore_sdk_c";
-        public const string ARCoreShimApi = "arcore_unity_api";
-        public const string MediaNdk = "mediandk";
-#else
+#if UNITY_EDITOR
         public const string ARCoreNativeApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string ARCoreShimApi = InstantPreviewManager.InstantPreviewNativeApi;
+        public const string ARPrestoApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string MediaNdk = InstantPreviewManager.InstantPreviewNativeApi;
+        public const string NdkCameraApi = "NOT_AVAILABLE";
+        public const bool isBehaveAsIfOnAndroid = true;
+#elif UNITY_ANDROID
+        public const string ARCoreNativeApi = "arcore_sdk_c";
+        public const string ARCoreShimApi = "arcore_unity_api";
+        public const string ARPrestoApi = "arpresto_api";
+        public const string MediaNdk = "mediandk";
+        public const string NdkCameraApi = "camera2ndk";
+        public const bool isBehaveAsIfOnAndroid = true;
+#elif UNITY_IOS
+        public const string ARCoreNativeApi = "__Internal";
+        public const string ARCoreShimApi = "NOT_AVAILABLE";
+        public const string ARPrestoApi = "NOT_AVAILABLE";
+        public const string MediaNdk = "NOT_AVAILABLE";
+        public const string NdkCameraApi = "NOT_AVAILABLE";
+        public const bool isBehaveAsIfOnAndroid = false;
 #endif
 
-        // NDK camera API is a system API after Android 24.
-        public const string NdkCameraApi = "camera2ndk";
+#if UNITY_EDITOR_OSX
+        public const string AugmentedImageCliBinaryName = "augmented_image_cli_osx";
+#elif UNITY_EDITOR_WIN
+        public const string AugmentedImageCliBinaryName = "augmented_image_cli_win";
+#endif
     }
 }

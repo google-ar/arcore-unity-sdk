@@ -68,7 +68,7 @@ namespace GoogleARCore
             {
                 // TODO (b/73256094): Remove isTracking when fixed.
                 var nativeSession = LifecycleManager.Instance.NativeSession;
-                var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
+                var isTracking = LifecycleManager.Instance.IsTracking;
                 if (nativeSession == null || !isTracking)
                 {
                     return new LightEstimate(LightEstimateState.NotValid, 0.0f, Color.black);
@@ -218,7 +218,7 @@ namespace GoogleARCore
                 {
                     // TODO (b/73256094): Remove isTracking when fixed.
                     var nativeSession = LifecycleManager.Instance.NativeSession;
-                    var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
+                    var isTracking = LifecycleManager.Instance.IsTracking;
                     if (nativeSession == null || !isTracking)
                     {
                         return 0;
@@ -277,7 +277,7 @@ namespace GoogleARCore
             {
                 get
                 {
-                    return LifecycleManager.Instance.BackgroundTexture;
+                    return ARCoreAndroidLifecycleManager.Instance.BackgroundTexture;
                 }
             }
 

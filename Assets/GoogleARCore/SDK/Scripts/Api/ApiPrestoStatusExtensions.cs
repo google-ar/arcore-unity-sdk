@@ -20,12 +20,9 @@
 
 namespace GoogleARCoreInternal
 {
-    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public static class ApiPrestoStatusExtensions
+    internal static class ApiPrestoStatusExtensions
     {
         public static SessionStatus ToSessionStatus(this ApiPrestoStatus prestoStatus)
         {

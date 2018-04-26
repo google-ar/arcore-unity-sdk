@@ -20,11 +20,7 @@
 
 namespace GoogleARCoreInternal
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public enum ApiUpdateMode
+    internal enum ApiUpdateMode
     {
         Blocking = 0,
         LatestCameraImage = 1,

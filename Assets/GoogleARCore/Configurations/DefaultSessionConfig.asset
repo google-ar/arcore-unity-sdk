@@ -11,6 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53ac32fab2599402fb6d154adf4c1e40, type: 3}
   m_Name: DefaultSessionConfig
   m_EditorClassIdentifier: 
-  m_matchCameraFramerate: 1
-  m_enablePlaneFinding: 1
-  m_enableLightEstimation: 1
+  MatchCameraFramerate: 1
+  PlaneFindingMode: 1
+  EnableLightEstimation: 1
+  EnableCloudAnchor: 0
+  AugmentedImageDatabase: {fileID: 0}

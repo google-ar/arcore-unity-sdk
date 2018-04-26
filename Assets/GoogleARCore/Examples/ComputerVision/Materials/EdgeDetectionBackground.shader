@@ -2,9 +2,7 @@ Shader "EdgeDetectionBackground"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
         _ImageTex ("Texture", 2D) = "white" {}
-        _OverlayPercentage ("Overlay Percentage", Range (0.0, 1.0)) = 0.5
     }
 
     // For GLES3
@@ -44,7 +42,6 @@ Shader "EdgeDetectionBackground"
 
             #ifdef FRAGMENT
             varying vec2 textureCoord;
-            uniform float _OverlayPercentage;
             uniform sampler2D _ImageTex;
 
             void main()
@@ -52,12 +49,7 @@ Shader "EdgeDetectionBackground"
                 #ifdef SHADER_API_GLES3
 
                 vec4 color = texture2D(_ImageTex, textureCoord);
-                if (textureCoord.x < _OverlayPercentage)
-                {
-                discard;
-                }
-
-                gl_FragColor = color;
+                gl_FragColor = vec4(color.r, color.r, color.r, 1.0);
                 #endif
             }
 
@@ -113,17 +105,12 @@ Shader "EdgeDetectionBackground"
           return o;
         }
 
-        uniform float _OverlayPercentage;
         sampler2D _ImageTex;
-        sampler2D _MainTex;
 
         fixed4 frag(v2f i) : SV_Target
         {
-          if (i.uv.y > 1.0 - _OverlayPercentage)
-          {
-            discard;
-          }
-          return tex2D(_ImageTex, i.uv);
+          fixed4 color = tex2D(_ImageTex, i.uv);
+          return fixed4(color.r, color.r, color.r, 1.0);
         }
         ENDCG
       }

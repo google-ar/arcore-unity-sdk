@@ -20,11 +20,7 @@
 
 namespace GoogleARCoreInternal
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public enum ApiApkInstallationStatus
+    internal enum ApiApkInstallationStatus
     {
         Uninitialized = 0,
         Requested = 1,

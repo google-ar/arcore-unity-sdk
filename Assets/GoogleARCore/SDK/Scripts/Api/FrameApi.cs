@@ -22,20 +22,30 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public class FrameApi
+#if UNITY_IOS
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
+
+    internal class FrameApi
     {
         private NativeSession m_NativeSession;
 
         public FrameApi(NativeSession nativeSession)
         {
             m_NativeSession = nativeSession;
+        }
+
+        public void Release(IntPtr frameHandle)
+        {
+            ExternApi.ArFrame_release(frameHandle);
         }
 
         public long GetTimestamp()
@@ -126,6 +136,15 @@ namespace GoogleARCoreInternal
             for (int i = 0; i < count; i++)
             {
                 IntPtr trackableHandle = m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
+
+                // TODO:: Remove conditional when b/75291352 is fixed.
+                ApiTrackableType trackableType = m_NativeSession.TrackableApi.GetType(trackableHandle);
+                if ((int)trackableType == 0x41520105)
+                {
+                    m_NativeSession.TrackableApi.Release(trackableHandle);
+                    continue;
+                }
+
                 trackables.Add(m_NativeSession.TrackableFactory(trackableHandle));
             }
 
@@ -135,36 +154,41 @@ namespace GoogleARCoreInternal
         private struct ExternApi
         {
             [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArFrame_release(IntPtr frame);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_getTimestamp(IntPtr sessionHandle,
                 IntPtr frame, ref long timestamp);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+#pragma warning disable 626
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_acquireCamera(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr cameraHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArFrame_acquireCameraImage(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr imageHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArFrame_acquirePointCloud(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr pointCloudHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_transformDisplayUvCoords(IntPtr session, IntPtr frame,
                 int numElements, ref ApiDisplayUvCoords uvsIn, ref ApiDisplayUvCoords uvsOut);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_getUpdatedTrackables(IntPtr sessionHandle, IntPtr frameHandle,
                 ApiTrackableType filterType, IntPtr outTrackableList);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_getLightEstimate(IntPtr sessionHandle, IntPtr frameHandle,
                 IntPtr lightEstimateHandle);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_acquireImageMetadata(IntPtr sessionHandle, IntPtr frameHandle,
                 ref IntPtr outMetadata);
+#pragma warning restore 626
         }
     }
 }

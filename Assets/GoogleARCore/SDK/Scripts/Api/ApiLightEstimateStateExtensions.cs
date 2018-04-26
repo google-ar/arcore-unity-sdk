@@ -20,13 +20,9 @@
 
 namespace GoogleARCoreInternal
 {
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public static class ApiLightEstimateStateExtensions
+    internal static class ApiLightEstimateStateExtensions
     {
         public static LightEstimateState ToLightEstimateState(this ApiLightEstimateState apiState)
         {

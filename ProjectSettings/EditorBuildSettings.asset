@@ -9,5 +9,11 @@ EditorBuildSettings:
     path: Assets/GoogleARCore/Examples/HelloAR/Scenes/HelloAR.unity
     guid: e6a6fa04348cb45c9b0221eb19c946da
   - enabled: 0
+    path: Assets/GoogleARCore/Examples/AugmentedImage/Scenes/AugmentedImage.unity
+    guid: be567d47d3ab94b3badc5b211f535a24
+  - enabled: 0
+    path: Assets/GoogleARCore/Examples/CloudAnchor/Scenes/CloudAnchor.unity
+    guid: 83fb41cc294e74bdea57537befa00ffc
+  - enabled: 0
     path: Assets/GoogleARCore/Examples/ComputerVision/Scenes/ComputerVision.unity
     guid: 5ef0f7f7f2c7b4285b707265348bbffd

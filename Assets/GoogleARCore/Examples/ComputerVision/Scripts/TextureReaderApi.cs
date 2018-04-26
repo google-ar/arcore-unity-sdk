@@ -17,20 +17,22 @@
 //
 // </copyright>
 //-----------------------------------------------------------------------
-namespace GoogleARCore.TextureReader
+namespace GoogleARCore.Examples.ComputerVision
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
-    using GoogleARCore;
     using UnityEngine;
+
+#if UNITY_IOS
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
 
     /// <summary>
     /// API that provides CPU access to GPU texture.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
     public class TextureReaderApi
     {
         /// <summary>
@@ -42,7 +44,7 @@ namespace GoogleARCore.TextureReader
             /// Color image pixel format. Four bytes per pixel, in the order of R, G, B, and A.
             /// </summary>
             ImageFormatColor = 0,
-           
+
             /// <summary>
             /// Grayscale image pixel format. One byte per pixel.
             /// </summary>
@@ -55,7 +57,7 @@ namespace GoogleARCore.TextureReader
         /// <param name="format">Format of the output image pixel. Can be either eImageFormat_RGBA or eImageFormat_I8.</param>
         /// <param name="width">Width of the output image, in pixels.</param>
         /// <param name="height">Height of the output image, in pixels.</param>
-        /// <param name="keepAspectRatio">Indicate whether or not to keep aspect ratio. If true, the output image may be cropped 
+        /// <param name="keepAspectRatio">Indicate whether or not to keep aspect ratio. If true, the output image may be cropped
         /// if the image aspect ratio is different from the texture aspect ratio. If false, the output image covers the entire
         /// texture scope and no cropping is applied.</param>
         public void Create(ImageFormatType format, int width, int height, bool keepAspectRatio)
@@ -109,22 +111,24 @@ namespace GoogleARCore.TextureReader
 
         private struct ExternApi
         {
+#pragma warning disable 626
             public const string ARCoreCameraUtilityAPI = "arcore_camera_utility";
 
-            [DllImport(ARCoreCameraUtilityAPI)]
+            [AndroidImport(ARCoreCameraUtilityAPI)]
             public static extern void TextureReader_create(int format, int width, int height, bool keepAspectRatio);
-            
-            [DllImport(ARCoreCameraUtilityAPI)]
+
+            [AndroidImport(ARCoreCameraUtilityAPI)]
             public static extern void TextureReader_destroy();
 
-            [DllImport(ARCoreCameraUtilityAPI)]
+            [AndroidImport(ARCoreCameraUtilityAPI)]
             public static extern int TextureReader_submitFrame(int textureId, int textureWidth, int textureHeight);
 
-            [DllImport(ARCoreCameraUtilityAPI)]
+            [AndroidImport(ARCoreCameraUtilityAPI)]
             public static extern IntPtr TextureReader_acquireFrame(int bufferIndex, ref int bufferSize);
 
-            [DllImport(ARCoreCameraUtilityAPI)]
+            [AndroidImport(ARCoreCameraUtilityAPI)]
             public static extern void TextureReader_releaseFrame(int bufferIndex);
+#pragma warning restore 626
         }
     }
 }

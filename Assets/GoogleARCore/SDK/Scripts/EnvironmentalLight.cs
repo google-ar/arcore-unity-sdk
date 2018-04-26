@@ -41,6 +41,9 @@ namespace GoogleARCore
                 // Set _GlobalColorCorrection to white in editor, if the value is not set, all materials
                 // using light estimation shaders will be black.
                 Shader.SetGlobalColor("_GlobalColorCorrection", Color.white);
+
+                // Set _GlobalLightEstimation for backward compatibility.
+                Shader.SetGlobalFloat("_GlobalLightEstimation", 1f);
                 return;
             }
 
@@ -55,6 +58,9 @@ namespace GoogleARCore
 
             // Apply color correction along with normalized pixel intensity in gamma space.
             Shader.SetGlobalColor("_GlobalColorCorrection", Frame.LightEstimate.ColorCorrection * normalizedIntensity);
+
+            // Set _GlobalLightEstimation for backward compatibility.
+            Shader.SetGlobalFloat("_GlobalLightEstimation", normalizedIntensity);
         }
     }
 }
