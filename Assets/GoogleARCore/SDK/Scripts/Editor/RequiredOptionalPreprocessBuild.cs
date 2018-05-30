@@ -24,6 +24,7 @@ namespace GoogleARCoreInternal
     using System.IO;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Build.Reporting;
     using UnityEngine;
 
     internal class RequiredOptionalPreprocessBuild : IPreprocessBuild
@@ -38,6 +39,21 @@ namespace GoogleARCoreInternal
             }
         }
 
+#if UNITY_2018
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            var isARCoreRequired = ARCoreProjectSettings.Instance.IsARCoreRequired;
+
+            Debug.LogFormat("Building application with {0} ARCore support.",
+                isARCoreRequired ? "REQUIRED" : "OPTIONAL");
+
+            AssetHelper.GetPluginImporterByName("google_ar_required.aar")
+                .SetCompatibleWithPlatform(BuildTarget.Android, isARCoreRequired);
+            AssetHelper.GetPluginImporterByName("google_ar_optional.aar")
+                .SetCompatibleWithPlatform(BuildTarget.Android, !isARCoreRequired);
+        }
+#endif
+
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
             var isARCoreRequired = ARCoreProjectSettings.Instance.IsARCoreRequired;
@@ -50,5 +66,6 @@ namespace GoogleARCoreInternal
             AssetHelper.GetPluginImporterByName("google_ar_optional.aar")
                 .SetCompatibleWithPlatform(BuildTarget.Android, !isARCoreRequired);
         }
+
     }
 }

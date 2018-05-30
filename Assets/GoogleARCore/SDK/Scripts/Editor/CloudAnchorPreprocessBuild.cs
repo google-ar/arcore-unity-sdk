@@ -25,6 +25,7 @@ namespace GoogleARCoreInternal
     using System.Text;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Build.Reporting;
     using UnityEngine;
 
     internal class CloudAnchorPreprocessBuild : IPreprocessBuild
@@ -42,6 +43,20 @@ namespace GoogleARCoreInternal
                 return 0;
             }
         }
+
+#if UNITY_2018
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform == BuildTarget.Android)
+            {
+                _PreprocessAndroidBuild();
+            }
+            else if (report.summary.platform == BuildTarget.iOS)
+            {
+                _PreprocessIosBuild();
+            }
+        }
+#endif
 
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
