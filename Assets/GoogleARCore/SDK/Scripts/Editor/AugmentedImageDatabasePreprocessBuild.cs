@@ -24,10 +24,11 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Build.Reporting;
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
      Justification = "Internal")]
-    public class AugmentedImageDatabasePreprocessBuild : IPreprocessBuild
+    public class AugmentedImageDatabasePreprocessBuild : IPreprocessBuildWithReport
     {
         [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
          Justification = "Overriden property.")]
@@ -38,6 +39,25 @@ namespace GoogleARCoreInternal
                 return 0;
             }
         }
+
+#if UNITY_2018
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            var augmentedImageDatabaseGuids = AssetDatabase.FindAssets("t:AugmentedImageDatabase");
+            foreach (var databaseGuid in augmentedImageDatabaseGuids)
+            {
+                var database = AssetDatabase.LoadAssetAtPath<AugmentedImageDatabase>(
+                    AssetDatabase.GUIDToAssetPath(databaseGuid));
+
+                string error;
+                database.BuildIfNeeded(out error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new BuildFailedException(error);
+                }
+            }
+        }
+#endif
 
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
@@ -55,5 +75,6 @@ namespace GoogleARCoreInternal
                 }
             }
         }
+
     }
 }

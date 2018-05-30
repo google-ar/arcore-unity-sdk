@@ -25,9 +25,10 @@ namespace GoogleARCoreInternal
     using System.Text;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    internal class CloudAnchorPreprocessBuild : IPreprocessBuild
+    internal class CloudAnchorPreprocessBuild : IPreprocessBuildWithReport
     {
         private const string k_ManifestTemplateGuid = "5e182918f0b8c4929a3d4b0af0ed6f56";
         private const string k_PluginsFolderGuid = "93be2b9777c348648a2d9151b7e233fc";
@@ -42,6 +43,20 @@ namespace GoogleARCoreInternal
                 return 0;
             }
         }
+
+#if UNITY_2018
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform == BuildTarget.Android)
+            {
+                _PreprocessAndroidBuild();
+            }
+            else if (report.summary.platform == BuildTarget.iOS)
+            {
+                _PreprocessIosBuild();
+            }
+        }
+#endif
 
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
