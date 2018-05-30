@@ -28,7 +28,7 @@ namespace GoogleARCoreInternal
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
      Justification = "Internal")]
-    public class AugmentedImageDatabasePreprocessBuild : IPreprocessBuild
+    public class AugmentedImageDatabasePreprocessBuild : IPreprocessBuildWithReport
     {
         [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
          Justification = "Overriden property.")]
