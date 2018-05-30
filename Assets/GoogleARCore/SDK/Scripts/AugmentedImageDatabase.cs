@@ -268,7 +268,8 @@ namespace GoogleARCore
                 return false;
             }
 
-            path = AssetDatabase.GUIDToAssetPath(cliBinaryGuid[0]);
+            string projectPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+            path = @"" + projectPath + AssetDatabase.GUIDToAssetPath(cliBinaryGuid[0]);
             return !string.IsNullOrEmpty(path);
         }
         /// @endcond
