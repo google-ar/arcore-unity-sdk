@@ -22,6 +22,7 @@ Shader "EdgeDetectionBackground"
 
             uniform vec4 _UvTopLeftRight;
             uniform vec4 _UvBottomLeftRight;
+            uniform vec4 _ImageTex_ST;
 
             #ifdef VERTEX
 
@@ -30,9 +31,10 @@ Shader "EdgeDetectionBackground"
             void main()
             {
                 #ifdef SHADER_API_GLES3
-                vec2 uvTop = mix(_UvTopLeftRight.xy, _UvTopLeftRight.zw, gl_MultiTexCoord0.x);
-                vec2 uvBottom = mix(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, gl_MultiTexCoord0.x);
-                textureCoord = mix(uvTop, uvBottom, gl_MultiTexCoord0.y);
+                vec2 transformedUV = gl_MultiTexCoord0.xy * _ImageTex_ST.xy + _ImageTex_ST.zw;
+                vec2 uvTop = mix(_UvTopLeftRight.xy, _UvTopLeftRight.zw, transformedUV.x);
+                vec2 uvBottom = mix(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, transformedUV.x);
+                textureCoord = mix(uvTop, uvBottom, transformedUV.y);
 
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
                 #endif
@@ -77,6 +79,7 @@ Shader "EdgeDetectionBackground"
 
         uniform float4 _UvTopLeftRight;
         uniform float4 _UvBottomLeftRight;
+        uniform float4 _ImageTex_ST;
 
         struct appdata
         {
@@ -92,12 +95,13 @@ Shader "EdgeDetectionBackground"
 
         v2f vert(appdata v)
         {
-          float2 uvTop = lerp(_UvTopLeftRight.xy, _UvTopLeftRight.zw, v.uv.x);
-          float2 uvBottom = lerp(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, v.uv.x);
+          float2 transformedUV = v.uv * _ImageTex_ST.xy + _ImageTex_ST.zw;
+          float2 uvTop = lerp(_UvTopLeftRight.xy, _UvTopLeftRight.zw, transformedUV.x);
+          float2 uvBottom = lerp(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, transformedUV.x);
 
           v2f o;
           o.vertex = UnityObjectToClipPos(v.vertex);
-          o.uv = lerp(uvTop, uvBottom, v.uv.y);
+          o.uv = lerp(uvTop, uvBottom, transformedUV.y);
 
           // Instant preview's texture is transformed differently.
           o.uv.x = 1.0 - o.uv.x;

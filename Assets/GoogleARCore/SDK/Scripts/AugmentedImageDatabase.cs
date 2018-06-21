@@ -87,7 +87,9 @@ namespace GoogleARCore
                 var oldValue = m_Images[index];
                 m_Images[index] = value;
 
-                if (oldValue.TextureGUID != m_Images[index].TextureGUID)
+                if (oldValue.TextureGUID != m_Images[index].TextureGUID
+                    || oldValue.Name != m_Images[index].Name
+                    || oldValue.Width != m_Images[index].Width)
                 {
                     m_IsRawDataDirty = true;
                 }
@@ -171,6 +173,14 @@ namespace GoogleARCore
             File.WriteAllLines(inputImagesFile, fileLines);
             var rawDatabasePath = Path.Combine(tempDirectoryPath, "out_database");
             string output;
+#if !UNITY_EDITOR_WIN
+            ShellHelper.RunCommand("chmod", "+x " + cliBinaryPath, out output, out error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogWarning(error);
+                return;
+            }
+#endif
             ShellHelper.RunCommand(cliBinaryPath,
                 string.Format("build-db --input_image_list_path {0} --output_db_path {1}",
                               inputImagesFile, rawDatabasePath), out output, out error);
@@ -212,6 +222,15 @@ namespace GoogleARCore
             string currentCliVersion;
             {
                 string error;
+#if !UNITY_EDITOR_WIN
+                string output;
+                ShellHelper.RunCommand("chmod", "+x " + cliBinaryPath, out output, out error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogWarning(error);
+                    return dirtyEntries;
+                }
+#endif
                 ShellHelper.RunCommand(cliBinaryPath, "version", out currentCliVersion, out error);
 
                 if (!string.IsNullOrEmpty(error))
@@ -268,7 +287,9 @@ namespace GoogleARCore
                 return false;
             }
 
-            path = AssetDatabase.GUIDToAssetPath(cliBinaryGuid[0]);
+            // Remove the '/Assets' from the project path since it will be added in the path below.
+            string projectPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+            path = Path.Combine(projectPath, AssetDatabase.GUIDToAssetPath(cliBinaryGuid[0]));
             return !string.IsNullOrEmpty(path);
         }
         /// @endcond

@@ -37,7 +37,7 @@ namespace GoogleARCore
         None = 0,
 
         /// <summary>
-        /// The collision is within the the DetectedPlane's convex bounding polygon.
+        /// The collision is within the DetectedPlane's convex bounding polygon.
         /// </summary>
         PlaneWithinPolygon = 1 << 0,
 

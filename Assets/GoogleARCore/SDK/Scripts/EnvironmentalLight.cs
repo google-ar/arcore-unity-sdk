@@ -36,7 +36,8 @@ namespace GoogleARCore
         /// </summary>
         public void Update()
         {
-            if (Application.isEditor && !GoogleARCoreInternal.ARCoreProjectSettings.Instance.IsInstantPreviewEnabled)
+            if (Application.isEditor && (!Application.isPlaying ||
+                 !GoogleARCoreInternal.ARCoreProjectSettings.Instance.IsInstantPreviewEnabled))
             {
                 // Set _GlobalColorCorrection to white in editor, if the value is not set, all materials
                 // using light estimation shaders will be black.

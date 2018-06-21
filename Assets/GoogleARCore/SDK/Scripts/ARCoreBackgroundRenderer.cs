@@ -99,8 +99,8 @@ namespace GoogleARCore
         {
             if (m_BackgroundRenderer != null)
             {
-                m_BackgroundRenderer.camera = null;
                 m_BackgroundRenderer.mode = ARRenderMode.StandardBackground;
+                m_BackgroundRenderer.camera = null;
             }
         }
     }

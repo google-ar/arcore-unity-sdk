@@ -25,7 +25,7 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
     using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
 #else
@@ -47,6 +47,8 @@ namespace GoogleARCoreInternal
 
         private OnBeforeSetConfigurationCallback m_OnBeforeSetConfigurationCallback;
 
+        private OnBeforeResumeSessionCallback m_OnBeforeResumeSessionCallback;
+
         private List<Action<ApkAvailabilityStatus>> m_PendingAvailabilityCheckCallbacks =
             new List<Action<ApkAvailabilityStatus>>();
 
@@ -55,7 +57,9 @@ namespace GoogleARCoreInternal
 
         public delegate void EarlyUpdateCallback();
 
-        private delegate void OnBeforeSetConfigurationCallback(IntPtr sessionHandhle, IntPtr configHandle);
+        private delegate void OnBeforeSetConfigurationCallback(IntPtr sessionHandle, IntPtr configHandle);
+
+        private delegate void OnBeforeResumeSessionCallback(IntPtr sessionHandle);
 
         private delegate void CameraPermissionRequestProvider(
             CameraPermissionsResultCallback onComplete, IntPtr context);
@@ -72,6 +76,10 @@ namespace GoogleARCoreInternal
         private delegate void SessionCreationResultCallback(
             IntPtr sessionHandle, IntPtr frameHandle, IntPtr context, ApiArStatus status);
 
+        public event Action EarlyUpdate;
+
+        public event Action BeforeResumeSession;
+
         public static ARPrestoCallbackManager Instance
         {
             get
@@ -79,43 +87,15 @@ namespace GoogleARCoreInternal
                 if (s_Instance == null)
                 {
                     s_Instance = new ARPrestoCallbackManager();
+                    s_Instance._Initialize();
                 }
 
                 return s_Instance;
             }
         }
 
-        public void InitializeIfNeeded()
-        {
-            if (m_EarlyUpdateCallback != null)
-            {
-                return;
-            }
-
-            m_EarlyUpdateCallback = new EarlyUpdateCallback(_EarlyUpdateTrampoline);
-            ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback);
-
-            IntPtr javaVMHandle = IntPtr.Zero;
-            IntPtr activityHandle = IntPtr.Zero;
-            ExternApi.ArCoreUnity_getJniInfo(ref javaVMHandle, ref activityHandle);
-
-            m_CheckApkAvailabilityResultCallback =
-                new CheckApkAvailabilityResultCallback(_OnCheckApkAvailabilityResultTrampoline);
-
-            m_RequestApkInstallationResultCallback =
-                new RequestApkInstallationResultCallback(_OnApkInstallationResultTrampoline);
-
-            m_RequestCameraPermissionCallback =
-                new CameraPermissionRequestProvider(_RequestCameraPermissionTrampoline);
-
-            m_OnBeforeSetConfigurationCallback = new OnBeforeSetConfigurationCallback(_BeforeSetConfigurationTrampoline);
-            ExternApi.ArPresto_initialize(javaVMHandle, activityHandle, m_RequestCameraPermissionCallback,
-                m_OnBeforeSetConfigurationCallback);
-        }
-
         public AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
-            InitializeIfNeeded();
             Action<ApkAvailabilityStatus> onComplete;
             AsyncTask<ApkAvailabilityStatus> task =
                 new AsyncTask<ApkAvailabilityStatus>(out onComplete);
@@ -130,7 +110,6 @@ namespace GoogleARCoreInternal
 
         public AsyncTask<ApkInstallationStatus> RequestApkInstallation(bool userRequested)
         {
-            InitializeIfNeeded();
             Action<ApkInstallationStatus> onComplete;
             AsyncTask<ApkInstallationStatus> task =
                 new AsyncTask<ApkInstallationStatus>(out onComplete);
@@ -167,13 +146,52 @@ namespace GoogleARCoreInternal
         [AOT.MonoPInvokeCallback(typeof(EarlyUpdateCallback))]
         private static void _EarlyUpdateTrampoline()
         {
-            ARCoreAndroidLifecycleManager.Instance.EarlyUpdate();
+            if (Instance.EarlyUpdate != null)
+            {
+                Instance.EarlyUpdate();
+            }
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeSetConfigurationCallback))]
-        private static void _BeforeSetConfigurationTrampoline(IntPtr sessionHandhle, IntPtr configHandle)
+        private static void _BeforeSetConfigurationTrampoline(IntPtr sessionHandle, IntPtr configHandle)
         {
-            ExperimentManager.Instance.OnBeforeSetConfiguration(sessionHandhle, configHandle);
+            ExperimentManager.Instance.OnBeforeSetConfiguration(sessionHandle, configHandle);
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(OnBeforeResumeSessionCallback))]
+        private static void _BeforeResumeSessionTrampoline(IntPtr sessionHandle)
+        {
+            if (Instance.BeforeResumeSession != null)
+            {
+                Instance.BeforeResumeSession();
+            }
+        }
+
+        private void _Initialize()
+        {
+            m_EarlyUpdateCallback = new EarlyUpdateCallback(_EarlyUpdateTrampoline);
+            ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback);
+
+            IntPtr javaVMHandle = IntPtr.Zero;
+            IntPtr activityHandle = IntPtr.Zero;
+            ExternApi.ArCoreUnity_getJniInfo(ref javaVMHandle, ref activityHandle);
+
+            m_CheckApkAvailabilityResultCallback =
+                new CheckApkAvailabilityResultCallback(_OnCheckApkAvailabilityResultTrampoline);
+
+            m_RequestApkInstallationResultCallback =
+                new RequestApkInstallationResultCallback(_OnApkInstallationResultTrampoline);
+
+            m_RequestCameraPermissionCallback =
+                new CameraPermissionRequestProvider(_RequestCameraPermissionTrampoline);
+
+            m_OnBeforeSetConfigurationCallback =
+                new OnBeforeSetConfigurationCallback(_BeforeSetConfigurationTrampoline);
+
+            m_OnBeforeResumeSessionCallback = new OnBeforeResumeSessionCallback(_BeforeResumeSessionTrampoline);
+
+            ExternApi.ArPresto_initialize(javaVMHandle, activityHandle, m_RequestCameraPermissionCallback,
+                m_OnBeforeSetConfigurationCallback, m_OnBeforeResumeSessionCallback);
         }
 
         private void _OnCheckApkAvailabilityResult(ApkAvailabilityStatus status)
@@ -218,7 +236,8 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_initialize(IntPtr javaVM, IntPtr activity,
                 CameraPermissionRequestProvider requestCameraPermission,
-                OnBeforeSetConfigurationCallback onBeforeSetConfiguration);
+                OnBeforeSetConfigurationCallback onBeforeSetConfiguration,
+                OnBeforeResumeSessionCallback onBeforeResumeSession);
 
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_checkApkAvailability(

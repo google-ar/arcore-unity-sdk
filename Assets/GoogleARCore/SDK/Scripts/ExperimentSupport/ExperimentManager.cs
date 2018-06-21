@@ -62,7 +62,7 @@ namespace GoogleARCoreInternal
                 if (s_Instance == null)
                 {
                     s_Instance = new ExperimentManager();
-                    LifecycleManager.Instance.EarlyUpdateEvent += s_Instance.OnEarlyUpdate;
+                    LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
                 }
 
                 return s_Instance;
@@ -83,14 +83,6 @@ namespace GoogleARCoreInternal
                 }
 
                 return result;
-            }
-        }
-
-        public void OnEarlyUpdate()
-        {
-            foreach (var experiment in m_Experiments)
-            {
-                experiment.OnEarlyUpdate();
             }
         }
 
@@ -117,6 +109,14 @@ namespace GoogleARCoreInternal
 
             throw new NotImplementedException(
                     "ExperimentManager.TrackableFactory::No constructor for requested trackable type.");
+        }
+
+        private void _OnEarlyUpdate()
+        {
+            foreach (var experiment in m_Experiments)
+            {
+                experiment.OnEarlyUpdate();
+            }
         }
 
         private ExperimentBase _GetTrackableTypeManager(int trackableType)

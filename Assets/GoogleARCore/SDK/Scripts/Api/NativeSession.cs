@@ -28,6 +28,10 @@ namespace GoogleARCoreInternal
 
     internal class NativeSession
     {
+#pragma warning disable 414
+        private static bool s_ReportedEngineType = false;
+#pragma warning restore 414
+
         private float m_LastReleasedPointcloudTimestamp = 0.0f;
 
         private TrackableManager m_TrackableManager = null;
@@ -58,6 +62,14 @@ namespace GoogleARCoreInternal
             SessionConfigApi = new SessionConfigApi(this);
             TrackableApi = new TrackableApi(this);
             TrackableListApi = new TrackableListApi(this);
+
+#if !UNITY_EDITOR
+            if (!s_ReportedEngineType)
+            {
+                SessionApi.ReportEngineType();
+                s_ReportedEngineType = true;
+            }
+#endif
         }
 
         public IntPtr SessionHandle { get; private set; }
@@ -70,14 +82,6 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                // TODO (b/73256094): Remove when fixed.
-                if (LifecycleManager.Instance.IsTracking)
-                {
-                    var previousLastTimestamp = m_LastReleasedPointcloudTimestamp;
-                    m_LastReleasedPointcloudTimestamp = 0.0f;
-                    return previousLastTimestamp != 0;
-                }
-
                 return PointCloudApi.GetTimestamp(PointCloudHandle) != m_LastReleasedPointcloudTimestamp;
             }
         }
@@ -176,13 +180,9 @@ namespace GoogleARCoreInternal
                     PointCloudHandle = IntPtr.Zero;
                 }
 
-                // TODO (b/73256094): Remove when fixed.
-                if (LifecycleManager.Instance.IsTracking)
-                {
-                    IntPtr pointCloudHandle;
-                    FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
-                    PointCloudHandle = pointCloudHandle;
-                }
+                IntPtr pointCloudHandle;
+                FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
+                PointCloudHandle = pointCloudHandle;
             }
         }
     }

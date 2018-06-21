@@ -60,7 +60,7 @@ namespace GoogleARCore.Examples.CloudAnchor
                 y = viewportPoint.y
             };
 
-            session.HitTest(arPoint, ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent, m_HitResultList);
+            m_HitResultList = session.HitTest(arPoint, ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent);
             if (m_HitResultList.Count > 0)
             {
                 int minDistanceIndex = 0;

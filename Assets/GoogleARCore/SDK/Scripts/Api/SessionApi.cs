@@ -26,7 +26,7 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
     using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
 #else
@@ -140,9 +140,6 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArSession_reportEngineType(IntPtr sessionHandle, string engineType, string engineVersion);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern int ArSession_configure(IntPtr sessionHandle, IntPtr config);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
@@ -150,12 +147,16 @@ namespace GoogleARCoreInternal
                 IntPtr trackableList);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArSession_setDisplayGeometry(IntPtr sessionHandle, int rotation, int width, int height);
+            public static extern void ArSession_setDisplayGeometry(IntPtr sessionHandle, int rotation, int width,
+                int height);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern int ArSession_acquireNewAnchor(IntPtr sessionHandle, IntPtr poseHandle,
                 ref IntPtr anchorHandle);
 #pragma warning restore 626
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_reportEngineType(IntPtr sessionHandle, string engineType,
+                string engineVersion);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArSession_hostAndAcquireNewCloudAnchor(IntPtr sessionHandle,

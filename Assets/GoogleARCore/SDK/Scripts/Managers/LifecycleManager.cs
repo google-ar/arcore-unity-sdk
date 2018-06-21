@@ -28,10 +28,6 @@ namespace GoogleARCoreInternal
     {
         private static ILifecycleManager s_Instance;
 
-        public delegate void EarlyUpdateDelegate();
-
-        public delegate void FrameUpdatedDelegate(FrameUpdate frameInfo);
-
         public static ILifecycleManager Instance
         {
             get
@@ -50,13 +46,6 @@ namespace GoogleARCoreInternal
 
                 return s_Instance;
             }
-        }
-
-        public struct FrameUpdate
-        {
-            public bool IsTracking;
-            public IntPtr SessionHandle;
-            public IntPtr FrameHandle;
         }
     }
 }

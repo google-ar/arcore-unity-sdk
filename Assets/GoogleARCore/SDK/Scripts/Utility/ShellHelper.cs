@@ -47,8 +47,8 @@ namespace GoogleARCoreInternal
 
                 var outputBuilder = new StringBuilder();
                 var errorBuilder = new StringBuilder();
-                process.OutputDataReceived += (sender, ef) => outputBuilder.Append(ef.Data);
-                process.ErrorDataReceived += (sender, ef) => errorBuilder.Append(ef.Data);
+                process.OutputDataReceived += (sender, ef) => outputBuilder.AppendLine(ef.Data);
+                process.ErrorDataReceived += (sender, ef) => errorBuilder.AppendLine(ef.Data);
 
                 process.Start();
                 process.BeginOutputReadLine();

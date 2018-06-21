@@ -56,12 +56,6 @@ namespace GoogleARCore.CrossPlatform
                     // Anchors from another session are considered stopped.
                     return XPTrackingState.Stopped;
                 }
-                else if (!LifecycleManager.Instance.IsTracking)
-                {
-                    // TODO (b/73256094): Remove isTracking when fixed.
-                    // If there are no new frames coming in we must manually return paused.
-                    return XPTrackingState.Paused;
-                }
 
                 return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle).ToXPTrackingState();
             }

@@ -27,7 +27,7 @@ namespace GoogleARCoreInternal.CrossPlatform
     using GoogleARCore.CrossPlatform;
     using UnityEngine;
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
     using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
 #else
@@ -48,7 +48,7 @@ namespace GoogleARCoreInternal.CrossPlatform
                 if (s_Instance == null)
                 {
                     s_Instance = new CloudServiceManager();
-                    LifecycleManager.Instance.EarlyUpdateEvent += s_Instance._OnEarlyUpdate;
+                    LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
                 }
 
                 return s_Instance;
@@ -59,6 +59,17 @@ namespace GoogleARCoreInternal.CrossPlatform
         {
             Action<CloudAnchorResult> onComplete;
             var task = new GoogleARCore.AsyncTask<CloudAnchorResult>(out onComplete);
+
+            if (LifecycleManager.Instance.NativeSession == null)
+            {
+                onComplete(new CloudAnchorResult()
+                {
+                    Response = CloudServiceResponse.ErrorNotSupportedByConfiguration,
+                    Anchor = null,
+                });
+
+                return task;
+            }
 
             IntPtr cloudAnchorHandle = IntPtr.Zero;
             var status = LifecycleManager.Instance.NativeSession.SessionApi
@@ -92,6 +103,17 @@ namespace GoogleARCoreInternal.CrossPlatform
         {
             Action<CloudAnchorResult> onComplete;
             var task = new GoogleARCore.AsyncTask<CloudAnchorResult>(out onComplete);
+
+            if (LifecycleManager.Instance.NativeSession == null)
+            {
+                onComplete(new CloudAnchorResult()
+                {
+                    Response = CloudServiceResponse.ErrorNotSupportedByConfiguration,
+                    Anchor = null,
+                });
+
+                return task;
+            }
 
             var poseHandle = LifecycleManager.Instance.NativeSession.PoseApi.Create(pose);
             IntPtr arkitAnchorHandle = IntPtr.Zero;
@@ -132,6 +154,17 @@ namespace GoogleARCoreInternal.CrossPlatform
         {
             Action<CloudAnchorResult> onComplete;
             var task = new GoogleARCore.AsyncTask<CloudAnchorResult>(out onComplete);
+
+            if (LifecycleManager.Instance.NativeSession == null)
+            {
+                onComplete(new CloudAnchorResult()
+                {
+                    Response = CloudServiceResponse.ErrorNotSupportedByConfiguration,
+                    Anchor = null,
+                });
+
+                return task;
+            }
 
             IntPtr cloudAnchorHandle = IntPtr.Zero;
             var status = LifecycleManager.Instance.NativeSession.SessionApi

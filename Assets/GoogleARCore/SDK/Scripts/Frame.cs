@@ -66,10 +66,8 @@ namespace GoogleARCore
         {
             get
             {
-                // TODO (b/73256094): Remove isTracking when fixed.
                 var nativeSession = LifecycleManager.Instance.NativeSession;
-                var isTracking = LifecycleManager.Instance.IsTracking;
-                if (nativeSession == null || !isTracking)
+                if (nativeSession == null)
                 {
                     return new LightEstimate(LightEstimateState.NotValid, 0.0f, Color.black);
                 }
@@ -216,10 +214,8 @@ namespace GoogleARCore
             {
                 get
                 {
-                    // TODO (b/73256094): Remove isTracking when fixed.
                     var nativeSession = LifecycleManager.Instance.NativeSession;
-                    var isTracking = LifecycleManager.Instance.IsTracking;
-                    if (nativeSession == null || !isTracking)
+                    if (nativeSession == null)
                     {
                         return 0;
                     }
@@ -277,12 +273,18 @@ namespace GoogleARCore
             {
                 get
                 {
+                    var nativeSession = LifecycleManager.Instance.NativeSession;
+                    if (nativeSession == null)
+                    {
+                        return null;
+                    }
+
                     return ARCoreAndroidLifecycleManager.Instance.BackgroundTexture;
                 }
             }
 
             /// <summary>
-            /// Gets UVs that map the orienation and aspect ratio of <c>Frame.CameraImage.Texture</c> that of the
+            /// Gets UVs that map the orientation and aspect ratio of <c>Frame.CameraImage.Texture</c> that of the
             /// device's display.
             /// </summary>
             public static DisplayUvCoords DisplayUvCoords
@@ -300,6 +302,46 @@ namespace GoogleARCore
 
                     nativeSession.FrameApi.TransformDisplayUvCoords(ref displayUvCoords);
                     return displayUvCoords.ToDisplayUvCoords();
+                }
+            }
+
+            /// <summary>
+            /// Gets the unrotated and uncropped intrinsics for the texture (GPU) stream.
+            /// </summary>
+            public static CameraIntrinsics TextureIntrinsics
+            {
+                get
+                {
+                    var nativeSession = LifecycleManager.Instance.NativeSession;
+                    if (nativeSession == null)
+                    {
+                        return new CameraIntrinsics();
+                    }
+
+                    var cameraHandle = nativeSession.FrameApi.AcquireCamera();
+                    CameraIntrinsics result = nativeSession.CameraApi.GetTextureIntrinsics(cameraHandle);
+                    nativeSession.CameraApi.Release(cameraHandle);
+                    return result;
+                }
+            }
+
+            /// <summary>
+            /// Gets the unrotated and uncropped intrinsics for the image (CPU) stream.
+            /// </summary>
+            public static CameraIntrinsics ImageIntrinsics
+            {
+                get
+                {
+                    var nativeSession = LifecycleManager.Instance.NativeSession;
+                    if (nativeSession == null)
+                    {
+                        return new CameraIntrinsics();
+                    }
+
+                    var cameraHandle = nativeSession.FrameApi.AcquireCamera();
+                    CameraIntrinsics result = nativeSession.CameraApi.GetImageIntrinsics(cameraHandle);
+                    nativeSession.CameraApi.Release(cameraHandle);
+                    return result;
                 }
             }
 

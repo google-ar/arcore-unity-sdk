@@ -25,7 +25,7 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
     using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
 #else
@@ -39,7 +39,7 @@ namespace GoogleARCoreInternal
 
         private ARCoreSessionConfig m_CachedConfig = null;
 
-        public event LifecycleManager.EarlyUpdateDelegate EarlyUpdateEvent;
+        public event Action EarlyUpdate;
 
         public static ARCoreAndroidLifecycleManager Instance
         {
@@ -49,39 +49,30 @@ namespace GoogleARCoreInternal
                 {
                     s_Instance = new ARCoreAndroidLifecycleManager();
                     s_Instance._Initialize();
+                    ARPrestoCallbackManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
+                    s_Instance.EarlyUpdate += InstantPreviewManager.OnEarlyUpdate;
                 }
 
                 return s_Instance;
             }
         }
 
-        public Texture2D BackgroundTexture { get; private set; }
-
-        public bool IsTracking { get; private set; }
-
-        public NativeSession NativeSession { get; private set; }
+        public SessionStatus SessionStatus { get; private set; }
 
         public ARCoreSession SessionComponent { get; private set; }
 
-        public SessionStatus SessionStatus { get; private set; }
+        public NativeSession NativeSession { get; private set; }
 
-        public void SetConfiguration(ARCoreSessionConfig config)
+        public Texture2D BackgroundTexture { get; private set; }
+
+        public AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
-            if (config == null)
-            {
-                return;
-            }
+            return ARPrestoCallbackManager.Instance.CheckApkAvailability();
+        }
 
-            if (m_CachedConfig == null || !config.Equals(m_CachedConfig) ||
-                ExperimentManager.Instance.IsConfigurationDirty)
-            {
-                GCHandle handle;
-                var prestoConfig = new ApiPrestoConfig(config, out handle);
-                ExternApi.ArPresto_setConfiguration(ref prestoConfig);
-                m_CachedConfig = ScriptableObject.CreateInstance<ARCoreSessionConfig>();
-                m_CachedConfig.CopyFrom(config);
-                handle.Free();
-            }
+        public AsyncTask<ApkInstallationStatus> RequestApkInstallation(bool userRequested)
+        {
+            return ARPrestoCallbackManager.Instance.RequestApkInstallation(userRequested);
         }
 
         public void CreateSession(ARCoreSession sessionComponent)
@@ -97,8 +88,6 @@ namespace GoogleARCoreInternal
             }
 
             SessionComponent = sessionComponent;
-            ARPrestoCallbackManager.Instance.InitializeIfNeeded();
-            EnableSession();
         }
 
         public void EnableSession()
@@ -109,7 +98,7 @@ namespace GoogleARCoreInternal
                 return;
             }
 
-            SetConfiguration(SessionComponent.SessionConfig);
+            _SetConfiguration(SessionComponent.SessionConfig);
             ExternApi.ArPresto_setEnabled(true);
         }
 
@@ -124,58 +113,49 @@ namespace GoogleARCoreInternal
             ExternApi.ArPresto_reset();
         }
 
-        internal void EarlyUpdate()
+        private void _OnEarlyUpdate()
         {
-            // Get the latest session handle from presto.
-            IntPtr sessionHandle = IntPtr.Zero;
-            ExternApi.ArPresto_getSession(ref sessionHandle);
-
-            // Update the display geometry if there is a non-null session.
-            if (sessionHandle != IntPtr.Zero)
+            // Perform updates before calling ArPresto_update.
+            _UpdateDisplayGeometry();
+            if (SessionComponent != null)
             {
-                _SetDisplayGeometry(sessionHandle, Screen.orientation, Screen.width, Screen.height);
+                _SetConfiguration(SessionComponent.SessionConfig);
             }
 
             // Update ArPresto and potentially ArCore.
             ExternApi.ArPresto_update();
 
-            // Update pending AsyncTasks.
-            AsyncTask.OnUpdate();
-
-            // Update the lifecycle state.
-            _UpdateState();
-
-            // Return if there is no session component in the scene.
-            if (SessionComponent == null)
-            {
-                return;
-            }
-
-            ExternApi.ArPresto_getSession(ref sessionHandle);
-
+            // Get state information from ARPresto.
+            ApiPrestoStatus prestoStatus = ApiPrestoStatus.Uninitialized;
+            IntPtr sessionHandle = IntPtr.Zero;
             IntPtr frameHandle = IntPtr.Zero;
+            ExternApi.ArPresto_getStatus(ref prestoStatus);
+            ExternApi.ArPresto_getSession(ref sessionHandle);
             ExternApi.ArPresto_getFrame(ref frameHandle);
 
-            if (NativeSession == null && sessionHandle != IntPtr.Zero)
+            SessionStatus = prestoStatus.ToSessionStatus();
+
+            // Update native session reference to match presto.
+            if (sessionHandle == IntPtr.Zero)
+            {
+                NativeSession = null;
+            }
+            else if (NativeSession == null)
             {
                 NativeSession = new NativeSession(sessionHandle, frameHandle);
-                NativeSession.SessionApi.ReportEngineType();
             }
 
+            // Update the native session with the newest frame.
             if (NativeSession != null)
             {
                 NativeSession.OnUpdate(frameHandle);
             }
 
-            SetConfiguration(SessionComponent.SessionConfig);
-
             _UpdateTextureIfNeeded();
 
-            InstantPreviewManager.OnEarlyUpdate();
-
-            if (EarlyUpdateEvent != null)
+            if (EarlyUpdate != null)
             {
-                EarlyUpdateEvent();
+                EarlyUpdate();
             }
         }
 
@@ -185,7 +165,6 @@ namespace GoogleARCoreInternal
             BackgroundTexture = null;
             NativeSession = null;
             SessionComponent = null;
-            IsTracking = false;
             SessionStatus = SessionStatus.None;
         }
 
@@ -231,21 +210,38 @@ namespace GoogleARCoreInternal
             BackgroundTexture.UpdateExternalTexture(new IntPtr(backgroundTextureId));
         }
 
-        private void _UpdateState()
+        private void _SetConfiguration(ARCoreSessionConfig config)
         {
-            ApiPrestoStatus prestoStatus = ApiPrestoStatus.Uninitialized;
-            ExternApi.ArPresto_getStatus(ref prestoStatus);
+            if (config == null)
+            {
+                return;
+            }
 
-            IsTracking = prestoStatus == ApiPrestoStatus.Resumed;
-            SessionStatus = prestoStatus.ToSessionStatus();
+            if (m_CachedConfig == null || !config.Equals(m_CachedConfig) ||
+                ExperimentManager.Instance.IsConfigurationDirty)
+            {
+                GCHandle handle;
+                var prestoConfig = new ApiPrestoConfig(config, out handle);
+                ExternApi.ArPresto_setConfiguration(ref prestoConfig);
+                m_CachedConfig = ScriptableObject.CreateInstance<ARCoreSessionConfig>();
+                m_CachedConfig.CopyFrom(config);
+
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
+            }
         }
 
-        private void _SetDisplayGeometry(IntPtr sessionHandle, ScreenOrientation orientation, int width, int height)
+        private void _UpdateDisplayGeometry()
         {
             const int androidRotation0 = 0;
             const int androidRotation90 = 1;
             const int androidRotation180 = 2;
             const int androidRotation270 = 3;
+
+            IntPtr sessionHandle = IntPtr.Zero;
+            ExternApi.ArPresto_getSession(ref sessionHandle);
 
             if (sessionHandle == IntPtr.Zero)
             {
@@ -253,7 +249,7 @@ namespace GoogleARCoreInternal
             }
 
             int androidOrientation = 0;
-            switch (orientation)
+            switch (Screen.orientation)
             {
                 case ScreenOrientation.LandscapeLeft:
                     androidOrientation = androidRotation90;
@@ -269,7 +265,7 @@ namespace GoogleARCoreInternal
                     break;
             }
 
-            ExternApi.ArSession_setDisplayGeometry(sessionHandle, androidOrientation, width, height);
+            ExternApi.ArSession_setDisplayGeometry(sessionHandle, androidOrientation, Screen.width, Screen.height);
         }
 
         private struct ExternApi

@@ -46,17 +46,10 @@ namespace GoogleARCore
         {
             get
             {
-                // TODO (b/73256094): Remove isTracking when the bug is fixed.
-                var isTracking = LifecycleManager.Instance.IsTracking;
                 if (_IsSessionDestroyed())
                 {
                     // Anchors from another session are considered stopped.
                     return TrackingState.Stopped;
-                }
-                else if (!isTracking)
-                {
-                    // If there are no new frames coming in we must manually return paused.
-                    return TrackingState.Paused;
                 }
 
                 return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle);

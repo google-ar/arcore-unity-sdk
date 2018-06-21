@@ -51,6 +51,11 @@ namespace GoogleARCore.Examples.ComputerVision
         public bool UseCustomResolutionImage = false;
 
         /// <summary>
+        /// A Text box that is used to output the camera intrinsics values.
+        /// </summary>
+        public Text CameraIntrinsicsOutput;
+
+        /// <summary>
         /// A buffer that stores the result of performing edge detection on the camera image each frame.
         /// </summary>
         private byte[] m_EdgeDetectionResultImage = null;
@@ -96,6 +101,16 @@ namespace GoogleARCore.Examples.ComputerVision
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 EdgeDetectionBackgroundImage.enabled = !EdgeDetectionBackgroundImage.enabled;
+            }
+
+            var cameraIntrinsics = EdgeDetectionBackgroundImage.enabled
+                ? Frame.CameraImage.ImageIntrinsics : Frame.CameraImage.TextureIntrinsics;
+            string intrinsicsType = EdgeDetectionBackgroundImage.enabled ? "Image" : "Texture";
+            CameraIntrinsicsOutput.text = _CameraIntrinsicsToString(cameraIntrinsics, intrinsicsType);
+
+            if (UseCustomResolutionImage && EdgeDetectionBackgroundImage.enabled)
+            {
+              CameraIntrinsicsOutput.text = string.Empty;
             }
 
             if (!Session.Status.IsValid())
@@ -380,6 +395,24 @@ namespace GoogleARCore.Examples.ComputerVision
         private void _DoQuit()
         {
             Application.Quit();
+        }
+
+        /// <summary>
+        /// Generate string to print the value in CameraIntrinsics.
+        /// </summary>
+        /// <param name="intrinsics">The CameraIntrinsics to generate the string from.</param>
+        /// <param name="intrinsicsType">The string that describe the type of the intrinsics.</param>
+        /// <returns>The generated string.</returns>
+        private string _CameraIntrinsicsToString(CameraIntrinsics intrinsics, string intrinsicsType)
+        {
+            float fovX = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.x, 2 * intrinsics.FocalLength.x) * Mathf.Rad2Deg;
+            float fovY = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.y, 2 * intrinsics.FocalLength.y) * Mathf.Rad2Deg;
+
+            return string.Format("Unrotated Camera {4} Intrinsics: {0}  Focal Length: {1}{0}  " +
+                "Principal Point:{2}{0}  Image Dimensions: {3}{0}  Unrotated Field of View: ({5}º, {6}º)",
+                Environment.NewLine, intrinsics.FocalLength.ToString(),
+                intrinsics.PrincipalPoint.ToString(), intrinsics.ImageDimensions.ToString(),
+                intrinsicsType, fovX, fovY);
         }
     }
 }

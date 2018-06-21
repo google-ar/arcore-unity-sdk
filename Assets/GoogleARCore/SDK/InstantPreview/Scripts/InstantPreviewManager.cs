@@ -35,7 +35,7 @@ namespace GoogleARCoreInternal
     using UnityEditor;
 #endif
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
     using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
 #else
@@ -189,7 +189,7 @@ namespace GoogleARCoreInternal
         public static void OnEarlyUpdate()
         {
             var session = LifecycleManager.Instance.SessionComponent;
-            if (Application.isEditor || session == null)
+            if (!Application.isEditor || session == null)
             {
                 return;
             }

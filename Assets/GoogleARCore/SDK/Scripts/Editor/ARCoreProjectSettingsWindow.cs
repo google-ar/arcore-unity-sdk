@@ -29,7 +29,7 @@ namespace GoogleARCoreInternal
         private static void ShowARCoreProjectSettingsWindow()
         {
             ARCoreProjectSettings.Instance.Load();
-            Rect rect = new Rect(500, 300, 400, 150);
+            Rect rect = new Rect(500, 300, 400, 180);
             ARCoreProjectSettingsWindow window = GetWindowWithRect<ARCoreProjectSettingsWindow>(rect);
             window.titleContent = new GUIContent("ARCore");
             window.Show();
@@ -55,9 +55,16 @@ namespace GoogleARCoreInternal
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(3);
-            EditorGUILayout.LabelField("Cloud Services API Key ", GUILayout.Width(150));
+            EditorGUILayout.LabelField("Android Cloud Services API Key ", GUILayout.Width(180));
             ARCoreProjectSettings.Instance.CloudServicesApiKey =
                 EditorGUILayout.TextField(ARCoreProjectSettings.Instance.CloudServicesApiKey);
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(3);
+            EditorGUILayout.LabelField("iOS Cloud Services API Key ", GUILayout.Width(180));
+            ARCoreProjectSettings.Instance.IosCloudServicesApiKey =
+                EditorGUILayout.TextField(ARCoreProjectSettings.Instance.IosCloudServicesApiKey);
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(10);
             if (GUI.changed)

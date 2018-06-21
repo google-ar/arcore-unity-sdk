@@ -30,9 +30,16 @@ namespace GoogleARCore
     public class ARCoreSessionConfig : ScriptableObject
     {
         /// <summary>
-        /// Toggles whether the rendering frame rate matches the background camera frame rate.
-        /// Setting this to true will also set QualitySetting.vSyncCount to 0, which will make your entire app to run at the background camera frame rate (including animations, UI interaction, etc.).
-        /// Setting this to false could incur extra power overhead due to rendering the same background more than once.
+        /// Toggles whether ARCore may introduce a delay into Unity's frame update to
+        /// match the rate that the camera sensor is delivering frames (this is 30 frames-per-second
+        /// on most devices).  Enabling this setting can reduce power consumption caused by rendering
+        /// the same background texture more than once.  Since enabling this setting also sets
+        /// QualitySetting.vSyncCount to 0 the entire Unity application (e.g animations, UI) will also
+        /// update at the camera sensor frame rate.
+        ///
+        /// Note that enabling this setting does not guarentee each Unity frame will have a new and unique
+        /// camera background texture.  This is because the period of time ARCore will wait for a new camera
+        /// frame to become available is capped (currently at 66ms) to avoid a deadlock.
         /// </summary>
         [Tooltip("Toggles whether the rendering frame rate matches the background camera frame rate")]
         public bool MatchCameraFramerate = true;
@@ -53,7 +60,7 @@ namespace GoogleARCore
         /// <summary>
         /// Toggles whether cloud anchor is enabled.
         /// </summary>
-        [Tooltip("Toggles whether cloud anchor is enabled.")]
+        [Tooltip("Toggles whether the cloud anchor feature is enabled.")]
         public bool EnableCloudAnchor = false;
 
         /// <summary>
