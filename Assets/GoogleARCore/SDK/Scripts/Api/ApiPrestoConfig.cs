@@ -37,6 +37,7 @@ namespace GoogleARCoreInternal
         public ApiCloudAnchorMode CloudAnchorMode;
         public IntPtr AugmentedImageDatabaseBytes;
         public long AugmentedImageDatabaseSize;
+        public ApiCameraFocusMode CameraFocusMode;
 
         /// <summary>
         /// Wrap an ARCoreSessionConfig in an API config.
@@ -84,6 +85,19 @@ namespace GoogleARCoreInternal
                 handle = new GCHandle();
                 AugmentedImageDatabaseBytes = IntPtr.Zero;
                 AugmentedImageDatabaseSize = 0;
+            }
+
+            switch (config.CameraFocusMode)
+            {
+                case GoogleARCore.CameraFocusMode.Fixed:
+                    CameraFocusMode = ApiCameraFocusMode.Fixed;
+                    break;
+                case GoogleARCore.CameraFocusMode.Auto:
+                    CameraFocusMode = ApiCameraFocusMode.Auto;
+                    break;
+                default:
+                    CameraFocusMode = ApiCameraFocusMode.Fixed;
+                    break;
             }
         }
     }

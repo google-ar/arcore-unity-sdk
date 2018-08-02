@@ -52,7 +52,8 @@ namespace GoogleARCoreInternal
         /// </summary>
         /// <param name="nativeHandle">A native handle to a plane that has been acquired.  RELEASE WILL BE HANDLED BY
         /// THIS METHOD.</param>
-        /// <returns>A reference to the Trackable.</returns>
+        /// <returns>A reference to the Trackable. May return <c>null</c> on error or if Trackable is
+        /// not handled.</returns>
         public Trackable TrackableFactory(IntPtr nativeHandle)
         {
             if (nativeHandle == IntPtr.Zero)
@@ -95,7 +96,11 @@ namespace GoogleARCoreInternal
             }
 #pragma warning restore 618
 
-            m_TrackableDict.Add(nativeHandle, result);
+            if (result != null)
+            {
+                m_TrackableDict.Add(nativeHandle, result);
+            }
+
             return result;
         }
 

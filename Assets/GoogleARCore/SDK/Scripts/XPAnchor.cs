@@ -29,6 +29,7 @@ namespace GoogleARCore.CrossPlatform
     /// <summary>
     /// A cross-platform anchor.
     /// </summary>
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/CrossPlatform/XPAnchor")]
     public class XPAnchor : MonoBehaviour
     {
         private static Dictionary<IntPtr, XPAnchor> s_AnchorDict =

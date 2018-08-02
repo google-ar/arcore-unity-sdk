@@ -21,6 +21,7 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
@@ -36,8 +37,9 @@ namespace GoogleARCoreInternal
     internal class ARCoreAndroidLifecycleManager : ILifecycleManager
     {
         private static ARCoreAndroidLifecycleManager s_Instance;
-
         private ARCoreSessionConfig m_CachedConfig = null;
+        private List<IntPtr> m_TempCameraConfigHandles = new List<IntPtr>();
+        private List<CameraConfig> m_TempCameraConfigs = new List<CameraConfig>();
 
         public event Action EarlyUpdate;
 
@@ -50,6 +52,7 @@ namespace GoogleARCoreInternal
                     s_Instance = new ARCoreAndroidLifecycleManager();
                     s_Instance._Initialize();
                     ARPrestoCallbackManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
+                    ARPrestoCallbackManager.Instance.BeforeResumeSession += s_Instance._OnBeforeResumeSession;
                     s_Instance.EarlyUpdate += InstantPreviewManager.OnEarlyUpdate;
                 }
 
@@ -111,6 +114,57 @@ namespace GoogleARCoreInternal
         {
             _Initialize();
             ExternApi.ArPresto_reset();
+        }
+
+        private void _OnBeforeResumeSession(IntPtr sessionHandle)
+        {
+            if (SessionComponent == null)
+            {
+                return;
+            }
+
+            var chooseCameraConfiguration = SessionComponent.GetChooseCameraConfigurationCallback();
+            if (chooseCameraConfiguration == null)
+            {
+                return;
+            }
+
+            if (NativeSession == null)
+            {
+                NativeSession = new NativeSession(sessionHandle, IntPtr.Zero);
+            }
+
+            var listHandle = NativeSession.CameraConfigListApi.Create();
+            NativeSession.SessionApi.GetSupportedCameraConfigurations(listHandle, m_TempCameraConfigHandles,
+                m_TempCameraConfigs);
+
+            if (m_TempCameraConfigHandles.Count == 0)
+            {
+                Debug.LogWarning("Unable to choose a custom camera configuration because none are available.");
+            }
+            else
+            {
+                var configIndex = chooseCameraConfiguration(m_TempCameraConfigs);
+                if (configIndex >= 0 && configIndex < m_TempCameraConfigHandles.Count)
+                {
+                    var status = NativeSession.SessionApi.SetCameraConfig(m_TempCameraConfigHandles[configIndex]);
+                    if (status != ApiArStatus.Success)
+                    {
+                        Debug.LogErrorFormat("Failed to set the ARCore camera configuration: {0}", status);
+                    }
+                }
+
+                for (int i = 0; i < m_TempCameraConfigHandles.Count; i++)
+                {
+                    NativeSession.CameraConfigApi.Destroy(m_TempCameraConfigHandles[i]);
+                }
+            }
+
+            // clean up
+            NativeSession.CameraConfigListApi.Destroy(listHandle);
+
+            m_TempCameraConfigHandles.Clear();
+            m_TempCameraConfigs.Clear();
         }
 
         private void _OnEarlyUpdate()

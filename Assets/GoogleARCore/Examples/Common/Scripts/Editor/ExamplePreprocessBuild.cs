@@ -53,8 +53,8 @@ namespace GoogleARCore.Examples.Common
             },
             new ExampleScene()
             {
-                ProductName = "CloudAnchor U3D",
-                PackageName = "com.google.ar.core.examples.unity.cloudanchor",
+                ProductName = "CloudAnchors U3D",
+                PackageName = "com.google.ar.core.examples.unity.cloudanchors",
                 SceneGuid = "83fb41cc294e74bdea57537befa00ffc",
                 IconGuid = "dcfb8b44c93d547e2bdf8a638c1415af"
             },

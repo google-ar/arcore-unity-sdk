@@ -30,25 +30,37 @@ namespace GoogleARCoreInternal
     {
 #if UNITY_EDITOR
         public const string ARCoreNativeApi = InstantPreviewManager.InstantPreviewNativeApi;
+        public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
         public const string ARCoreShimApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string ARPrestoApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string MediaNdk = InstantPreviewManager.InstantPreviewNativeApi;
         public const string NdkCameraApi = "NOT_AVAILABLE";
-        public const bool isBehaveAsIfOnAndroid = true;
 #elif UNITY_ANDROID
         public const string ARCoreNativeApi = "arcore_sdk_c";
+        public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
         public const string ARCoreShimApi = "arcore_unity_api";
         public const string ARPrestoApi = "arpresto_api";
         public const string MediaNdk = "mediandk";
         public const string NdkCameraApi = "camera2ndk";
-        public const bool isBehaveAsIfOnAndroid = true;
 #elif UNITY_IOS
+#if ARCORE_IOS_SUPPORT
         public const string ARCoreNativeApi = "__Internal";
+        public const string ARCoreARKitIntegrationApi = "__Internal";
+#else
+        public const string ARCoreNativeApi = "NOT_AVAILABLE";
+        public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
+#endif
         public const string ARCoreShimApi = "NOT_AVAILABLE";
         public const string ARPrestoApi = "NOT_AVAILABLE";
         public const string MediaNdk = "NOT_AVAILABLE";
         public const string NdkCameraApi = "NOT_AVAILABLE";
-        public const bool isBehaveAsIfOnAndroid = false;
+#else
+        public const string ARCoreNativeApi = "NOT_AVAILABLE";
+        public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
+        public const string ARCoreShimApi = "NOT_AVAILABLE";
+        public const string ARPrestoApi = "NOT_AVAILABLE";
+        public const string MediaNdk = "NOT_AVAILABLE";
+        public const string NdkCameraApi = "NOT_AVAILABLE";
 #endif
 
 #if UNITY_EDITOR_OSX

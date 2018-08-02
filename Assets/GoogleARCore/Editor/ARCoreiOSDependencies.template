@@ -1,0 +1,6 @@
+<dependencies>
+    <iosPods>
+        <iosPod minTargetSdk="11.0" name="ARCore" version="~&gt; 1.4.0">
+            </iosPod>
+    </iosPods>
+</dependencies>

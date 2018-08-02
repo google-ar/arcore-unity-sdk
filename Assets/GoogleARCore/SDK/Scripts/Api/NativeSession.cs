@@ -49,6 +49,8 @@ namespace GoogleARCoreInternal
             AugmentedImageApi = new AugmentedImageApi(this);
             AugmentedImageDatabaseApi = new AugmentedImageDatabaseApi(this);
             CameraApi = new CameraApi(this);
+            CameraConfigApi = new CameraConfigApi(this);
+            CameraConfigListApi = new CameraConfigListApi(this);
             CameraMetadataApi = new CameraMetadataApi(this);
             FrameApi = new FrameApi(this);
             HitTestApi = new HitTestApi(this);
@@ -93,6 +95,10 @@ namespace GoogleARCoreInternal
         public AugmentedImageDatabaseApi AugmentedImageDatabaseApi { get; private set; }
 
         public CameraApi CameraApi { get; private set; }
+
+        public CameraConfigApi CameraConfigApi { get; private set; }
+
+        public CameraConfigListApi CameraConfigListApi { get; private set; }
 
         public CameraMetadataApi CameraMetadataApi { get; private set; }
 
@@ -170,20 +176,19 @@ namespace GoogleARCoreInternal
         {
             FrameHandle = frameHandle;
 
-            if (ApiConstants.isBehaveAsIfOnAndroid)
+#if UNITY_EDITOR || UNITY_ANDROID
+            // After first frame, release previous frame's point cloud.
+            if (PointCloudHandle != IntPtr.Zero)
             {
-                // After first frame, release previous frame's point cloud.
-                if (PointCloudHandle != IntPtr.Zero)
-                {
-                    m_LastReleasedPointcloudTimestamp = PointCloudApi.GetTimestamp(PointCloudHandle);
-                    PointCloudApi.Release(PointCloudHandle);
-                    PointCloudHandle = IntPtr.Zero;
-                }
-
-                IntPtr pointCloudHandle;
-                FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
-                PointCloudHandle = pointCloudHandle;
+                m_LastReleasedPointcloudTimestamp = PointCloudApi.GetTimestamp(PointCloudHandle);
+                PointCloudApi.Release(PointCloudHandle);
+                PointCloudHandle = IntPtr.Zero;
             }
+
+            IntPtr pointCloudHandle;
+            FrameApi.TryAcquirePointCloudHandle(out pointCloudHandle);
+            PointCloudHandle = pointCloudHandle;
+#endif
         }
     }
 }

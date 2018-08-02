@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/GoogleARCore/Examples/AugmentedImage/Scenes/AugmentedImage.unity
     guid: be567d47d3ab94b3badc5b211f535a24
   - enabled: 0
-    path: Assets/GoogleARCore/Examples/CloudAnchor/Scenes/CloudAnchor.unity
+    path: Assets/GoogleARCore/Examples/CloudAnchors/Scenes/CloudAnchors.unity
     guid: 83fb41cc294e74bdea57537befa00ffc
   - enabled: 0
     path: Assets/GoogleARCore/Examples/ComputerVision/Scenes/ComputerVision.unity

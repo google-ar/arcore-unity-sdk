@@ -120,7 +120,7 @@ namespace GoogleARCore
         /// <summary>
         /// Tells if the session was destroyed.
         /// </summary>
-        /// <returns><c>true</c> if the session this Trackable belong to was destroyed,
+        /// <returns><c>true</c> if the session this Trackable belongs to was destroyed,
         /// <c>false</c> otherwise.</returns>
         protected bool _IsSessionDestroyed()
         {

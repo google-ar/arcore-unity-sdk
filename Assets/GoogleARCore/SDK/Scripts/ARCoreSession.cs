@@ -20,12 +20,14 @@
 
 namespace GoogleARCore
 {
+    using System.Collections.Generic;
     using GoogleARCoreInternal;
     using UnityEngine;
 
     /// <summary>
     /// A component that manages the ARCore Session in a Unity scene.
     /// </summary>
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSession")]
     public class ARCoreSession : MonoBehaviour
     {
         /// <summary>
@@ -33,6 +35,24 @@ namespace GoogleARCore
         /// </summary>
         [Tooltip("A scriptable object specifying the ARCore session configuration.")]
         public ARCoreSessionConfig SessionConfig;
+
+        private OnChooseCameraConfigurationDelegate m_OnChooseCameraConfiguration;
+
+        /// <summary>
+        /// Selects a camera configuration for the ARCore session being resumed.
+        /// </summary>
+        /// <param name="supportedConfigurations">
+        /// A list of supported camera configurations. Currently it contains 3 camera configs.
+        /// The GPU texture resolutions are the same in all three configs.
+        /// Currently, most devices provide GPU texture resolution of 1920 x 1080,
+        /// but devices might provide higher or lower resolution textures, depending
+        /// on device capabilities. The CPU image resolutions returned are VGA, 720p,
+        /// and a resolution matching the GPU texture.</param>
+        /// <returns>The index of the camera configuration in <c>supportedConfigurations</c> to be used for the
+        /// ARCore session.  If the return value is not a valid index (e.g. the value -1), then no camera
+        /// configuration will be set and the ARCore session will use the previously selected camera
+        /// configuration or a default configuration if no previous selection exists.</returns>
+        public delegate int OnChooseCameraConfigurationDelegate(List<CameraConfig> supportedConfigurations);
 
         /// <summary>
         /// Unity Awake.
@@ -64,6 +84,22 @@ namespace GoogleARCore
         public void OnDisable()
         {
             LifecycleManager.Instance.DisableSession();
+        }
+
+        /// <summary>
+        /// Registers a callback that allows a camera configuration to be selected from a list of valid configurations.
+        /// The callback will be invoked each time the ARCore session is resumed which can happen when the ARCoreSession
+        /// component becomes enabled or the Android application moves from 'paused' to 'resumed' state.
+        /// </summary>
+        /// <param name="onChooseCameraConfiguration">The callback to register for selecting a camera configuration.</param>
+        public void RegisterChooseCameraConfigurationCallback(OnChooseCameraConfigurationDelegate onChooseCameraConfiguration)
+        {
+            m_OnChooseCameraConfiguration = onChooseCameraConfiguration;
+        }
+
+        internal OnChooseCameraConfigurationDelegate GetChooseCameraConfigurationCallback()
+        {
+            return m_OnChooseCameraConfiguration;
         }
     }
 }

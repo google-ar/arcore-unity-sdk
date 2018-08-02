@@ -84,7 +84,7 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each {@link TrackableHitFlag} which is set represents a category
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
         /// of raycast hits the method call should consider valid.</param>
         /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
@@ -100,7 +100,39 @@ namespace GoogleARCore
 
             // Note that the Unity's screen coordinate (0, 0) starts from bottom left.
             bool foundHit = nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, x, Screen.height - y, filter,
-                s_TmpTrackableHitList, true);
+                s_TmpTrackableHitList);
+
+            if (foundHit && s_TmpTrackableHitList.Count != 0)
+            {
+                hitResult = s_TmpTrackableHitList[0];
+            }
+
+            return foundHit;
+        }
+
+        /// <summary>
+        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Output the closest hit from the origin.
+        /// </summary>
+        /// <param name="origin">The starting point of the ray in world coordinates.</param>
+        /// <param name="direction">The direction of the ray.</param>
+        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
+        /// of raycast hits the method call should consider valid.</param>
+        /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
+        public static bool Raycast(Vector3 origin, Vector3 direction, out TrackableHit hitResult,
+            float maxDistance = Mathf.Infinity, TrackableHitFlags filter = TrackableHitFlags.Default)
+        {
+            hitResult = new TrackableHit();
+            var nativeSession = LifecycleManager.Instance.NativeSession;
+            if (nativeSession == null)
+            {
+                return false;
+            }
+
+            bool foundHit = nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, origin, direction, maxDistance,
+                filter, s_TmpTrackableHitList);
 
             if (foundHit && s_TmpTrackableHitList.Count != 0)
             {
@@ -118,7 +150,7 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each {@link TrackableHitFlag} which is set represents a category
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
         /// of raycast hits the method call should consider valid.</param>
         /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast is successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
@@ -131,7 +163,34 @@ namespace GoogleARCore
                 return false;
             }
 
-            return nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, x, Screen.height - y, filter, hitResults, true);
+            return nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, x, Screen.height - y, filter,
+                hitResults);
+        }
+
+        /// <summary>
+        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Output all hits from the origin.
+        /// </summary>
+        /// <param name="origin">The starting point of the ray in world coordinates.</param>
+        /// <param name="direction">The direction of the ray.</param>
+        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
+        /// of raycast hits the method call should consider valid.</param>
+        /// successful.</param>
+        /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
+        public static bool RaycastAll(Vector3 origin, Vector3 direction, List<TrackableHit> hitResults,
+            float maxDistance = Mathf.Infinity, TrackableHitFlags filter = TrackableHitFlags.Default)
+        {
+            hitResults.Clear();
+            var nativeSession = LifecycleManager.Instance.NativeSession;
+            if (nativeSession == null)
+            {
+                return false;
+            }
+
+            return nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, origin, direction, maxDistance,
+                filter, hitResults);
         }
 
         /// <summary>

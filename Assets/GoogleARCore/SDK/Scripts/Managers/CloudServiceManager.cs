@@ -27,14 +27,6 @@ namespace GoogleARCoreInternal.CrossPlatform
     using GoogleARCore.CrossPlatform;
     using UnityEngine;
 
-#if UNITY_IOS && !UNITY_EDITOR
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
     internal class CloudServiceManager
     {
         private static CloudServiceManager s_Instance;
@@ -98,7 +90,6 @@ namespace GoogleARCoreInternal.CrossPlatform
             return task;
         }
 
-#if UNITY_IOS
         public GoogleARCore.AsyncTask<CloudAnchorResult> CreateCloudAnchor(UnityEngine.Pose pose)
         {
             Action<CloudAnchorResult> onComplete;
@@ -148,7 +139,6 @@ namespace GoogleARCoreInternal.CrossPlatform
             _UpdateCloudAnchorRequest(request, true);
             return task;
         }
-#endif
 
         public GoogleARCore.AsyncTask<CloudAnchorResult> ResolveCloudAnchor(String cloudAnchorId)
         {

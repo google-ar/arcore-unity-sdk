@@ -78,7 +78,7 @@ namespace GoogleARCoreInternal
 
         public event Action EarlyUpdate;
 
-        public event Action BeforeResumeSession;
+        public event Action<IntPtr> BeforeResumeSession;
 
         public static ARPrestoCallbackManager Instance
         {
@@ -163,7 +163,7 @@ namespace GoogleARCoreInternal
         {
             if (Instance.BeforeResumeSession != null)
             {
-                Instance.BeforeResumeSession();
+                Instance.BeforeResumeSession(sessionHandle);
             }
         }
 

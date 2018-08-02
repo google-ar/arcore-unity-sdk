@@ -62,5 +62,13 @@ namespace GoogleARCore
         /// that has a surface normal estimate (orientation).
         /// </summary>
         FeaturePointWithSurfaceNormal = 1 << 4,
+
+        /// <summary>
+        /// This value is used to collide with all things good for placing objects.
+        ///
+        /// If you pass this into Raycast, you will collide with planes within the bounding
+        /// polygon and feature points with normals.
+        /// </summary>
+        Default = PlaneWithinPolygon | FeaturePointWithSurfaceNormal
     }
 }

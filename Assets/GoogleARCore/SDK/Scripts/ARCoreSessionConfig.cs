@@ -27,6 +27,7 @@ namespace GoogleARCore
     /// Holds settings that are used to configure the session.
     /// </summary>
     [CreateAssetMenu(fileName = "ARCoreSessionConfig", menuName = "GoogleARCore/SessionConfig", order = 1)]
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSessionConfig")]
     public class ARCoreSessionConfig : ScriptableObject
     {
         /// <summary>
@@ -70,6 +71,12 @@ namespace GoogleARCore
         public AugmentedImageDatabase AugmentedImageDatabase;
 
         /// <summary>
+        /// Chooses which focus mode will be used in ARCore camera.
+        /// </summary>
+        [Tooltip("Chooses which focus mode will be used in ARCore camera.")]
+        public CameraFocusMode CameraFocusMode = CameraFocusMode.Fixed;
+
+        /// <summary>
         ///  Gets or sets a value indicating whether PlaneFinding is enabled.
         /// </summary>
         [System.Obsolete("This field has be replaced by GoogleARCore.DetectedPlaneFindingMode. See https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
@@ -104,7 +111,8 @@ namespace GoogleARCore
                 PlaneFindingMode != otherConfig.PlaneFindingMode ||
                 EnableLightEstimation != otherConfig.EnableLightEstimation ||
                 EnableCloudAnchor != otherConfig.EnableCloudAnchor ||
-                AugmentedImageDatabase != otherConfig.AugmentedImageDatabase)
+                AugmentedImageDatabase != otherConfig.AugmentedImageDatabase ||
+                CameraFocusMode != otherConfig.CameraFocusMode)
             {
                 return false;
             }
@@ -132,6 +140,7 @@ namespace GoogleARCore
             EnableLightEstimation = other.EnableLightEstimation;
             EnableCloudAnchor = other.EnableCloudAnchor;
             AugmentedImageDatabase = other.AugmentedImageDatabase;
+            CameraFocusMode = other.CameraFocusMode;
         }
     }
 }

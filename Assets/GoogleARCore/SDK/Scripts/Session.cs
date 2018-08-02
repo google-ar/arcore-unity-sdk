@@ -90,6 +90,22 @@ namespace GoogleARCore
         }
 
         /// <summary>
+        /// Get the camera configuration the ARCore session is currently running with.
+        /// </summary>
+        /// <returns>The CameraConfig that the ARCore session is currently running with. The value is only currect
+        /// when there is a valid running ARCore session. </returns>
+        public static CameraConfig GetCameraConfig()
+        {
+            var nativeSession = LifecycleManager.Instance.NativeSession;
+            if (nativeSession == null)
+            {
+                return new CameraConfig();
+            }
+
+            return nativeSession.SessionApi.GetCameraConfig();
+        }
+
+        /// <summary>
         /// Checks the availability of the ARCore APK on the device.
         /// </summary>
         /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability is known.</returns>

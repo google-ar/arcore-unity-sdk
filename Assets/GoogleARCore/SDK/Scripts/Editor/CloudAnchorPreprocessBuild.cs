@@ -89,7 +89,7 @@ namespace GoogleARCoreInternal
                 }
 
                 // Replace the project's cloud anchor AAR with the newly generated AAR.
-                Debug.Log("Enabling cloud anchors in this build.");
+                Debug.Log("Enabling Cloud Anchors in this build.");
 
                 var tempDirectoryPath = Path.Combine(cachedCurrentDirectory, FileUtil.GetUniqueTempPathInProject());
 

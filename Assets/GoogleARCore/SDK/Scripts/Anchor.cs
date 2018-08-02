@@ -30,6 +30,7 @@ namespace GoogleARCore
     /// Attaches a GameObject to an ARCore {@link Trackable}.  The transform of the GameObject will be updated to
     /// maintain the semantics of the attachment relationship, which varies between sub-types of Trackable.
     /// </summary>
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/Anchor")]
     public class Anchor : MonoBehaviour
     {
         private static Dictionary<IntPtr, Anchor> s_AnchorDict =

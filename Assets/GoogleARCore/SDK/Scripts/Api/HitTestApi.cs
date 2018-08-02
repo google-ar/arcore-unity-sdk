@@ -43,14 +43,39 @@ namespace GoogleARCoreInternal
         }
 
         public bool Raycast(IntPtr frameHandle, float x, float y, TrackableHitFlags filter,
-            List<TrackableHit> outHitList, bool isOnlyQueryingNearestHit)
+            List<TrackableHit> outHitList)
         {
             outHitList.Clear();
 
             IntPtr hitResultListHandle = IntPtr.Zero;
             ExternApi.ArHitResultList_create(m_NativeSession.SessionHandle, ref hitResultListHandle);
             ExternApi.ArFrame_hitTest(m_NativeSession.SessionHandle, frameHandle, x, y, hitResultListHandle);
+            FilterTrackableHits(hitResultListHandle, Mathf.Infinity, filter, outHitList);
+            ExternApi.ArHitResultList_destroy(hitResultListHandle);
+            return outHitList.Count != 0;
+        }
 
+        public bool Raycast(IntPtr frameHandle, Vector3 origin, Vector3 direction, float maxDistance,
+            TrackableHitFlags filter, List<TrackableHit> outHitList)
+        {
+            outHitList.Clear();
+
+            IntPtr hitResultListHandle = IntPtr.Zero;
+            ExternApi.ArHitResultList_create(m_NativeSession.SessionHandle, ref hitResultListHandle);
+
+            // Invert z to match ARCore coordinate system.
+            origin.z = -origin.z;
+            direction.z = -direction.z;
+            ExternApi.ArFrame_hitTestRay(m_NativeSession.SessionHandle, frameHandle, ref origin, ref direction,
+                hitResultListHandle);
+            FilterTrackableHits(hitResultListHandle, maxDistance, filter, outHitList);
+            ExternApi.ArHitResultList_destroy(hitResultListHandle);
+            return outHitList.Count != 0;
+        }
+
+        private void FilterTrackableHits(IntPtr hitResultListHandle, float maxDistance, TrackableHitFlags filter,
+            List<TrackableHit> outHitList)
+        {
             int hitListSize = 0;
             ExternApi.ArHitResultList_getSize(m_NativeSession.SessionHandle, hitResultListHandle, ref hitListSize);
 
@@ -59,15 +84,12 @@ namespace GoogleARCoreInternal
                 TrackableHit trackableHit;
                 if (HitResultListGetItemAt(hitResultListHandle, i, out trackableHit))
                 {
-                    if ((filter & trackableHit.Flags) != TrackableHitFlags.None)
+                    if ((filter & trackableHit.Flags) != TrackableHitFlags.None && trackableHit.Distance <= maxDistance)
                     {
                         outHitList.Add(trackableHit);
                     }
                 }
             }
-
-            ExternApi.ArHitResultList_destroy(hitResultListHandle);
-            return outHitList.Count != 0;
         }
 
         private bool HitResultListGetItemAt(IntPtr hitResultListHandle, int index, out TrackableHit outTrackableHit)
@@ -147,6 +169,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_hitTest(IntPtr session,
                 IntPtr frame, float pixel_x, float pixel_y, IntPtr hit_result_list);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArFrame_hitTestRay(IntPtr session,
+                IntPtr frame, ref Vector3 origin, ref Vector3 direction, IntPtr hit_result_list);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_create(IntPtr session, ref IntPtr out_hit_result_list);

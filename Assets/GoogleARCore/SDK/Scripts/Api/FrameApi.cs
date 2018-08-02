@@ -145,7 +145,11 @@ namespace GoogleARCoreInternal
                     continue;
                 }
 
-                trackables.Add(m_NativeSession.TrackableFactory(trackableHandle));
+                Trackable trackable = m_NativeSession.TrackableFactory(trackableHandle);
+                if (trackable != null)
+                {
+                    trackables.Add(trackable);
+                }
             }
 
             m_NativeSession.TrackableListApi.Destroy(listHandle);

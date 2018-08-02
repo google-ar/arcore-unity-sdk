@@ -52,7 +52,7 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Name of the Instant Preview plugin library.
         /// </summary>
-        public const string InstantPreviewNativeApi = "instant_preview_unity_plugin";
+        public const string InstantPreviewNativeApi = "arcore_instant_preview_unity_plugin";
 
         // Guid is taken from meta file and should never change.
         private const string k_ApkGuid = "cf7b10762fe921e40a18151a6c92a8a6";

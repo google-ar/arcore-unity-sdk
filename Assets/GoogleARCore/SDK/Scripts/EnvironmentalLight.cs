@@ -28,6 +28,7 @@ namespace GoogleARCore
     /// to be inline with those estimated by ARCore.
     /// </summary>
     [ExecuteInEditMode]
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/EnvironmentalLight")]
     public class EnvironmentalLight : MonoBehaviour
     {
         /// <summary>

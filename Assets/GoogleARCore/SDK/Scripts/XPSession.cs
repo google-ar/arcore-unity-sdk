@@ -22,7 +22,8 @@ namespace GoogleARCore.CrossPlatform
 {
     using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
-#if UNITY_IOS
+
+#if ARCORE_IOS_SUPPORT
     using UnityEngine.XR.iOS;
 #endif
 
@@ -42,7 +43,7 @@ namespace GoogleARCore.CrossPlatform
             return CloudServiceManager.Instance.CreateCloudAnchor(anchor);
         }
 
-#if UNITY_IOS
+#if ARCORE_IOS_SUPPORT
         /// <summary>
         /// Attempts to asynchronously host a new cloud anchor.
         /// </summary>

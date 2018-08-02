@@ -37,8 +37,9 @@ namespace GoogleARCore.Examples.ComputerVision
         /// <param name="pixelBuffer">Pointer to raw image buffer, assuming one byte per pixel.</param>
         /// <param name="width">Width of the input image, in pixels.</param>
         /// <param name="height">Height of the input image, in pixels.</param>
+        /// <param name="rowStride">Row stride of the input image, in pixels.</param>
         /// <returns>False if the outputImage buffer is too small, True otherwise.</returns>
-        public static bool Detect(byte[] outputImage, IntPtr pixelBuffer, int width, int height)
+        public static bool Detect(byte[] outputImage, IntPtr pixelBuffer, int width, int height, int rowStride)
         {
             if (outputImage.Length < width * height)
             {
@@ -46,15 +47,15 @@ namespace GoogleARCore.Examples.ComputerVision
                 return false;
             }
 
-            Sobel(outputImage, pixelBuffer, width, height);
+            Sobel(outputImage, pixelBuffer, width, height, rowStride);
 
             return true;
         }
 
-        private static void Sobel(byte[] outputImage, IntPtr inputImage, int width, int height)
+        private static void Sobel(byte[] outputImage, IntPtr inputImage, int width, int height, int rowStride)
         {
             // Adjust buffer size if necessary.
-            int bufferSize = width * height;
+            int bufferSize = rowStride * height;
             if (bufferSize != s_ImageBufferSize || s_ImageBuffer.Length == 0)
             {
                 s_ImageBufferSize = bufferSize;
@@ -72,17 +73,17 @@ namespace GoogleARCore.Examples.ComputerVision
                 for (int i = 1; i < width - 1; i++)
                 {
                     // Offset of the pixel at [i, j] of the input image.
-                    int offset = (j * width) + i;
+                    int offset = (j * rowStride) + i;
 
                     // Neighbour pixels around the pixel at [i, j].
-                    int a00 = s_ImageBuffer[offset - width - 1];
-                    int a01 = s_ImageBuffer[offset - width];
-                    int a02 = s_ImageBuffer[offset - width + 1];
+                    int a00 = s_ImageBuffer[offset - rowStride - 1];
+                    int a01 = s_ImageBuffer[offset - rowStride];
+                    int a02 = s_ImageBuffer[offset - rowStride + 1];
                     int a10 = s_ImageBuffer[offset - 1];
                     int a12 = s_ImageBuffer[offset + 1];
-                    int a20 = s_ImageBuffer[offset + width - 1];
-                    int a21 = s_ImageBuffer[offset + width];
-                    int a22 = s_ImageBuffer[offset + width + 1];
+                    int a20 = s_ImageBuffer[offset + rowStride - 1];
+                    int a21 = s_ImageBuffer[offset + rowStride];
+                    int a22 = s_ImageBuffer[offset + rowStride + 1];
 
                     // Sobel X filter:
                     //   -1, 0, 1, 

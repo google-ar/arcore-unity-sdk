@@ -109,6 +109,13 @@ namespace GoogleARCoreInternal
             return m_NativeSession.TrackableFactory(subsumerHandle) as DetectedPlane;
         }
 
+        public DetectedPlaneType GetPlaneType(IntPtr planeHandle)
+        {
+            ApiPlaneType planeType = ApiPlaneType.HorizontalDownwardFacing;
+            ExternApi.ArPlane_getType(m_NativeSession.SessionHandle, planeHandle, ref planeType);
+            return planeType.ToDetectedPlaneType();
+        }
+
         public bool IsPoseInExtents(IntPtr planeHandle, Pose pose)
         {
             // The int is used as a boolean value as the C API expects a int32_t value to represent a boolean.
@@ -163,6 +170,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getExtentZ(IntPtr sessionHandle, IntPtr planeHandle,
                 ref float extentZ);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArPlane_getType(IntPtr sessionHandle, IntPtr planeHandle,
+                ref ApiPlaneType planeType);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getPolygonSize(IntPtr sessionHandle, IntPtr planeHandle,

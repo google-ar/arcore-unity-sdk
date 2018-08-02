@@ -35,15 +35,15 @@ namespace GoogleARCoreInternal
 
         private IntPtr m_SessionHandle = IntPtr.Zero;
 
-        private string m_CloudServicesApiKey;
+        private IntPtr m_FrameHandle = IntPtr.Zero;
 
         // Avoid warnings for fields that are unused on Android platform.
 #pragma warning disable 67, 414
-        private IntPtr m_RealArKitSessionHandle = IntPtr.Zero;
-
-        private IntPtr m_FrameHandle = IntPtr.Zero;
+        private string m_CloudServicesApiKey;
 
         private bool m_SessionEnabled = false;
+
+        private IntPtr m_RealArKitSessionHandle = IntPtr.Zero;
 
         public event Action EarlyUpdate;
 #pragma warning restore 67, 414
@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal
                     s_Instance = new ARCoreIOSLifecycleManager();
                     s_Instance._Initialize();
                     s_Instance.m_CloudServicesApiKey = (Resources.Load(k_CloudServicesApiKeyPath) as TextAsset).text;
-#if UNITY_IOS
+#if ARCORE_IOS_SUPPORT
                     UnityEngine.XR.iOS.UnityARSessionNativeInterface.ARFrameUpdatedEvent +=
                         s_Instance._OnARKitFrameUpdated;
 #endif
@@ -85,6 +85,7 @@ namespace GoogleARCoreInternal
 
         public void CreateSession(ARCoreSession sessionComponent)
         {
+#if ARCORE_IOS_SUPPORT
             if (SessionComponent != null)
             {
                 Debug.LogError("Multiple ARCore session components cannot exist in the scene. " +
@@ -104,6 +105,10 @@ namespace GoogleARCoreInternal
             }
 
             NativeSession = new NativeSession(m_SessionHandle, IntPtr.Zero);
+#else
+            Debug.Log("ARCore iOS Support is not enabled. ARCore will be disabled on iOS device.");
+            return;
+#endif
         }
 
         public void EnableSession()
@@ -135,7 +140,7 @@ namespace GoogleARCoreInternal
             _Initialize();
         }
 
-#if UNITY_IOS
+#if ARCORE_IOS_SUPPORT
         private void _OnARKitFrameUpdated(UnityEngine.XR.iOS.UnityARCamera camera)
         {
             if (m_FrameHandle != IntPtr.Zero)
@@ -171,7 +176,7 @@ namespace GoogleARCoreInternal
         private IntPtr _GetSessionHandleFromArkitPlugin()
         {
             IntPtr result = IntPtr.Zero;
-#if UNITY_IOS
+#if ARCORE_IOS_SUPPORT
             var m_session = UnityEngine.XR.iOS.UnityARSessionNativeInterface.GetARSessionNativeInterface();
             var sessionField = m_session.GetType().GetField("m_NativeARSession", BindingFlags.NonPublic | BindingFlags.Instance);
             var val = sessionField.GetValue(m_session);
@@ -183,11 +188,11 @@ namespace GoogleARCoreInternal
         private struct ExternApi
         {
 #if UNITY_IOS
-            [DllImport("__Internal")]
+            [DllImport(ApiConstants.ARCoreARKitIntegrationApi)]
             public static extern IntPtr ARCoreARKitIntegration_castUnitySessionToARKitSession(
                 IntPtr sessionToCast);
 
-            [DllImport("__Internal")]
+            [DllImport(ApiConstants.ARCoreARKitIntegrationApi)]
             public static extern IntPtr ARCoreARKitIntegration_getCurrentFrame(IntPtr arkitSessionHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
@@ -201,6 +206,16 @@ namespace GoogleARCoreInternal
             public static extern ApiArStatus ArSession_updateAndAcquireArFrame(IntPtr sessionHandle,
                 IntPtr arkitFrameHandle, ref IntPtr arFrame);
 #else
+            public static IntPtr ARCoreARKitIntegration_castUnitySessionToARKitSession(IntPtr sessionToCast)
+            {
+                return IntPtr.Zero;
+            }
+
+            public static IntPtr ARCoreARKitIntegration_getCurrentFrame(IntPtr arkitSessionHandle)
+            {
+                return IntPtr.Zero;
+            }
+
             public static ApiArStatus ArSession_create(string apiKey, string bundleIdentifier,
                 ref IntPtr sessionHandle)
             {

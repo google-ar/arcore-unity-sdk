@@ -29,7 +29,7 @@ namespace GoogleARCoreInternal
         private static void ShowARCoreProjectSettingsWindow()
         {
             ARCoreProjectSettings.Instance.Load();
-            Rect rect = new Rect(500, 300, 400, 180);
+            Rect rect = new Rect(500, 300, 400, 200);
             ARCoreProjectSettingsWindow window = GetWindowWithRect<ARCoreProjectSettingsWindow>(rect);
             window.titleContent = new GUIContent("ARCore");
             window.Show();
@@ -44,31 +44,49 @@ namespace GoogleARCoreInternal
             titleStyle.stretchWidth = true;
             titleStyle.fontSize = 14;
             titleStyle.fixedHeight = 20;
+
             EditorGUILayout.LabelField("ARCore Project Settings", titleStyle);
             GUILayout.Space(15);
+
             ARCoreProjectSettings.Instance.IsARCoreRequired =
                 EditorGUILayout.Toggle("ARCore Required", ARCoreProjectSettings.Instance.IsARCoreRequired);
             GUILayout.Space(5);
+
             ARCoreProjectSettings.Instance.IsInstantPreviewEnabled =
                 EditorGUILayout.Toggle("Instant Preview enabled",
                                        ARCoreProjectSettings.Instance.IsInstantPreviewEnabled);
             GUILayout.Space(5);
+            bool newARCoreIOSEnabled =
+                EditorGUILayout.Toggle("IOS Support Enabled",
+                                       ARCoreProjectSettings.Instance.IsIOSSupportEnabled);
+            GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(3);
-            EditorGUILayout.LabelField("Android Cloud Services API Key ", GUILayout.Width(180));
+
+            EditorGUILayout.LabelField("Android Cloud Services API Key", GUILayout.Width(180));
             ARCoreProjectSettings.Instance.CloudServicesApiKey =
                 EditorGUILayout.TextField(ARCoreProjectSettings.Instance.CloudServicesApiKey);
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(3);
-            EditorGUILayout.LabelField("iOS Cloud Services API Key ", GUILayout.Width(180));
+
+            EditorGUILayout.LabelField("iOS Cloud Services API Key", GUILayout.Width(180));
             ARCoreProjectSettings.Instance.IosCloudServicesApiKey =
                 EditorGUILayout.TextField(ARCoreProjectSettings.Instance.IosCloudServicesApiKey);
+
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(10);
+
             if (GUI.changed)
             {
+                if (newARCoreIOSEnabled != ARCoreProjectSettings.Instance.IsIOSSupportEnabled)
+                {
+                    ARCoreProjectSettings.Instance.IsIOSSupportEnabled = newARCoreIOSEnabled;
+
+                    ARCoreIOSSupportHelper.SetARCoreIOSSupportEnabled(newARCoreIOSEnabled);
+                }
+
                 ARCoreProjectSettings.Instance.Save();
             }
 
@@ -81,6 +99,6 @@ namespace GoogleARCoreInternal
 
             EditorGUILayout.EndHorizontal();
             GUILayout.EndVertical();
-        } 
+        }
     }
 }
