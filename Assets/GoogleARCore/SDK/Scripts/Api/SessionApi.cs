@@ -118,6 +118,10 @@ namespace GoogleARCoreInternal
                 {
                     trackables.Add(trackable);
                 }
+                else
+                {
+                    m_NativeSession.TrackableApi.Release(trackableHandle);
+                }
             }
 
             m_NativeSession.TrackableListApi.Destroy(listHandle);

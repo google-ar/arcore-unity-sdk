@@ -53,7 +53,7 @@ namespace GoogleARCore.Examples.Common
                 // Copy the point cloud points for mesh verticies.
                 for (int i = 0; i < Frame.PointCloud.PointCount; i++)
                 {
-                    m_Points[i] = Frame.PointCloud.GetPoint(i);
+                    m_Points[i] = Frame.PointCloud.GetPointAsStruct(i);
                 }
 
                 // Update the mesh indicies array.

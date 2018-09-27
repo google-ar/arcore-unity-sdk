@@ -18,6 +18,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+// Certain versions of 2018.1 fail to define UNITY_2017_4_OR_NEWER.
+#if !UNITY_2017_4_OR_NEWER && !UNITY_2018_1_OR_NEWER && !ARCORE_SKIP_MIN_VERSION_CHECK
+  #error ARCore SDK for Unity requires Unity 2017.4 or later.
+#endif  // !UNITY_2017_4_OR_NEWER && !UNITY_2018_1_OR_NEWER
+
 namespace GoogleARCore
 {
     using System;
@@ -53,6 +58,7 @@ namespace GoogleARCore
         /// <param name="pose">The Unity world pose where the anchor is to be creates.</param>
         /// <param name="trackable">The Trackable to attach the Anchor to.</param>
         /// <returns>The newly created anchor or null.</returns>
+        [SuppressMemoryAllocationError(Reason = "Could allocate a new Anchor object")]
         public static Anchor CreateAnchor(Pose pose, Trackable trackable = null)
         {
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -77,6 +83,7 @@ namespace GoogleARCore
         /// <typeparam name="T">The Trackable type to get.</typeparam>
         /// <param name="trackables">A reference to a list of T that will be filled by the method call.</param>
         /// <param name="filter">A filter on the type of data to return.</param>
+        [SuppressMemoryAllocationError(Reason = "List could be resized.")]
         public static void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter = TrackableQueryFilter.All) where T : Trackable
         {
             trackables.Clear();
@@ -109,6 +116,7 @@ namespace GoogleARCore
         /// Checks the availability of the ARCore APK on the device.
         /// </summary>
         /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability is known.</returns>
+        [SuppressMemoryAllocationError(Reason = "Creates a new AsyncTask")]
         public static AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
             return LifecycleManager.Instance.CheckApkAvailability();
@@ -120,6 +128,7 @@ namespace GoogleARCore
         /// <param name="userRequested">Whether the installation was requested explicity by a user action.</param>
         /// <returns>An AsyncTask that completes with an ApkInstallationStatus when the installation
         /// status is resolved.</returns>
+        [SuppressMemoryAllocationError(Reason = "Creates a new AsyncTask")]
         public static AsyncTask<ApkInstallationStatus> RequestApkInstallation(bool userRequested)
         {
             return LifecycleManager.Instance.RequestApkInstallation(userRequested);

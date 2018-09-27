@@ -57,6 +57,7 @@ namespace GoogleARCore
         /// <summary>
         /// Unity Awake.
         /// </summary>
+        [SuppressMemoryAllocationError(Reason = "Could create new LifecycleManager")]
         public void Awake()
         {
             LifecycleManager.Instance.CreateSession(this);
@@ -65,6 +66,7 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnDestroy.
         /// </summary>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public void OnDestroy()
         {
             LifecycleManager.Instance.ResetSession();
@@ -73,6 +75,7 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnEnable.
         /// </summary>
+        [SuppressMemoryAllocationError(Reason = "Enabling session creates a new ARSessionConfiguration")]
         public void OnEnable()
         {
             LifecycleManager.Instance.EnableSession();
@@ -81,6 +84,7 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnDisable.
         /// </summary>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public void OnDisable()
         {
             LifecycleManager.Instance.DisableSession();

@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal
                                        ARCoreProjectSettings.Instance.IsInstantPreviewEnabled);
             GUILayout.Space(5);
             bool newARCoreIOSEnabled =
-                EditorGUILayout.Toggle("IOS Support Enabled",
+                EditorGUILayout.Toggle("iOS Support Enabled",
                                        ARCoreProjectSettings.Instance.IsIOSSupportEnabled);
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();

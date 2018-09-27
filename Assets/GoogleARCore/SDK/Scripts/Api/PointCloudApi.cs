@@ -61,42 +61,42 @@ namespace GoogleARCoreInternal
             return pointCount;
         }
 
-        public Vector4 GetPoint(IntPtr pointCloudHandle, int index)
+        public PointCloudPoint GetPoint(IntPtr pointCloudHandle, int index)
         {
-            IntPtr pointCloudNativeHandle = IntPtr.Zero;
-            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
-            IntPtr pointHandle = new IntPtr(pointCloudNativeHandle.ToInt64() +
-                                            (Marshal.SizeOf(typeof(Vector4)) * index));
-            Marshal.Copy(pointHandle, m_CachedVector, 0, 4);
+            // Get a reference to the pointcloud data to extract position and condfidence of point at index.
+            IntPtr pointCloudDataHandle = IntPtr.Zero;
+            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudDataHandle);
+            IntPtr pointDataHandle = new IntPtr(pointCloudDataHandle.ToInt64() +
+                (Marshal.SizeOf(typeof(Vector4)) * index));
+            Marshal.Copy(pointDataHandle, m_CachedVector, 0, 4);
 
             // Negate z axis because points are returned in OpenGl space.
-            return new Vector4(m_CachedVector[0], m_CachedVector[1], -m_CachedVector[2], m_CachedVector[3]);
-        }
+            Vector3 position = new Vector3(m_CachedVector[0], m_CachedVector[1], -m_CachedVector[2]);
+            float confidence = m_CachedVector[3];
 
-        public void CopyPoints(IntPtr pointCloudHandle, List<Vector4> points)
-        {
-            points.Clear();
-
-            IntPtr pointCloudNativeHandle = IntPtr.Zero;
-            int pointCloudSize = GetNumberOfPoints(pointCloudHandle);
-
-            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudNativeHandle);
-
-            MarshalingHelper.AddUnmanagedStructArrayToList<Vector4>(pointCloudNativeHandle,
-                    pointCloudSize, points);
-
-            for (int i = 0; i < pointCloudSize; ++i)
-            {
-                // Negate z axis because points are returned in OpenGl space.
-                points[i] = new Vector4(points[i].x, points[i].y,
-                        -points[i].z, points[i].w);
-            }
+            return new PointCloudPoint(_GetPointId(pointCloudHandle, index), position, confidence);
         }
 
         public void Release(IntPtr pointCloudHandle)
         {
             ExternApi.ArPointCloud_release(pointCloudHandle);
         }
+
+#if !UNITY_EDITOR
+        private int _GetPointId(IntPtr pointCloudHandle, int index)
+        {
+            IntPtr pointCloudIdsHandle = IntPtr.Zero;
+            ExternApi.ArPointCloud_getPointIds(m_NativeSession.SessionHandle, pointCloudHandle,
+                ref pointCloudIdsHandle);
+            IntPtr pointIdHandle = new IntPtr(pointCloudIdsHandle.ToInt64() + (Marshal.SizeOf(typeof(int)) * index));
+            return Marshal.ReadInt32(pointIdHandle);
+        }
+#else
+        private int _GetPointId(IntPtr pointCloudHandle, int index)
+        {
+            return 0;
+        }
+#endif
 
         private struct ExternApi
         {
@@ -112,6 +112,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_getData(IntPtr session, IntPtr pointCloudHandle,
                 ref IntPtr pointCloudData);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArPointCloud_getPointIds(IntPtr session, IntPtr pointCloudHandle,
+                ref IntPtr pointIds);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_release(IntPtr pointCloudHandle);

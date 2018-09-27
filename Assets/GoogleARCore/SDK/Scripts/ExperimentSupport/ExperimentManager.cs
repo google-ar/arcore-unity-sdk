@@ -22,9 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.InteropServices;
-    using System.Threading;
+    using System.Reflection;
     using GoogleARCore;
 
     internal class ExperimentManager
@@ -38,13 +36,26 @@ namespace GoogleARCoreInternal
             // state. Find and hook them up.
             m_Experiments = new List<ExperimentBase>();
 
-            var implementingTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(ExperimentBase).IsAssignableFrom(p));
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            List<Type> allTypes = new List<Type>();
 
-            foreach (var type in implementingTypes)
+            foreach (var assembly in assemblies)
             {
-                if (!type.IsClass || type.IsAbstract)
+                try
+                {
+                    var assemblyTypes = assembly.GetTypes();
+                    allTypes.AddRange(assemblyTypes);
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    UnityEngine.Debug.Log("Unable to load types from assembly:: " + assembly.ToString() + ":: "
+                        + ex.Message);
+                }
+            }
+
+            foreach (var type in allTypes)
+            {
+                if (!type.IsClass || type.IsAbstract || !typeof(ExperimentBase).IsAssignableFrom(type))
                 {
                     continue;
                 }

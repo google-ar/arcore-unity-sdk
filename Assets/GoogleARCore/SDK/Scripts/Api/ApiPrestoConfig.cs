@@ -35,19 +35,14 @@ namespace GoogleARCoreInternal
         public ApiPlaneFindingMode PlaneFindingMode;
         public ApiLightEstimationMode LightEstimationMode;
         public ApiCloudAnchorMode CloudAnchorMode;
-        public IntPtr AugmentedImageDatabaseBytes;
-        public long AugmentedImageDatabaseSize;
+        public IntPtr ArPrestoAugmentedImageDatabase;
         public ApiCameraFocusMode CameraFocusMode;
 
         /// <summary>
         /// Wrap an ARCoreSessionConfig in an API config.
         /// </summary>
         /// <param name="config">Config to wrap.</param>
-        /// <param name="handle">
-        /// GCHandle pinning internal IntPtr. The caller is responsible for calling GCHandle.Free
-        /// when done with this config.
-        /// </param>
-        public ApiPrestoConfig(ARCoreSessionConfig config, out GCHandle handle)
+        public ApiPrestoConfig(ARCoreSessionConfig config)
         {
             UpdateMode = config.MatchCameraFramerate ?
                 ApiUpdateMode.Blocking : ApiUpdateMode.LatestCameraImage;
@@ -75,16 +70,11 @@ namespace GoogleARCoreInternal
 
             if (config.AugmentedImageDatabase != null)
             {
-                byte[] rawData = config.AugmentedImageDatabase.GetRawData();
-                handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
-                AugmentedImageDatabaseBytes = handle.AddrOfPinnedObject();
-                AugmentedImageDatabaseSize = rawData.Length;
+                ArPrestoAugmentedImageDatabase = config.AugmentedImageDatabase.m_ArPrestoDatabaseHandle;
             }
             else
             {
-                handle = new GCHandle();
-                AugmentedImageDatabaseBytes = IntPtr.Zero;
-                AugmentedImageDatabaseSize = 0;
+                ArPrestoAugmentedImageDatabase = IntPtr.Zero;
             }
 
             switch (config.CameraFocusMode)

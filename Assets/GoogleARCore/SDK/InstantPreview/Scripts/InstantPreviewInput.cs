@@ -37,6 +37,19 @@ namespace GoogleARCore
         private static List<Touch> s_TouchList = new List<Touch>();
 
         /// <summary>
+        /// Gets the inputString from Instant Preview since the last update.
+        /// </summary>
+        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
+         Justification = "Overridden field.")]
+        public static string inputString
+        {
+            get
+            {
+                return Input.inputString;
+            }
+        }
+
+        /// <summary>
         /// Gets the available touch inputs from Instant Preview since the last
         /// update.
         /// </summary>

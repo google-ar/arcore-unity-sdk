@@ -52,6 +52,7 @@ namespace GoogleARCore
         /// android.permission.CAMERA).</param>
         /// <returns><c>true</c> if <c>permissionName</c> is granted to the application, otherwise
         /// <c>false</c>.</returns>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Allocates new objects the first time is called")]
         public static bool IsPermissionGranted(string permissionName)
         {
             if (Application.isEditor)
@@ -69,6 +70,7 @@ namespace GoogleARCore
         /// <returns>An asynchronous task the completes when the user has accepted/rejected the requested permission
         /// and yields a {@link AndroidPermissionsRequestResult} that summarizes the result.  If this method is called
         /// when another permissions request is pending <c>null</c> will be returned instead.</returns>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Allocates new objects the first time is called")]
         public static AsyncTask<AndroidPermissionsRequestResult> RequestPermission(string permissionName)
         {
             if (AndroidPermissionsManager.IsPermissionGranted(permissionName))
@@ -95,6 +97,7 @@ namespace GoogleARCore
         /// Callback fired when a permission is granted.
         /// </summary>
         /// <param name="permissionName">The name of the permission that was granted.</param>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public virtual void OnPermissionGranted(string permissionName)
         {
             _OnPermissionResult(permissionName, true);
@@ -107,6 +110,7 @@ namespace GoogleARCore
         /// Callback fired when a permission is denied.
         /// </summary>
         /// <param name="permissionName">The name of the permission that was denied.</param>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public virtual void OnPermissionDenied(string permissionName)
         {
             _OnPermissionResult(permissionName, false);

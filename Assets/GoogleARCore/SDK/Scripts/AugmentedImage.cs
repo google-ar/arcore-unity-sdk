@@ -62,6 +62,7 @@ namespace GoogleARCore
         /// </summary>
         public string Name
         {
+            [SuppressMemoryAllocationError(IsWarning = true, Reason = "Allocates new string")]
             get
             {
                 return m_NativeSession.AugmentedImageApi.GetName(m_TrackableNativeHandle);

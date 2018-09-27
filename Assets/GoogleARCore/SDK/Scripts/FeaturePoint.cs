@@ -62,6 +62,7 @@ namespace GoogleARCore
         /// </summary>
         public FeaturePointOrientationMode OrientationMode
         {
+            [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
                 if (_IsSessionDestroyed())

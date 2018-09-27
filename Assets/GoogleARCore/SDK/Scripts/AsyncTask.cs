@@ -108,6 +108,7 @@ namespace GoogleARCore
         /// <param name="doAfterTaskComplete">The action to invoke when task is complete.  The result of the task will
         /// be passed as an argument to the action.</param>
         /// <returns>The invoking asynchronous task.</returns>
+        [SuppressMemoryAllocationError(Reason = "Could allocate new List")]
         public AsyncTask<T> ThenAction(Action<T> doAfterTaskComplete)
         {
             // Perform action now if task is already complete.

@@ -54,6 +54,7 @@ namespace GoogleARCore
         /// </summary>
         public bool IsAllGranted
         {
+            [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
                 if (PermissionNames == null || GrantResults == null)

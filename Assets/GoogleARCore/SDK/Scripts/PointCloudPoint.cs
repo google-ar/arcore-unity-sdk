@@ -28,56 +28,61 @@ namespace GoogleARCore
     public struct PointCloudPoint
     {
         /// <summary>
-        /// The x-position of the point.
+        /// A number that represents an invalid point id.
         /// </summary>
-        public float X;
-
-        /// <summary>
-        /// The y-position of the point.
-        /// </summary>
-        public float Y;
-
-        /// <summary>
-        /// The z-position of the point.
-        /// </summary>
-        public float Z;
-
-        /// <summary>
-        /// A normalized confidence value for the point.
-        /// </summary>
-        public float Confidence;
+        public const int InvalidPointId = -1;
 
         /// <summary>
         /// Constructs a new PointCloudPoint.
         /// </summary>
-        /// <param name="x">The x-position of the point.</param>
-        /// <param name="y">The y-position of the point.</param>
-        /// <param name="z">The z-position of the point.</param>
-        /// <param name="confidence">The confidence of the point.</param>
-        public PointCloudPoint(float x, float y, float z, float confidence)
+        /// <param name="id">The id of the point within the session.</param>
+        /// <param name="position">The position of the point in world space.</param>
+        /// <param name="confidence">The normalized confidence of the point.</param>
+        public PointCloudPoint(int id, Vector3 position, float confidence) : this()
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this.Id = id;
+            this.Position = position;
             this.Confidence = confidence;
         }
 
         /// <summary>
-        /// Implicitly converts a PointCloudPoint to a Vector4.
+        /// Gets a number that identifies the point within a point cloud and ARCore session.
+        ///
+        /// This value is guarenteed to be unique if the ARCore session has been running for less than 24 hours.
         /// </summary>
-        /// <param name="point">The point to convert.</param>
-        public static implicit operator Vector4(PointCloudPoint point)
+        /// <value>A number that identifies the point within a point cloud and ARCore session.</value>
+#if !UNITY_EDITOR
+        public int Id { get; private set; }
+#else
+        public int Id
         {
-            return new Vector4(point.X, point.Y, point.Z, point.Confidence);
+            get
+            {
+                Debug.Log("Instant Preview does not currently support point cloud ids. " +
+                    "PointCloudPoint.Id will always evaluate to 0 when accessed in the editor.");
+                return 0;
+            }
+            private set {}
         }
+#endif
 
         /// <summary>
-        /// Implicitly converts a Vector4 to a PointCloudPoint.
+        /// Gets the position of the point in world space.
         /// </summary>
-        /// <param name="vectorPoint">The Vector3 to convert.</param>
-        public static implicit operator PointCloudPoint(Vector4 vectorPoint)
+        public Vector3 Position { get; private set; }
+
+        /// <summary>
+        /// Gets a normalized confidence value for the point.
+        /// </summary>
+        public float Confidence { get; private set; }
+
+        /// <summary>
+        /// Implicitly converts a PointCloudPoint to a Vector3 that represents its position.
+        /// </summary>
+        /// <param name="point">The point to convert.</param>
+        public static implicit operator Vector3(PointCloudPoint point)
         {
-            return new PointCloudPoint(vectorPoint.x, vectorPoint.y, vectorPoint.z, vectorPoint.w);
+            return point.Position;
         }
     }
 }

@@ -84,7 +84,7 @@ namespace GoogleARCore.Examples.ComputerVision
         /// </summary>
         private DisplayUvCoords m_CameraImageToDisplayUvTransformation;
 
-        private ScreenOrientation m_CachedOrientation = ScreenOrientation.Unknown;
+        private ScreenOrientation? m_CachedOrientation = null;
         private Vector2 m_CachedScreenDimensions = Vector2.zero;
         private bool m_IsQuitting = false;
         private bool m_UseHighResCPUTexture = false;

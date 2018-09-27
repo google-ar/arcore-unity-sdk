@@ -126,6 +126,7 @@ namespace GoogleARCore
         /// <summary>
         /// Calls release as part of IDisposable pattern supporting 'using' statements.
         /// </summary>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public void Dispose()
         {
             Release();

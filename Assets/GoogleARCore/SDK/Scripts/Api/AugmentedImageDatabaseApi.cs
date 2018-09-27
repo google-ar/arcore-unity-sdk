@@ -38,44 +38,103 @@ namespace GoogleARCoreInternal
 
     internal class AugmentedImageDatabaseApi
     {
-        private NativeSession m_NativeSession;
-
         public AugmentedImageDatabaseApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
         }
 
-        public IntPtr CreateFromBytes(byte[] databaseBytes)
+        public IntPtr CreateArPrestoAugmentedImageDatabase(byte[] rawData)
         {
-            IntPtr result = IntPtr.Zero;
-            var bytesHandle = GCHandle.Alloc(databaseBytes, GCHandleType.Pinned);
-            var status = ExternApi.ArAugmentedImageDatabase_deserialize(m_NativeSession.SessionHandle,
-                bytesHandle.AddrOfPinnedObject(), databaseBytes.Length, ref result);
+            IntPtr outDatabaseHandle = IntPtr.Zero;
+            GCHandle handle = new GCHandle();
+            IntPtr rawDataHandle = IntPtr.Zero;
+            Int32 length = 0;
+
+            if (rawData != null)
+            {
+                handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
+                rawDataHandle = handle.AddrOfPinnedObject();
+                length = rawData.Length;
+            }
+
+            ExternApi.ArPrestoAugmentedImageDatabase_create(rawDataHandle, length, ref outDatabaseHandle);
+
+            if (handle.IsAllocated)
+            {
+                handle.Free();
+            }
+
+            return outDatabaseHandle;
+        }
+
+        public Int32 AddImageAtRuntime(IntPtr databaseHandle, string name, Texture2D image, float width)
+        {
+            Int32 outIndex = -1;
+            GCHandle grayscaleBytesHandle = _ConvertTextureToGrayscaleBytes(image);
+            if (grayscaleBytesHandle.AddrOfPinnedObject() == IntPtr.Zero)
+            {
+                return -1;
+            }
+
+            ApiArStatus status =
+                ExternApi.ArPrestoAugmentedImageDatabase_addImageAtRuntime(databaseHandle, name,
+                    grayscaleBytesHandle.AddrOfPinnedObject(), image.width, image.height, image.width,
+                    width, ref outIndex);
+
+            if (grayscaleBytesHandle.IsAllocated)
+            {
+                grayscaleBytesHandle.Free();
+            }
 
             if (status != ApiArStatus.Success)
             {
-                Debug.LogErrorFormat("ArAugmentedImageDatabase_deserialize returned {0} when passed a " +
-                    "database with size: {1}", status, databaseBytes.Length);
+                Debug.LogWarningFormat("Failed to add aumented image at runtime with status {0}", status);
+                return -1;
             }
 
-            bytesHandle.Free();
-            return result;
+            return outIndex;
         }
 
-        public void Destroy(IntPtr trackedImageDatabaseHandle)
+        private GCHandle _ConvertTextureToGrayscaleBytes(Texture2D image)
         {
-            ExternApi.ArAugmentedImageDatabase_destroy(trackedImageDatabaseHandle);
+            byte[] grayscaleBytes = null;
+
+            if (image.format == TextureFormat.RGB24 || image.format == TextureFormat.RGBA32)
+            {
+                Color[] pixels = image.GetPixels();
+                grayscaleBytes = new byte[pixels.Length];
+                for (int i = 0; i < image.height; i++)
+                {
+                    for (int j = 0; j < image.width; j++)
+                    {
+                        grayscaleBytes[(i * image.width) + j] = 
+                            (byte)(((0.213 * pixels[((image.height - 1 - i) * image.width) + j].r)
+                            + (0.715 * pixels[((image.height - 1 - i) * image.width) + j].g)
+                            + (0.072 * pixels[((image.height - 1 - i) * image.width) + j].b)) * 255);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("Unsupported texture format " + image.format);
+            }
+
+            return GCHandle.Alloc(grayscaleBytes, GCHandleType.Pinned);
         }
 
         private struct ExternApi
         {
 #pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedImageDatabase_destroy(IntPtr augmentedImageDatabaseHandle);
+            [AndroidImport(ApiConstants.ARPrestoApi)]
+            public static extern void ArPrestoAugmentedImageDatabase_create(IntPtr rawBytes,
+                Int64 rawBytesSize, ref IntPtr outAugmentedImageDatabaseHandle);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern ApiArStatus ArAugmentedImageDatabase_deserialize(IntPtr sessionHandle,
-                 IntPtr rawBytes, Int64 rawBytesSize, ref IntPtr outAugmentedImageDatabaseHandle);
+            [AndroidImport(ApiConstants.ARPrestoApi)]
+            public static extern void ArPrestoAugmentedImageDatabase_destroy(IntPtr augmentedImageDatabaseHandle);
+
+            [AndroidImport(ApiConstants.ARPrestoApi)]
+            public static extern ApiArStatus ArPrestoAugmentedImageDatabase_addImageAtRuntime(
+                IntPtr augmentedImageDatabaseHandle, string imageName, IntPtr imageBytes, Int32 imageWidth,
+                Int32 imageHeight, Int32 imageStride, float imageWidthInMeters, ref Int32 outIndex);
 #pragma warning restore 626
         }
     }

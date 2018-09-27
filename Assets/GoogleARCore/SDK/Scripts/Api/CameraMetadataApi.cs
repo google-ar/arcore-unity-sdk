@@ -37,6 +37,8 @@ namespace GoogleARCoreInternal
 
     internal class CameraMetadataApi
     {
+        private const int k_MaximumTagCountForWarning = 5000;
+        private HashSet<int> m_WarningTags = new HashSet<int>();
         private NativeSession m_NativeSession;
 
         public CameraMetadataApi(NativeSession nativeSession)
@@ -64,6 +66,13 @@ namespace GoogleARCoreInternal
                 ARDebug.LogErrorFormat("ACameraMetadata_getConstEntry error with native camera error code: {0}",
                     status);
                 return false;
+            }
+
+            if (entry.Count > k_MaximumTagCountForWarning && !m_WarningTags.Contains((int)tag))
+            {
+                Debug.LogWarningFormat("TryGetValues for tag {0} has {1} values. Accessing tags with a large " +
+                    "number of values may impede performance.", tag, entry.Count);
+                m_WarningTags.Add((int)tag);
             }
 
             for (int i = 0; i < entry.Count; i++)

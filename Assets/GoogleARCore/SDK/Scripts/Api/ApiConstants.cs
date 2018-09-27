@@ -67,6 +67,8 @@ namespace GoogleARCoreInternal
         public const string AugmentedImageCliBinaryName = "augmented_image_cli_osx";
 #elif UNITY_EDITOR_WIN
         public const string AugmentedImageCliBinaryName = "augmented_image_cli_win";
+#elif UNITY_EDITOR_LINUX
+        public const string AugmentedImageCliBinaryName = "augmented_image_cli_linux";
 #endif
     }
 }

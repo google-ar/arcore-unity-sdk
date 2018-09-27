@@ -141,7 +141,7 @@ namespace GoogleARCoreInternal
                     string quality;
                     string error;
                     ShellHelper.RunCommand(cliBinaryPath,
-                        string.Format("eval-img --input_image_path {0}", imagePath), out quality, out error);
+                        string.Format("eval-img --input_image_path \"{0}\"", imagePath), out quality, out error);
                     if (!string.IsNullOrEmpty(error))
                     {
                         Debug.LogWarning(error);

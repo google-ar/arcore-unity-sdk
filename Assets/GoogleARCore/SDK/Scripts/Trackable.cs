@@ -63,6 +63,7 @@ namespace GoogleARCore
         /// <returns>The tracking state of for the Trackable in the current frame.</returns>
         public virtual TrackingState TrackingState
         {
+            [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
                 if (_IsSessionDestroyed())
@@ -83,6 +84,7 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="pose">The Pose of the location to create the anchor.</param>
         /// <returns>An Anchor attached to the Trackable at <c>Pose</c>.</returns>
+        [SuppressMemoryAllocationError(Reason = "Could allocate a new Anchor object")]
         public virtual Anchor CreateAnchor(Pose pose)
         {
             if (_IsSessionDestroyed())
@@ -105,6 +107,7 @@ namespace GoogleARCore
         /// Gets all anchors attached to the Trackable.
         /// </summary>
         /// <param name="anchors">A list of anchors to be filled by the method.</param>
+        [SuppressMemoryAllocationError(Reason = "List could be resized.")]
         public virtual void GetAllAnchors(List<Anchor> anchors)
         {
             if (_IsSessionDestroyed())

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ARCoreIOSSupportPreprocessBuild.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -28,19 +28,9 @@ namespace GoogleARCoreInternal
     using UnityEditor.Build;
     using UnityEngine;
 
-    internal class ARCoreIOSSupportPreprocessBuild : IPreprocessBuild
+    internal class ARCoreIOSSupportPreprocessBuild : PreprocessBuildBase
     {
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overriden property.")]
-        public int callbackOrder
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        public void OnPreprocessBuild(BuildTarget target, string path)
+        public override void OnPreprocessBuild(BuildTarget target, string path)
         {
             if (target == BuildTarget.iOS)
             {

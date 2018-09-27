@@ -272,18 +272,13 @@ namespace GoogleARCoreInternal
             }
 
             if (m_CachedConfig == null || !config.Equals(m_CachedConfig) ||
+                (config.AugmentedImageDatabase != null && config.AugmentedImageDatabase.m_IsDirty) ||
                 ExperimentManager.Instance.IsConfigurationDirty)
             {
-                GCHandle handle;
-                var prestoConfig = new ApiPrestoConfig(config, out handle);
+                var prestoConfig = new ApiPrestoConfig(config);
                 ExternApi.ArPresto_setConfiguration(ref prestoConfig);
                 m_CachedConfig = ScriptableObject.CreateInstance<ARCoreSessionConfig>();
                 m_CachedConfig.CopyFrom(config);
-
-                if (handle.IsAllocated)
-                {
-                    handle.Free();
-                }
             }
         }
 
