@@ -66,6 +66,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// The database to use for detecting AugmentedImage Trackables.
+        /// When this value is null, Augmented Image detection is disabled.
         /// </summary>
         [Tooltip("The database to use for detecting AugmentedImage Trackables.")]
         public AugmentedImageDatabase AugmentedImageDatabase;

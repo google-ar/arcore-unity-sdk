@@ -205,7 +205,7 @@ namespace GoogleARCore.Examples.Common
 
             m_Mesh.Clear();
             m_Mesh.SetVertices(m_MeshVertices);
-            m_Mesh.SetIndices(m_MeshIndices.ToArray(), MeshTopology.Triangles, 0);
+            m_Mesh.SetTriangles(m_MeshIndices, 0);
             m_Mesh.SetColors(m_MeshColors);
         }
 

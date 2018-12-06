@@ -298,13 +298,14 @@ namespace GoogleARCore
             }
 
             /// <summary>
-            /// This method has been deprecated. Please use Frame.PointCloud.GetPointAsStruct instead.
             /// Gets a point from the point cloud at a given index.
             /// The point returned will be a Vector4 in the form <x,y,z,c> where the first three dimensions describe
             /// the position of the point in the world and the last represents a confidence estimation in the range [0, 1).
             /// </summary>
             /// <param name="index">The index of the point cloud point to get.</param>
             /// <returns>The point from the point cloud at <c>index</c> along with its confidence.</returns>
+            /// @deprecated Please use Frame.PointCloud.GetPointAsStruct instead.
+
             [System.Obsolete("Frame.PointCloud.GetPoint has been deprecated. " +
              "Please use Frame.PointCloud.GetPointAsStruct instead.")]
             public static Vector4 GetPoint(int index)
@@ -337,6 +338,7 @@ namespace GoogleARCore
             /// of the point in the world and the last represents a confidence estimation in the range [0, 1).
             /// </summary>
             /// <param name="points">A list that will be filled with point cloud points by this method call.</param>
+            /// @deprecated Please copy points manually instead.
             [System.Obsolete("Frame.PointCloud.CopyPoints has been deprecated. Please copy points manually instead.")]
             public static void CopyPoints(List<Vector4> points)
             {

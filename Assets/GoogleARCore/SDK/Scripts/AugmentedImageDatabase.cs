@@ -159,6 +159,7 @@ namespace GoogleARCore
         /// <param name="image">The image to be added.</param>
         /// <param name="width">The physical width of the image in meters, or 0 if the width is unkwown.</param>
         /// <returns>The index of the added image in this database or -1 if there was an error.</returns>
+        [SuppressMemoryAllocationError(Reason = "Allocates memory for the image.")]
         public Int32 AddImage(string name, Texture2D image, float width = 0)
         {
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -257,7 +258,7 @@ namespace GoogleARCore
             var rawDatabasePath = Path.Combine(tempDirectoryPath, "out_database");
             string output;
 #if !UNITY_EDITOR_WIN
-            ShellHelper.RunCommand("chmod", "+x " + cliBinaryPath, out output, out error);
+            ShellHelper.RunCommand("chmod", "+x \"" + cliBinaryPath + "\"", out output, out error);
             if (!string.IsNullOrEmpty(error))
             {
                 Debug.LogWarning(error);

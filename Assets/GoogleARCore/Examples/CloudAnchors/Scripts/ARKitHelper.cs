@@ -95,5 +95,16 @@ namespace GoogleARCore.Examples.CloudAnchors
             anchorGO.transform.rotation = pose.rotation;
             return anchor;
         }
+
+        /// <summary>
+        /// Sets the world origin.
+        /// </summary>
+        /// <param name="transform">Transform of the new world origin.</param>
+        public void SetWorldOrigin(Transform transform)
+        {
+#if ARCORE_IOS_SUPPORT
+            UnityARSessionNativeInterface.GetARSessionNativeInterface().SetWorldOrigin(transform);
+#endif
+        }
     }
 }

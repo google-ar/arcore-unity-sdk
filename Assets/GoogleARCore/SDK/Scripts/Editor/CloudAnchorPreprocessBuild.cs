@@ -52,7 +52,9 @@ namespace GoogleARCoreInternal
             var jdkPath = UnityEditor.EditorPrefs.GetString("JdkPath");
             if (string.IsNullOrEmpty(jdkPath))
             {
-                Debug.Log("JDK path Unity pref is not set. Falling back to JAVA_HOME environment variable.");
+                Debug.Log(
+                    "Unity 'Preferences > External Tools > Android JDK' path is not set. " +
+                    "Falling back to JAVA_HOME environment variable.");
                 jdkPath = System.Environment.GetEnvironmentVariable("JAVA_HOME");
             }
 
@@ -137,7 +139,7 @@ namespace GoogleARCoreInternal
             }
             else
             {
-                Debug.Log("A cloud anchor API key has not been set.  Cloud anchors are disabled in this build.");
+                Debug.Log("Cloud Anchor API key has not been set. Cloud Anchors will be disabled in this build.");
                 File.Delete(cloudAnchorsManifestAarPath);
                 AssetDatabase.Refresh();
             }

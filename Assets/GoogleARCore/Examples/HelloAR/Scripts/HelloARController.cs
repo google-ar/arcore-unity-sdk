@@ -56,7 +56,7 @@ namespace GoogleARCore.Examples.HelloAR
         public GameObject AndyPointPrefab;
 
         /// <summary>
-        /// A gameobject parenting UI for displaying the "searching for planes" snackbar.
+        /// A game object parenting UI for displaying the "searching for planes" snackbar.
         /// </summary>
         public GameObject SearchingForPlaneUI;
 

@@ -146,5 +146,5 @@ MonoBehaviour:
   m_Device: 0
   m_PoseSource: 6
   m_TrackingType: 0
-  m_UpdateType: 2
+  m_UpdateType: 1
   m_UseRelativeTransform: 1

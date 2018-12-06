@@ -33,7 +33,7 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="permissionNames">The value for PermissionNames.</param>
         /// <param name="grantResults">The value for GrantResults.</param>
-        public AndroidPermissionsRequestResult(string[] permissionNames,  bool[] grantResults)
+        public AndroidPermissionsRequestResult(string[] permissionNames,  bool[] grantResults) : this()
         {
             PermissionNames = permissionNames;
             GrantResults = grantResults;
