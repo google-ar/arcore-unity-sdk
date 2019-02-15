@@ -28,13 +28,17 @@ namespace GoogleARCore.Examples.CloudAnchors
     /// <summary>
     /// A Controller for the Anchor object that handles hosting and resolving the Cloud Anchor.
     /// </summary>
+#pragma warning disable 618
     public class AnchorController : NetworkBehaviour
+#pragma warning restore 618
     {
         /// <summary>
         /// The Cloud Anchor ID that will be used to host and resolve the Cloud Anchor. This variable will be
         /// syncrhonized over all clients.
         /// </summary>
+#pragma warning disable 618
         [SyncVar(hook = "_OnChangeId")]
+#pragma warning restore 618
         private string m_CloudAnchorId = string.Empty;
 
         /// <summary>
@@ -87,7 +91,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// Command run on the server to set the Cloud Anchor Id.
         /// </summary>
         /// <param name="cloudAnchorId">The new Cloud Anchor Id.</param>
+#pragma warning disable 618
         [Command]
+#pragma warning restore 618
         public void CmdSetCloudAnchorId(string cloudAnchorId)
         {
             m_CloudAnchorId = cloudAnchorId;

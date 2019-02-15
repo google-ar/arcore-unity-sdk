@@ -27,5 +27,6 @@ namespace GoogleARCoreInternal
         Plane = 0x41520101,
         Point = 0x41520102,
         AugmentedImage = 0x41520104,
+        AugmentedFace = 0x41520105,
     }
 }

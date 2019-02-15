@@ -34,13 +34,6 @@ namespace GoogleARCoreInternal
 
     internal class CameraApi
     {
-        private const string k_NoCameraIntrinsicsWarningMessage =
-            "Instant Preview currently does not support retrieving camera image intrinsics.\n" +
-            "Returning default values instead.";
-
-        // Throttle warnings to at most once every N seconds.
-        private ThrottledLogMessage m_NoCameraIntrinsicsWarning = new ThrottledLogMessage(5f);
-
         private NativeSession m_NativeSession;
 
         public CameraApi(NativeSession nativeSession)
@@ -54,6 +47,14 @@ namespace GoogleARCoreInternal
             ExternApi.ArCamera_getTrackingState(m_NativeSession.SessionHandle,
                 cameraHandle, ref apiTrackingState);
             return apiTrackingState.ToTrackingState();
+        }
+
+        public LostTrackingReason GetLostTrackingReason(IntPtr cameraHandle)
+        {
+            ApiTrackingFailureReason apiTrackingFailureReason = ApiTrackingFailureReason.None;
+            ExternApi.ArCamera_getTrackingFailureReason(m_NativeSession.SessionHandle,
+                cameraHandle, ref apiTrackingFailureReason);
+            return apiTrackingFailureReason.ToLostTrackingReason();
         }
 
         public Pose GetPose(IntPtr cameraHandle)
@@ -81,14 +82,6 @@ namespace GoogleARCoreInternal
 
         public CameraIntrinsics GetTextureIntrinsics(IntPtr cameraHandle)
         {
-            if (Application.isEditor)
-            {
-                m_NoCameraIntrinsicsWarning.ThrottledLogWarningFormat(k_NoCameraIntrinsicsWarningMessage);
-                return new CameraIntrinsics(new Vector2(1504.5f, 1504.1f),
-                                            new Vector2(963.9f, 540.6f),
-                                            new Vector2Int(1920, 1080));
-            }
-
             IntPtr cameraIntrinsicsHandle = IntPtr.Zero;
             ExternApi.ArCameraIntrinsics_create(m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 
@@ -103,14 +96,6 @@ namespace GoogleARCoreInternal
 
         public CameraIntrinsics GetImageIntrinsics(IntPtr cameraHandle)
         {
-            if (Application.isEditor)
-            {
-                m_NoCameraIntrinsicsWarning.ThrottledLogWarningFormat(k_NoCameraIntrinsicsWarningMessage);
-                return new CameraIntrinsics(new Vector2(501f, 501f),
-                                            new Vector2(321f, 240f),
-                                            new Vector2Int(640, 480));
-            }
-
             IntPtr cameraIntrinsicsHandle = IntPtr.Zero;
             ExternApi.ArCameraIntrinsics_create(m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 
@@ -151,6 +136,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_getTrackingState(IntPtr sessionHandle, IntPtr cameraHandle,
                 ref ApiTrackingState outTrackingState);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCamera_getTrackingFailureReason(IntPtr sessionHandle, IntPtr cameraHandle,
+                ref ApiTrackingFailureReason outTrackingState);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_getDisplayOrientedPose(

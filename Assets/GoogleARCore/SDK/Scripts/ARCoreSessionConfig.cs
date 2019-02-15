@@ -72,10 +72,22 @@ namespace GoogleARCore
         public AugmentedImageDatabase AugmentedImageDatabase;
 
         /// <summary>
-        /// Chooses which focus mode will be used in ARCore camera.
+        /// Chooses the desired focus mode to be used by the ARCore camera.
         /// </summary>
-        [Tooltip("Chooses which focus mode will be used in ARCore camera.")]
+        /// <remarks>
+        /// Currently, the default focus mode is <see cref="CameraFocusMode.Fixed"/>, but this default might change in
+        /// the future. Note: on devices where ARCore does not support Auto Focus due to the use of a fixed focus
+        /// camera, focus mode will remain AR_FOCUS_MODE_FIXED. See the
+        /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore Supported Devices</a> 
+        /// page for a  list of affected devices.
+        /// </remarks>
+        [Tooltip("Chooses the desired focus mode to be used by the ARCore camera.")]
         public CameraFocusMode CameraFocusMode = CameraFocusMode.Fixed;
+
+        /// <summary>
+        /// Chooses which <see cref="GoogleARCore.AugmentedFaceMode"/> the ARCore session uses.
+        /// </summary>
+        public AugmentedFaceMode AugmentedFaceMode = AugmentedFaceMode.Disabled;
 
         /// <summary>
         ///  Gets or sets a value indicating whether PlaneFinding is enabled.
@@ -113,7 +125,8 @@ namespace GoogleARCore
                 EnableLightEstimation != otherConfig.EnableLightEstimation ||
                 EnableCloudAnchor != otherConfig.EnableCloudAnchor ||
                 AugmentedImageDatabase != otherConfig.AugmentedImageDatabase ||
-                CameraFocusMode != otherConfig.CameraFocusMode)
+                CameraFocusMode != otherConfig.CameraFocusMode ||
+                AugmentedFaceMode != otherConfig.AugmentedFaceMode)
             {
                 return false;
             }
@@ -142,6 +155,7 @@ namespace GoogleARCore
             EnableCloudAnchor = other.EnableCloudAnchor;
             AugmentedImageDatabase = other.AugmentedImageDatabase;
             CameraFocusMode = other.CameraFocusMode;
+            AugmentedFaceMode = other.AugmentedFaceMode;
         }
     }
 }

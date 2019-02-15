@@ -189,7 +189,7 @@ namespace GoogleARCore
             for (var i = 0; i < nativeTouchCount; ++i)
             {
                 var source = new IntPtr(nativeTouchesPtr.ToInt64() + (i * structSize));
-                var nativeTouch = (NativeTouch)Marshal.PtrToStructure(source, typeof(NativeTouch));
+                NativeTouch nativeTouch = (NativeTouch)Marshal.PtrToStructure(source, typeof(NativeTouch));
 
                 var newTouch = new Touch()
                 {
@@ -222,11 +222,13 @@ namespace GoogleARCore
 
         private struct NativeTouch
         {
+#pragma warning disable 649
             public TouchPhase Phase;
             public float X;
             public float Y;
             public float Pressure;
             public int Id;
+#pragma warning restore 649
         }
 
         private struct NativeApi

@@ -38,9 +38,6 @@ namespace GoogleARCoreInternal
     {
         private NativeSession m_NativeSession;
 
-        // Throttle warnings to at most once every N seconds.
-        private ThrottledLogMessage m_FailedToAcquireWarning = new ThrottledLogMessage(5f);
-
         public FrameApi(NativeSession nativeSession)
         {
             m_NativeSession = nativeSession;
@@ -74,13 +71,10 @@ namespace GoogleARCoreInternal
                 m_NativeSession.FrameHandle, ref cameraImageHandle);
             if (status != ApiArStatus.Success)
             {
-                m_FailedToAcquireWarning.ThrottledLogWarningFormat(
-                    "Failed to acquire camera image with status {0}.\n" +
-                    "Will continue to retry.", status);
+                Debug.LogWarningFormat("Failed to acquire camera image with status {0}.", status);
                 return new CameraImageBytes(IntPtr.Zero);
             }
 
-            m_NativeSession.MarkHandleAcquired(cameraImageHandle);
             return new CameraImageBytes(cameraImageHandle);
         }
 
@@ -131,6 +125,16 @@ namespace GoogleARCoreInternal
             ApiDisplayUvCoords uvOut = new ApiDisplayUvCoords();
             ExternApi.ArFrame_transformDisplayUvCoords(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
                 ApiDisplayUvCoords.NumFloats, ref uv, ref uvOut);
+
+            uv = uvOut;
+        }
+
+        public void TransformCoordinates2d(ref Vector2 uv, DisplayUvCoordinateType inputType,
+            DisplayUvCoordinateType outputType)
+        {
+            Vector2 uvOut = new Vector2(uv.x, uv.y);
+            ExternApi.ArFrame_transformCoordinates2d(m_NativeSession.SessionHandle, m_NativeSession.FrameHandle,
+                inputType.ToApiCoordinates2dType(), 1, ref uv, outputType.ToApiCoordinates2dType(), ref uvOut);
 
             uv = uvOut;
         }
@@ -194,6 +198,11 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_transformDisplayUvCoords(IntPtr session, IntPtr frame,
                 int numElements, ref ApiDisplayUvCoords uvsIn, ref ApiDisplayUvCoords uvsOut);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArFrame_transformCoordinates2d(IntPtr session, IntPtr frame,
+                ApiCoordinates2dType inputType, int numVertices, ref Vector2 uvsIn,
+                ApiCoordinates2dType outputType, ref Vector2 uvsOut);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_getUpdatedTrackables(IntPtr sessionHandle, IntPtr frameHandle,

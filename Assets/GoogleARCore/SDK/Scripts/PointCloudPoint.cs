@@ -20,6 +20,7 @@
 
 namespace GoogleARCore
 {
+    using GoogleARCoreInternal;
     using UnityEngine;
 
     /// <summary>
@@ -31,6 +32,8 @@ namespace GoogleARCore
         /// A number that represents an invalid point id.
         /// </summary>
         public const int InvalidPointId = -1;
+
+        private int m_Id;
 
         /// <summary>
         /// Constructs a new PointCloudPoint.
@@ -46,25 +49,29 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets a number that identifies the point within a point cloud and ARCore session.
+        /// Gets or sets a number that identifies the point within a point cloud and ARCore session.
         ///
         /// This value is guarenteed to be unique if the ARCore session has been running for less than 24 hours.
         /// </summary>
         /// <value>A number that identifies the point within a point cloud and ARCore session.</value>
-#if !UNITY_EDITOR
-        public int Id { get; private set; }
-#else
         public int Id
         {
             get
             {
-                Debug.Log("Instant Preview does not currently support point cloud ids. " +
-                    "PointCloudPoint.Id will always evaluate to 0 when accessed in the editor.");
-                return 0;
+                if (InstantPreviewManager.IsProvidingPlatform)
+                {
+                    InstantPreviewManager.LogLimitedSupportMessage("access Point Cloud IDs");
+                    return 0;
+                }
+
+                return m_Id;
             }
-            private set {}
+
+            set
+            {
+                m_Id = value;
+            }
         }
-#endif
 
         /// <summary>
         /// Gets the position of the point in world space.

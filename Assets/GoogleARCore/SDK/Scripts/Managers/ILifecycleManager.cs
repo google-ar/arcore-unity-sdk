@@ -30,11 +30,17 @@ namespace GoogleARCoreInternal
     {
         event Action EarlyUpdate;
 
+        event Action<bool> OnSessionSetEnabled;
+
         SessionStatus SessionStatus { get; }
+
+        LostTrackingReason LostTrackingReason { get; }
 
         ARCoreSession SessionComponent { get; }
 
         NativeSession NativeSession { get; }
+
+        bool IsSessionChangedThisFrame { get; }
 
         AsyncTask<ApkAvailabilityStatus> CheckApkAvailability();
 

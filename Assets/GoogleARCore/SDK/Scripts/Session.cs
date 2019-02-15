@@ -50,6 +50,17 @@ namespace GoogleARCore
         }
 
         /// <summary>
+        /// Gets the reason for ARCore having lost tracking.
+        /// </summary>
+        public static LostTrackingReason LostTrackingReason
+        {
+            get
+            {
+                return LifecycleManager.Instance.LostTrackingReason;
+            }
+        }
+
+        /// <summary>
         /// Creates a new Anchor at the given <c>Pose</c> that is attached to the <c>Trackable</c>.
         /// If trackable is null, it creates a new anchor at a world pose.
         /// As ARCore updates its understading of the space, it will update the

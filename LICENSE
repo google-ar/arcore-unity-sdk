@@ -1,4 +1,18 @@
-Except as indicated at the end of this LICENSE file,
+===============================================================================
+
+All files in the following folders:
+- Assets/GoogleARCore/SDK/Plugins/
+- Assets/GoogleARCore/SDK/InstantPreview/Plugins/
+- Assets/PlayServicesResolver/
+
+are licensed as follows:
+
+Covered by the **Google APIs Terms of Service** at
+[https://developers.google.com/terms/](https://developers.google.com/terms/)
+
+===============================================================================
+
+Except as indicated previously in this LICENSE file
 files in this SDK are licensed as follows:
 
 Copyright (c) 2017, Google Inc.
@@ -159,15 +173,3 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
     incurred by, or claims asserted against, such Contributor by reason
     of your accepting any such warranty or additional liability.
 END OF TERMS AND CONDITIONS
-
-===============================================================================
-
-All files in the following folders:
-- Assets/GoogleARCore/SDK/Plugins/
-- Assets/GoogleARCore/SDK/InstantPreview/Plugins/
-- Assets/PlayServicesResolver/
-
-are licensed as follows:
-
-Covered by the **Google APIs Terms of Service** at
-[https://developers.google.com/terms/](https://developers.google.com/terms/)

@@ -73,22 +73,49 @@ namespace GoogleARCoreInternal
                 return;
             }
 
+            List<Texture2D> exampleSceneIcons = new List<Texture2D>();
+            List<string> exampleProductNames = new List<string>();
+            foreach (var exampleScene in m_ExampleScenes)
+            {
+                exampleSceneIcons.Add(AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    AssetDatabase.GUIDToAssetPath(exampleScene.IconGuid)));
+                exampleProductNames.Add(exampleScene.ProductName);
+            }
+
+            string[] projectFolders = Application.dataPath.Split('/');
+            string defaultProductName = projectFolders[projectFolders.Length - 2];
+            if (PlayerSettings.productName != defaultProductName
+                  && !exampleProductNames.Contains(PlayerSettings.productName))
+            {
+                return;
+            }
+
+            Texture2D[] applicationIcons =
+                PlayerSettings.GetIconsForTargetGroup(buildTargetGroup, IconKind.Application);
+
+            for (int i = 0; i < applicationIcons.Length; i++)
+            {
+                if (applicationIcons[i] != null && !exampleSceneIcons.Contains(applicationIcons[i]))
+                {
+                    return;
+                }
+            }
+
             foreach (var exampleScene in m_ExampleScenes)
             {
                 if (enabledBuildScene.guid.ToString() == exampleScene.SceneGuid)
                 {
-                    PlayerSettings.SetApplicationIdentifier(buildTargetGroup, exampleScene.PackageName);
                     PlayerSettings.productName = exampleScene.ProductName;
-                    var applicationIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(
+
+                    Texture2D exampleIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         AssetDatabase.GUIDToAssetPath(exampleScene.IconGuid));
 
-                    var icons = PlayerSettings.GetIconsForTargetGroup(buildTargetGroup, IconKind.Application);
-                    for (int i = 0; i < icons.Length; i++)
+                    for (int i = 0; i < applicationIcons.Length; i++)
                     {
-                        icons[i] = applicationIcon;
+                        applicationIcons[i] = exampleIcon;
                     }
 
-                    PlayerSettings.SetIconsForTargetGroup(buildTargetGroup, icons, IconKind.Application);
+                    PlayerSettings.SetIconsForTargetGroup(buildTargetGroup, applicationIcons, IconKind.Application);
                     break;
                 }
             }

@@ -97,7 +97,7 @@ namespace GoogleARCore
         /// Callback fired when a permission is granted.
         /// </summary>
         /// <param name="permissionName">The name of the permission that was granted.</param>
-        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Implements java object interface.")]
         public virtual void OnPermissionGranted(string permissionName)
         {
             _OnPermissionResult(permissionName, true);
@@ -110,7 +110,7 @@ namespace GoogleARCore
         /// Callback fired when a permission is denied.
         /// </summary>
         /// <param name="permissionName">The name of the permission that was denied.</param>
-        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Implements java object interface.")]
         public virtual void OnPermissionDenied(string permissionName)
         {
             _OnPermissionResult(permissionName, false);
@@ -122,6 +122,7 @@ namespace GoogleARCore
         /// <summary>
         /// Callback fired on an Android activity result (unused part of UnityAndroidPermissions interface).
         /// </summary>
+        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Implements java object interface.")]
         public virtual void OnActivityResult()
         {
         }

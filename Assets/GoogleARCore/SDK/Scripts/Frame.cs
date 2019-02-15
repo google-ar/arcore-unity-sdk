@@ -270,6 +270,11 @@ namespace GoogleARCore
             {
                 get
                 {
+                    if (LifecycleManager.Instance.IsSessionChangedThisFrame)
+                    {
+                        return true;
+                    }
+
                     var nativeSession = LifecycleManager.Instance.NativeSession;
                     if (nativeSession == null)
                     {
@@ -370,7 +375,7 @@ namespace GoogleARCore
                 get
                 {
                     var nativeSession = LifecycleManager.Instance.NativeSession;
-                    if (nativeSession == null)
+                    if (nativeSession == null || nativeSession.FrameApi.GetTimestamp() == 0)
                     {
                         return null;
                     }
@@ -379,25 +384,85 @@ namespace GoogleARCore
                 }
             }
 
-            /// <summary>
-            /// Gets UVs that map the orientation and aspect ratio of <c>Frame.CameraImage.Texture</c> that of the
-            /// device's display.
-            /// </summary>
+            //// @cond EXCLUDE_FROM_DOXYGEN
+
+            [Obsolete("This field has been deprecated. Please use Frame.CameraImage.TextureDisplayUvs.")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                "SA1600:ElementsMustBeDocumented", Justification = "Deprecated")]
             public static DisplayUvCoords DisplayUvCoords
             {
                 get
                 {
-                    ApiDisplayUvCoords displayUvCoords = new ApiDisplayUvCoords(new Vector2(0, 1),
-                        new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 0));
+                    return TextureDisplayUvs;
+                }
+            }
 
-                    var nativeSession = LifecycleManager.Instance.NativeSession;
-                    if (nativeSession == null || Texture == null)
+            //// @endcond
+
+            /// <summary>
+            /// Gets UVs that map the orientation and aspect ratio of
+            /// <see cref="Frame.CameraImage.Texture"/> to those of the device's display.
+            /// </summary>
+            public static DisplayUvCoords TextureDisplayUvs
+            {
+                get
+                {
+                    DisplayUvCoords displayUvCoords = DisplayUvCoords.FullScreenUvCoords;
+
+                    // Use deprecated 'TransformDisplayUvCoords' when running Instant Preview.
+                    if (InstantPreviewManager.IsProvidingPlatform)
                     {
-                        return displayUvCoords.ToDisplayUvCoords();
+                        var nativeSession = LifecycleManager.Instance.NativeSession;
+                        if (nativeSession == null)
+                        {
+                            return new DisplayUvCoords();
+                        }
+
+                        var apiCoords = new ApiDisplayUvCoords(displayUvCoords.TopLeft, displayUvCoords.TopRight,
+                            displayUvCoords.BottomLeft, displayUvCoords.BottomRight);
+                        nativeSession.FrameApi.TransformDisplayUvCoords(ref apiCoords);
+                        return apiCoords.ToDisplayUvCoords();
                     }
 
-                    nativeSession.FrameApi.TransformDisplayUvCoords(ref displayUvCoords);
-                    return displayUvCoords.ToDisplayUvCoords();
+                    displayUvCoords.TopLeft = TransformCoordinate(displayUvCoords.TopLeft,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.TopRight = TransformCoordinate(displayUvCoords.TopRight,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.BottomLeft = TransformCoordinate(displayUvCoords.BottomLeft,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.BottomRight = TransformCoordinate(displayUvCoords.BottomRight,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
+
+                    return displayUvCoords;
+                }
+            }
+
+            /// <summary>
+            /// Gets UVs that map the orientation and aspect ratio of the image returned by
+            /// <see cref="Frame.CameraImage.AcquireCameraImageBytes"/> to that of the device's display.
+            /// </summary>
+            public static DisplayUvCoords ImageDisplayUvs
+            {
+                get
+                {
+                    if (InstantPreviewManager.IsProvidingPlatform)
+                    {
+                        InstantPreviewManager.LogLimitedSupportMessage("access CPU image display UVs");
+                        return DisplayUvCoords.FullScreenUvCoords;
+                    }
+
+                    DisplayUvCoords displayUvCoords = DisplayUvCoords.FullScreenUvCoords;
+
+                    displayUvCoords.TopLeft = TransformCoordinate(displayUvCoords.TopLeft,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.TopRight = TransformCoordinate(displayUvCoords.TopRight,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.BottomLeft = TransformCoordinate(displayUvCoords.BottomLeft,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.BottomRight = TransformCoordinate(displayUvCoords.BottomRight,
+                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
+
+                    return displayUvCoords;
                 }
             }
 
@@ -428,6 +493,12 @@ namespace GoogleARCore
             {
                 get
                 {
+                    if (InstantPreviewManager.IsProvidingPlatform)
+                    {
+                        InstantPreviewManager.LogLimitedSupportMessage("access CPU Image intrinsics");
+                        return new CameraIntrinsics();
+                    }
+
                     var nativeSession = LifecycleManager.Instance.NativeSession;
                     if (nativeSession == null)
                     {
@@ -442,8 +513,42 @@ namespace GoogleARCore
             }
 
             /// <summary>
+            /// Transforms a coordinate between the <c>source</c> and <c>target</c> display UV coordinate types.
+            /// </summary>
+            /// <remarks>
+            /// This can be used for the conversion of coordinates accessed in the same Unity update.
+            /// </remarks>
+            /// <param name="coordinate">The coordinate to transform.</param>
+            /// <param name="sourceType">The source type of the desired transformation matrix.</param>
+            /// <param name="targetType">The target type of the desired transformation matrix.</param>
+            /// <returns>A corresponding position in the target frame.</returns>
+            public static Vector2 TransformCoordinate(Vector2 coordinate, DisplayUvCoordinateType sourceType,
+                DisplayUvCoordinateType targetType)
+            {
+                if (InstantPreviewManager.IsProvidingPlatform)
+                {
+                    InstantPreviewManager.LogLimitedSupportMessage("access 'Frame.TransformCoordinate'");
+                    return Vector2.zero;
+                }
+
+                var nativeSession = LifecycleManager.Instance.NativeSession;
+                if (nativeSession == null)
+                {
+                    Debug.LogError("Cannot transform coordinate when native session is null.");
+                    return Vector2.zero;
+                }
+
+                nativeSession.FrameApi.TransformCoordinates2d(ref coordinate, sourceType, targetType);
+                return coordinate;
+            }
+
+            /// <summary>
             /// Attempts to acquire the camera image for CPU access.
             /// </summary>
+            /// <remarks>
+            /// Not supported on all devices
+            /// (see https://developers.google.com/ar/discover/supported-devices).
+            /// </remarks>
             /// <returns>A <c>CameraImageBytes</c> struct with <c>IsAvailable</c> property set to <c>true</c> if
             /// successful and <c>false</c> if the image could not be acquired.</returns>
             public static GoogleARCore.CameraImageBytes AcquireCameraImageBytes()

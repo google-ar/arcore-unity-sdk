@@ -56,20 +56,9 @@ namespace GoogleARCore.Examples.HelloAR
         public GameObject AndyPointPrefab;
 
         /// <summary>
-        /// A game object parenting UI for displaying the "searching for planes" snackbar.
-        /// </summary>
-        public GameObject SearchingForPlaneUI;
-
-        /// <summary>
         /// The rotation in degrees need to apply to model when the Andy model is placed.
         /// </summary>
         private const float k_ModelRotation = 180.0f;
-
-        /// <summary>
-        /// A list to hold all planes ARCore is tracking in the current frame. This object is used across
-        /// the application to avoid per-frame allocations.
-        /// </summary>
-        private List<DetectedPlane> m_AllPlanes = new List<DetectedPlane>();
 
         /// <summary>
         /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
@@ -82,20 +71,6 @@ namespace GoogleARCore.Examples.HelloAR
         public void Update()
         {
             _UpdateApplicationLifecycle();
-
-            // Hide snackbar when currently tracking at least one plane.
-            Session.GetTrackables<DetectedPlane>(m_AllPlanes);
-            bool showSearchingUI = true;
-            for (int i = 0; i < m_AllPlanes.Count; i++)
-            {
-                if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
-                {
-                    showSearchingUI = false;
-                    break;
-                }
-            }
-
-            SearchingForPlaneUI.SetActive(showSearchingUI);
 
             // If the player has not touched the screen, we are done with this update.
             Touch touch;

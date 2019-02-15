@@ -29,7 +29,9 @@ namespace GoogleARCore.Examples.CloudAnchors
     /// <summary>
     /// Controller managing UI for joining and creating rooms.
     /// </summary>
+#pragma warning disable 618
     [RequireComponent(typeof(NetworkManager))]
+#pragma warning restore 618
     public class NetworkManagerUIController : MonoBehaviour
     {
         /// <summary>
@@ -75,7 +77,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// <summary>
         /// The Network Manager.
         /// </summary>
+#pragma warning disable 618
         private NetworkManager m_Manager;
+#pragma warning restore 618
 
         /// <summary>
         /// The current room number.
@@ -103,7 +107,9 @@ namespace GoogleARCore.Examples.CloudAnchors
                 m_JoinRoomButtonsPool.Add(button);
             }
 
+#pragma warning disable 618
             m_Manager = GetComponent<NetworkManager>();
+#pragma warning restore 618
             m_Manager.StartMatchMaker();
             m_Manager.matchMaker.ListMatches(
                 startPageNumber: 0,
@@ -196,7 +202,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// Handles the user intent to join the room associated with the button clicked.
         /// </summary>
         /// <param name="match">The information about the match that the user intents to join.</param>
+#pragma warning disable 618
         private void _OnJoinRoomClicked(MatchInfoSnapshot match)
+#pragma warning restore 618
         {
             m_Manager.matchName = match.name;
             m_Manager.matchMaker.JoinMatch(match.networkId, string.Empty, string.Empty,
@@ -205,14 +213,16 @@ namespace GoogleARCore.Examples.CloudAnchors
         }
 
         /// <summary>
-        /// Callback that happens when a <see cref="T:NetworkMatch.ListMatches"/> request has been processed on the
-        /// server.
+        /// Callback that happens when a <see cref="NetworkMatch.ListMatches"/> request has been
+        /// processed on the server.
         /// </summary>
         /// <param name="success">Indicates if the request succeeded.</param>
         /// <param name="extendedInfo">A text description for the error if success is false.</param>
         /// <param name="matches">A list of matches corresponding to the filters set in the initial list
         /// request.</param>
+#pragma warning disable 618
         private void _OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
+#pragma warning restore 618
         {
             m_Manager.OnMatchList(success, extendedInfo, matches);
             if (!success)
@@ -252,13 +262,15 @@ namespace GoogleARCore.Examples.CloudAnchors
         }
 
         /// <summary>
-        /// Callback that happens when a <see cref="T:NetworkMatch.CreateMatch"/> request has been processed on the
-        /// server.
+        /// Callback that happens when a <see cref="NetworkMatch.CreateMatch"/> request has been
+        /// processed on the server.
         /// </summary>
         /// <param name="success">Indicates if the request succeeded.</param>
         /// <param name="extendedInfo">A text description for the error if success is false.</param>
         /// <param name="matchInfo">The information about the newly created match.</param>
+#pragma warning disable 618
         private void _OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
+#pragma warning restore 618
         {
             m_Manager.OnMatchCreate(success, extendedInfo, matchInfo);
             if (!success)
@@ -274,13 +286,15 @@ namespace GoogleARCore.Examples.CloudAnchors
         }
 
         /// <summary>
-        /// Callback that happens when a <see cref="T:NetworkMatch.JoinMatch"/> request has been processed on the
-        /// server.
+        /// Callback that happens when a <see cref="NetworkMatch.JoinMatch"/> request has been
+        /// processed on the server.
         /// </summary>
         /// <param name="success">Indicates if the request succeeded.</param>
         /// <param name="extendedInfo">A text description for the error if success is false.</param>
         /// <param name="matchInfo">The info for the newly joined match.</param>
+#pragma warning disable 618
         private void _OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
+#pragma warning restore 618
         {
             m_Manager.OnMatchJoined(success, extendedInfo, matchInfo);
             if (!success)

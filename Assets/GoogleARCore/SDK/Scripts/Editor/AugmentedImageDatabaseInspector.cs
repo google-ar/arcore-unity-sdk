@@ -144,8 +144,8 @@ namespace GoogleARCoreInternal
                         string.Format("eval-img --input_image_path \"{0}\"", imagePath), out quality, out error);
                     if (!string.IsNullOrEmpty(error))
                     {
-                        Debug.LogWarning(error);
-                        return;
+                        Debug.LogError(error);
+                        quality = "ERROR";
                     }
 
                     lock (s_UpdatedQualityScores)

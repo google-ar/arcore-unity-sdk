@@ -40,11 +40,6 @@ namespace GoogleARCoreInternal
     {
         public AugmentedImageDatabaseApi(NativeSession nativeSession)
         {
-            if (Application.isEditor)
-            {
-                Debug.LogWarning("Augmented Images not supported in editor.\n" +
-                                 "To test your app, build and run on device.");
-            }
         }
 
         public IntPtr CreateArPrestoAugmentedImageDatabase(byte[] rawData)
@@ -117,7 +112,7 @@ namespace GoogleARCoreInternal
                 {
                     for (int j = 0; j < image.width; j++)
                     {
-                        grayscaleBytes[(i * image.width) + j] = 
+                        grayscaleBytes[(i * image.width) + j] =
                             (byte)(((0.213 * pixels[((image.height - 1 - i) * image.width) + j].r)
                             + (0.715 * pixels[((image.height - 1 - i) * image.width) + j].g)
                             + (0.072 * pixels[((image.height - 1 - i) * image.width) + j].b)) * 255);

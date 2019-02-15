@@ -170,7 +170,17 @@ namespace GoogleARCoreInternal
         private void _Initialize()
         {
             m_EarlyUpdateCallback = new EarlyUpdateCallback(_EarlyUpdateTrampoline);
-            ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback);
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                // Instant preview does not support updated function signature returning 'bool'.
+                ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback);
+            }
+            else if (!ExternApi.ArCoreUnity_setArPrestoInitialized(m_EarlyUpdateCallback))
+            {
+                Debug.LogError("Missing Unity Engine ARCore support.  Please ensure the Unity project has the " +
+                    "'Player Settings > XR Settings > ARCore Supported' checkbox is enabled.");
+            }
 
             IntPtr javaVMHandle = IntPtr.Zero;
             IntPtr activityHandle = IntPtr.Zero;
@@ -231,7 +241,7 @@ namespace GoogleARCoreInternal
             public static extern void ArCoreUnity_getJniInfo(ref IntPtr javaVM, ref IntPtr activity);
 
             [AndroidImport(ApiConstants.ARCoreShimApi)]
-            public static extern void ArCoreUnity_setArPrestoInitialized(EarlyUpdateCallback onEarlyUpdate);
+            public static extern bool ArCoreUnity_setArPrestoInitialized(EarlyUpdateCallback onEarlyUpdate);
 
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_initialize(IntPtr javaVM, IntPtr activity,

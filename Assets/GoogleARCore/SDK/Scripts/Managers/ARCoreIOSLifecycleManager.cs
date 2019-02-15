@@ -46,6 +46,8 @@ namespace GoogleARCoreInternal
         private IntPtr m_RealArKitSessionHandle = IntPtr.Zero;
 
         public event Action EarlyUpdate;
+
+        public event Action<bool> OnSessionSetEnabled;
 #pragma warning restore 67, 414
 
         public static ARCoreIOSLifecycleManager Instance
@@ -69,9 +71,13 @@ namespace GoogleARCoreInternal
 
         public SessionStatus SessionStatus { get; private set; }
 
+        public LostTrackingReason LostTrackingReason { get; private set; }
+
         public ARCoreSession SessionComponent { get; private set; }
 
         public NativeSession NativeSession { get; private set; }
+
+        public bool IsSessionChangedThisFrame { get; private set; }
 
         public AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
@@ -171,6 +177,8 @@ namespace GoogleARCoreInternal
         {
             m_SessionEnabled = false;
             SessionStatus = SessionStatus.NotTracking;
+            LostTrackingReason = LostTrackingReason.None;
+            IsSessionChangedThisFrame = false;
         }
 
         private IntPtr _GetSessionHandleFromArkitPlugin()

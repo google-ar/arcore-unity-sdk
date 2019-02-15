@@ -40,8 +40,6 @@ namespace GoogleARCore
         /// </summary>
         internal NativeSession m_NativeSession;
 
-        private bool m_IsSessionDestroyed = false;
-
         internal Trackable()
         {
         }
@@ -127,16 +125,7 @@ namespace GoogleARCore
         /// <c>false</c> otherwise.</returns>
         protected bool _IsSessionDestroyed()
         {
-            if (!m_IsSessionDestroyed)
-            {
-                var nativeSession = LifecycleManager.Instance.NativeSession;
-                if (nativeSession != m_NativeSession)
-                {
-                    m_IsSessionDestroyed = true;
-                }
-            }
-
-            return m_IsSessionDestroyed;
+            return m_NativeSession.IsDestroyed;
         }
     }
 }

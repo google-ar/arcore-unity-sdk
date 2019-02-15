@@ -69,7 +69,7 @@ namespace GoogleARCoreInternal
                 return result;
             }
 
-            // This block needs to construct classes marked Obsolete since those versions are always the most derived 
+            // This block needs to construct classes marked Obsolete since those versions are always the most derived
             // type.
 #pragma warning disable 618 // Obsolete warning
             ApiTrackableType trackableType = m_NativeSession.TrackableApi.GetType(nativeHandle);
@@ -84,6 +84,10 @@ namespace GoogleARCoreInternal
             else if (trackableType == ApiTrackableType.AugmentedImage)
             {
                 result = new AugmentedImage(nativeHandle, m_NativeSession);
+            }
+            else if (trackableType == ApiTrackableType.AugmentedFace)
+            {
+                result = new AugmentedFace(nativeHandle, m_NativeSession);
             }
             else if (ExperimentManager.Instance.IsManagingTrackableType((int)trackableType))
             {

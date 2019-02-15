@@ -1,9 +1,9 @@
 ﻿Shader "ARCore/ARBackground"
 {
     Properties {
-        _MainTex ("Texture", 2D) = "white" {}
+        _MainTex ("Main Texture", 2D) = "white" {}
         _UvTopLeftRight ("UV of top corners", Vector) = (0, 1, 1, 1)
-        _UvBottomLeftRight ("UV of bottom corners", Vector) = (0 , 0, 1, 0) 
+        _UvBottomLeftRight ("UV of bottom corners", Vector) = (0 , 0, 1, 0)
     }
 
     // For GLES3 or GLES2 on device
@@ -12,6 +12,7 @@
         Pass
         {
             ZWrite Off
+            Cull Off
 
             GLSLPROGRAM
 
@@ -29,12 +30,14 @@
             #ifdef VERTEX
 
             varying vec2 textureCoord;
+            varying vec2 uvCoord;
 
             void main()
             {
                 vec2 uvTop = mix(_UvTopLeftRight.xy, _UvTopLeftRight.zw, gl_MultiTexCoord0.x);
                 vec2 uvBottom = mix(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, gl_MultiTexCoord0.x);
                 textureCoord = mix(uvTop, uvBottom, gl_MultiTexCoord0.y);
+                uvCoord = vec2(gl_MultiTexCoord0.x, gl_MultiTexCoord0.y);
 
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
             }
@@ -43,15 +46,45 @@
 
             #ifdef FRAGMENT
             varying vec2 textureCoord;
+            varying vec2 uvCoord;
             uniform samplerExternalOES _MainTex;
+            uniform sampler2D _TransitionIconTex;
+            uniform vec4 _TransitionIconTexTransform;
+            uniform float _Brightness;
 
             void main()
             {
+                vec3 mainTexColor;
+                
                 #ifdef SHADER_API_GLES3
-                gl_FragColor = texture(_MainTex, textureCoord);
+                mainTexColor = texture(_MainTex, textureCoord).rgb;
                 #else
-                gl_FragColor = textureExternal(_MainTex, textureCoord);
+                mainTexColor = textureExternal(_MainTex, textureCoord).rgb;
                 #endif
+                
+                if (_Brightness < 1.0)
+                {
+                    mainTexColor = mainTexColor * _Brightness;
+
+                    if (_TransitionIconTexTransform.x > 0.0 && _TransitionIconTexTransform.z > 0.0)
+                    {
+                        vec2 uvCoordTex = vec2(uvCoord.x * _TransitionIconTexTransform.x + _TransitionIconTexTransform.y,
+                        uvCoord.y * _TransitionIconTexTransform.z + _TransitionIconTexTransform.w);
+
+                        vec4 transitionColor = vec4(0.0);
+                        if (uvCoordTex.x >= 0.0 && uvCoordTex.x <= 1.0 && uvCoordTex.y >= 0.0 && uvCoordTex.y <= 1.0)
+                        {
+                            transitionColor = texture(_TransitionIconTex, uvCoordTex);
+                        }
+                        
+                        if (transitionColor.a > 0.0)
+                        {
+                            mainTexColor = mix(transitionColor.rgb, mainTexColor, _Brightness);
+                        }
+                    }
+                }
+
+                gl_FragColor = vec4(mainTexColor, 1.0);
             }
 
             #endif

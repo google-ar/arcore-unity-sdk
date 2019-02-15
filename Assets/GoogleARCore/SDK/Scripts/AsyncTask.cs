@@ -97,6 +97,7 @@ namespace GoogleARCore
         /// Returns a yield instruction that monitors this task for completion within a coroutine.
         /// </summary>
         /// <returns>A yield instruction that monitors this task for completion.</returns>
+        [SuppressMemoryAllocationError(Reason = "Creates a new CustomYieldInstruction")]
         public CustomYieldInstruction WaitForCompletion()
         {
             return new WaitForTaskCompletionYieldInstruction<T>(this);

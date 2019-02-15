@@ -31,6 +31,16 @@ namespace GoogleARCore
     public class ARCoreSession : MonoBehaviour
     {
         /// <summary>
+        /// The direction of the device camera used by the session.
+        /// </summary>
+        /// <remarks>
+        /// Note that changing this value will trigger a re-initialization of session. ARCore tracking
+        /// data (e.g. Trackables) are not shared between cameras.
+        /// </remarks>
+        [Tooltip("The direction of the device camera used by the session.")]
+        public DeviceCameraDirection DeviceCameraDirection = DeviceCameraDirection.BackFacing;
+
+        /// <summary>
         /// A scriptable object specifying the ARCore session configuration.
         /// </summary>
         [Tooltip("A scriptable object specifying the ARCore session configuration.")]

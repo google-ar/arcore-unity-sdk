@@ -28,6 +28,12 @@ namespace GoogleARCore
     public struct DisplayUvCoords
     {
         /// <summary>
+        /// Gets full screen uv coordinates.
+        /// </summary>
+        public static readonly DisplayUvCoords FullScreenUvCoords =
+            new DisplayUvCoords(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 0));
+
+        /// <summary>
         /// The top-left UV coordinates for the display.
         /// </summary>
         public Vector2 TopLeft;
