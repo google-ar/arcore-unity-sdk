@@ -74,7 +74,11 @@
                         vec4 transitionColor = vec4(0.0);
                         if (uvCoordTex.x >= 0.0 && uvCoordTex.x <= 1.0 && uvCoordTex.y >= 0.0 && uvCoordTex.y <= 1.0)
                         {
+                            #ifdef SHADER_API_GLES3
                             transitionColor = texture(_TransitionIconTex, uvCoordTex);
+                            #else
+                            transitionColor = textureExternal(_TransitionIconTex, uvCoordTex);
+                            #endif
                         }
                         
                         if (transitionColor.a > 0.0)
