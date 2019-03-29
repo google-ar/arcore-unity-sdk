@@ -25,7 +25,8 @@ namespace GoogleARCoreInternal
 
     internal static class ApiApkInstallStatusExtensions
     {
-        public static ApkInstallationStatus ToApkInstallationStatus(this ApiApkInstallationStatus apiStatus)
+        public static ApkInstallationStatus ToApkInstallationStatus(
+            this ApiApkInstallationStatus apiStatus)
         {
             switch (apiStatus)
             {
@@ -42,7 +43,8 @@ namespace GoogleARCoreInternal
                 case ApiApkInstallationStatus.ErrorUserDeclined:
                     return ApkInstallationStatus.ErrorUserDeclined;
                 default:
-                    UnityEngine.Debug.LogErrorFormat("Unexpected ApiApkInstallStatus status {0}", apiStatus);
+                    UnityEngine.Debug.LogErrorFormat(
+                        "Unexpected ApiApkInstallStatus status {0}", apiStatus);
                     return ApkInstallationStatus.Error;
             }
         }

@@ -26,9 +26,11 @@ namespace GoogleARCoreInternal
     {
         public static void UnityPoseToApiPose(Pose unityPose, out ApiPoseData apiPose)
         {
-            Matrix4x4 glWorld_T_glLocal = Matrix4x4.TRS(unityPose.position, unityPose.rotation, Vector3.one);
+            Matrix4x4 glWorld_T_glLocal =
+                Matrix4x4.TRS(unityPose.position, unityPose.rotation, Vector3.one);
             Matrix4x4 unityWorld_T_glWorld = Matrix4x4.Scale(new Vector3(1, 1, -1));
-            Matrix4x4 unityWorld_T_unityLocal = unityWorld_T_glWorld * glWorld_T_glLocal * unityWorld_T_glWorld.inverse;
+            Matrix4x4 unityWorld_T_unityLocal =
+                unityWorld_T_glWorld * glWorld_T_glLocal * unityWorld_T_glWorld.inverse;
 
             Vector3 position = unityWorld_T_unityLocal.GetColumn(3);
             Quaternion rotation = Quaternion.LookRotation(unityWorld_T_unityLocal.GetColumn(2),
@@ -45,10 +47,13 @@ namespace GoogleARCoreInternal
 
         public static void ApiPoseToUnityPose(ApiPoseData apiPose, out Pose unityPose)
         {
-            Matrix4x4 glWorld_T_glLocal = Matrix4x4.TRS(new Vector3(apiPose.X, apiPose.Y, apiPose.Z),
-                new Quaternion(apiPose.Qx, apiPose.Qy, apiPose.Qz, apiPose.Qw), Vector3.one);
+            Matrix4x4 glWorld_T_glLocal =
+                Matrix4x4.TRS(
+                    new Vector3(apiPose.X, apiPose.Y, apiPose.Z),
+                    new Quaternion(apiPose.Qx, apiPose.Qy, apiPose.Qz, apiPose.Qw), Vector3.one);
             Matrix4x4 unityWorld_T_glWorld = Matrix4x4.Scale(new Vector3(1, 1, -1));
-            Matrix4x4 unityWorld_T_unityLocal = unityWorld_T_glWorld * glWorld_T_glLocal * unityWorld_T_glWorld.inverse;
+            Matrix4x4 unityWorld_T_unityLocal =
+                unityWorld_T_glWorld * glWorld_T_glLocal * unityWorld_T_glWorld.inverse;
 
             Vector3 position = unityWorld_T_unityLocal.GetColumn(3);
             Quaternion rotation = Quaternion.LookRotation(unityWorld_T_unityLocal.GetColumn(2),

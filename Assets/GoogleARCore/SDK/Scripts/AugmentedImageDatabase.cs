@@ -35,14 +35,16 @@ namespace GoogleARCore
     /// <summary>
     /// A database storing a list of images to be detected and tracked by ARCore.
     ///
-    /// An image database supports up to 1000 images. Only one image database can be in use at any given time.
+    /// An image database supports up to 1000 images. Only one image database can be in use at any
+    /// given time.
     /// </summary>
     public class AugmentedImageDatabase : ScriptableObject
     {
         private IntPtr m_ArPrestoDatabase = IntPtr.Zero;
 
         [SerializeField]
-        private List<AugmentedImageDatabaseEntry> m_Images = new List<AugmentedImageDatabaseEntry>();
+        private List<AugmentedImageDatabaseEntry> m_Images =
+            new List<AugmentedImageDatabaseEntry>();
 
         [SuppressMessage("UnityRules.UnityStyleRules", "CS0169:FieldIsNeverUsedIssue",
          Justification = "Used in editor.")]
@@ -81,7 +83,8 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets a value indicating whether the AugmentedImageDatabase is dirty and has to be reset in ArCore.
+        /// Gets a value indicating whether the AugmentedImageDatabase is dirty and has to be reset
+        /// in ArCore.
         /// </summary>
         internal bool m_IsDirty { get; private set; }
 
@@ -100,7 +103,8 @@ namespace GoogleARCore
                         return IntPtr.Zero;
                     }
 
-                    m_ArPrestoDatabase = nativeSession.AugmentedImageDatabaseApi
+                    m_ArPrestoDatabase =
+                        nativeSession.AugmentedImageDatabaseApi
                             .CreateArPrestoAugmentedImageDatabase(m_RawData);
                 }
 
@@ -157,8 +161,10 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="name">The name of the image.</param>
         /// <param name="image">The image to be added.</param>
-        /// <param name="width">The physical width of the image in meters, or 0 if the width is unkwown.</param>
-        /// <returns>The index of the added image in this database or -1 if there was an error.</returns>
+        /// <param name="width">The physical width of the image in meters, or 0 if the width is
+        /// unkwown.</param>
+        /// <returns>The index of the added image in this database or -1 if there was an
+        /// error.</returns>
         [SuppressMemoryAllocationError(Reason = "Allocates memory for the image.")]
         public Int32 AddImage(string name, Texture2D image, float width = 0)
         {
@@ -168,8 +174,8 @@ namespace GoogleARCore
                 return -1;
             }
 
-            Int32 imageIndex = nativeSession.AugmentedImageDatabaseApi.AddImageAtRuntime(m_ArPrestoDatabaseHandle, name,
-                    image, width);
+            Int32 imageIndex = nativeSession.AugmentedImageDatabaseApi.AddImageAtRuntime(
+                m_ArPrestoDatabaseHandle, name, image, width);
 
             if (imageIndex != -1)
             {
@@ -210,7 +216,8 @@ namespace GoogleARCore
         /// <summary>
         /// Checks if the database needs to be rebuilt.
         /// </summary>
-        /// <returns><c>true</c> if the database needs to be rebuilt, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the database needs to be rebuilt, <c>false</c>
+        /// otherwise.</returns>
         public bool IsBuildNeeded()
         {
             return m_IsRawDataDirty;
@@ -222,7 +229,8 @@ namespace GoogleARCore
         /// <summary>
         /// Rebuilds the database asset, if needed.
         /// </summary>
-        /// <param name="error">An error string that will be set if the build was unsuccessful.</param>
+        /// <param name="error">An error string that will be set if the build was
+        /// unsuccessful.</param>
         public void BuildIfNeeded(out string error)
         {
             error = "";
@@ -266,8 +274,9 @@ namespace GoogleARCore
             }
 #endif
             ShellHelper.RunCommand(cliBinaryPath,
-                string.Format("build-db --input_image_list_path {0} --output_db_path {1}",
-                              inputImagesFile, rawDatabasePath), out output, out error);
+                string.Format(
+                    "build-db --input_image_list_path {0} --output_db_path {1}",
+                    inputImagesFile, rawDatabasePath), out output, out error);
             if (!string.IsNullOrEmpty(error))
             {
                 return;
@@ -281,7 +290,8 @@ namespace GoogleARCore
             AssetDatabase.SaveAssets();
 
             const int BYTES_IN_KBYTE = 1024;
-            Debug.LogFormat("Built AugmentedImageDatabase '{0}' ({1} Images, {2} KBytes)", name, Count,
+            Debug.LogFormat(
+                "Built AugmentedImageDatabase '{0}' ({1} Images, {2} KBytes)", name, Count,
                 m_RawData.Length/BYTES_IN_KBYTE);
 
             // TODO:: Remove this log when all errors/warnings are moved to stderr for CLI tool.
@@ -293,7 +303,8 @@ namespace GoogleARCore
         /// <summary>
         /// Gets the image entries that require updating of the image quality score.
         /// </summary>
-        /// <returns>A list of image entries that require updating of the image quality score.</returns>
+        /// <returns>A list of image entries that require updating of the image quality
+        /// score.</returns>
         public List<AugmentedImageDatabaseEntry> GetDirtyQualityEntries()
         {
             var dirtyEntries = new List<AugmentedImageDatabaseEntry>();
@@ -357,7 +368,8 @@ namespace GoogleARCore
         /// <summary>
         /// Finds the path to the command-line tool used to generate a database.
         /// </summary>
-        /// <param name="path">The path to the command-line tool that will be set if a valid path was found.</param>
+        /// <param name="path">The path to the command-line tool that will be set if a valid path
+        /// was found.</param>
         /// <returns><c>true</c> if a valid path was found, <c>false</c> otherwise.</returns>
         public static bool FindCliBinaryPath(out string path)
         {
@@ -365,7 +377,8 @@ namespace GoogleARCore
             string[] cliBinaryGuid = AssetDatabase.FindAssets(binaryName);
             if (cliBinaryGuid.Length == 0)
             {
-                Debug.LogErrorFormat("Could not find required tool for building AugmentedImageDatabase: {0}. " +
+                Debug.LogErrorFormat(
+                    "Could not find required tool for building AugmentedImageDatabase: {0}. " +
                     "Was it removed from the ARCore SDK?", binaryName);
                 path = string.Empty;
                 return false;

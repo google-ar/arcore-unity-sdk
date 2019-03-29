@@ -97,7 +97,9 @@ namespace GoogleARCore.Examples.Common
         /// <summary>
         /// The Game Object that contains the window with more instructions on how to find a plane.
         /// </summary>
-        [Tooltip("The Game Object that contains the window with more instructions on how to find a plane.")]
+        [Tooltip(
+            "The Game Object that contains the window with more instructions on how to find " +
+            "a plane.")]
         [SerializeField] private GameObject m_MoreHelpWindow = null;
 
         /// <summary>
@@ -210,7 +212,8 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         private void _UpdateUI()
         {
-            if (Session.Status == SessionStatus.LostTracking && Session.LostTrackingReason != LostTrackingReason.None)
+            if (Session.Status == SessionStatus.LostTracking &&
+                Session.LostTrackingReason != LostTrackingReason.None)
             {
                 // The session has lost tracking.
                 m_FeaturePoints.SetActive(false);
@@ -245,7 +248,8 @@ namespace GoogleARCore.Examples.Common
 
             if (m_NotDetectedPlaneElapsed > DisplayGuideDelay)
             {
-                // The session has been tracking but no planes have been found by 'DisplayGuideDelay'.
+                // The session has been tracking but no planes have been found by
+                // 'DisplayGuideDelay'.
                 m_FeaturePoints.SetActive(true);
 
                 if (!m_HandAnimation.enabled)
@@ -270,8 +274,9 @@ namespace GoogleARCore.Examples.Common
             }
             else if (m_NotDetectedPlaneElapsed > 0f || m_DetectedPlaneElapsed > k_HideGuideDelay)
             {
-                // The session is tracking but no planes have been found in less than 'DisplayGuideDelay' or
-                // at least one plane has been tracking for more than 'k_HideGuideDelay'.
+                // The session is tracking but no planes have been found in less than
+                // 'DisplayGuideDelay' or at least one plane has been tracking for more than
+                // 'k_HideGuideDelay'.
                 m_FeaturePoints.SetActive(false);
                 m_SnackBar.SetActive(false);
                 m_OpenButton.SetActive(false);

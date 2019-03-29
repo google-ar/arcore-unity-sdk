@@ -158,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 035bca4b574dc4a2a8d83b85d750c600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HeightChangeVisualization: {fileID: 1674464896453232}
   ObjectTranslationMode: 2
   MaxTranslationDistance: 3
 --- !u!114 &114220473544446968

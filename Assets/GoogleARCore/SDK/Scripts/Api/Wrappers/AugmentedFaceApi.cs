@@ -50,7 +50,8 @@ namespace GoogleARCoreInternal
         public Pose GetCenterPose(IntPtr faceHandle)
         {
             var poseHandle = m_NativeSession.PoseApi.Create();
-            ExternApi.ArAugmentedFace_getCenterPose(m_NativeSession.SessionHandle, faceHandle, poseHandle);
+            ExternApi.ArAugmentedFace_getCenterPose(
+                m_NativeSession.SessionHandle, faceHandle, poseHandle);
             Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
             m_NativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
@@ -59,7 +60,8 @@ namespace GoogleARCoreInternal
         public Pose GetRegionPose(IntPtr faceHandle, ApiAugmentedFaceRegionType regionType)
         {
             var poseHandle = m_NativeSession.PoseApi.Create();
-            ExternApi.ArAugmentedFace_getRegionPose(m_NativeSession.SessionHandle, faceHandle, regionType, poseHandle);
+            ExternApi.ArAugmentedFace_getRegionPose(
+                m_NativeSession.SessionHandle, faceHandle, regionType, poseHandle);
             Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
             m_NativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
@@ -83,7 +85,8 @@ namespace GoogleARCoreInternal
             vertices.Capacity = verticesNum;
             for (int i = 0; i < floatNum; i += 3)
             {
-                vertices.Add(new Vector3(m_TempVertices[i], m_TempVertices[i + 1], -m_TempVertices[i + 2]));
+                vertices.Add(
+                    new Vector3(m_TempVertices[i], m_TempVertices[i + 1], -m_TempVertices[i + 2]));
             }
         }
 
@@ -105,7 +108,8 @@ namespace GoogleARCoreInternal
             normals.Capacity = verticesNum;
             for (int i = 0; i < floatNum; i += 3)
             {
-                normals.Add(new Vector3(m_TempNormals[i], m_TempNormals[i + 1], -m_TempNormals[i + 2]));
+                normals.Add(
+                    new Vector3(m_TempNormals[i], m_TempNormals[i + 1], -m_TempNormals[i + 2]));
             }
         }
 
@@ -113,8 +117,8 @@ namespace GoogleARCoreInternal
         {
             IntPtr textureCoordinatesHandle = IntPtr.Zero;
             int uvNum = 0;
-            ExternApi.ArAugmentedFace_getMeshTextureCoordinates(m_NativeSession.SessionHandle, faceHandle,
-                ref textureCoordinatesHandle, ref uvNum);
+            ExternApi.ArAugmentedFace_getMeshTextureCoordinates(
+                m_NativeSession.SessionHandle, faceHandle, ref textureCoordinatesHandle, ref uvNum);
             int floatNum = uvNum * 2;
             if (m_TempUVs == null || m_TempUVs.Length != floatNum)
             {
@@ -135,8 +139,9 @@ namespace GoogleARCoreInternal
         {
             IntPtr triangleIndicesHandle = IntPtr.Zero;
             int triangleNum = 0;
-            ExternApi.ArAugmentedFace_getMeshTriangleIndices(m_NativeSession.SessionHandle, faceHandle,
-                ref triangleIndicesHandle, ref triangleNum);
+            ExternApi.ArAugmentedFace_getMeshTriangleIndices(
+                m_NativeSession.SessionHandle, faceHandle, ref triangleIndicesHandle,
+                ref triangleNum);
             int indicesNum = triangleNum * 3;
             if (m_TempIndices == null || m_TempIndices.Length != indicesNum)
             {
@@ -160,28 +165,33 @@ namespace GoogleARCoreInternal
 #pragma warning disable 626
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getCenterPose(IntPtr sessionHandle, IntPtr faceHandle,
+            public static extern void ArAugmentedFace_getCenterPose(
+                IntPtr sessionHandle, IntPtr faceHandle, IntPtr poseHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedFace_getMeshVertices(
+                IntPtr sessionHandle, IntPtr faceHandle, ref IntPtr vertices,
+                ref Int32 numberOfVertices);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedFace_getMeshNormals(
+                IntPtr sessionHandle, IntPtr faceHandle, ref IntPtr normals,
+                ref Int32 numberOfVertices);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedFace_getMeshTextureCoordinates(
+                IntPtr sessionHandle, IntPtr faceHandle, ref IntPtr uvs,
+                ref Int32 numberOfVertices);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedFace_getMeshTriangleIndices(
+                IntPtr sessionHandle, IntPtr faceHandle, ref IntPtr indices,
+                ref Int32 numberOfTriangles);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedFace_getRegionPose(
+                IntPtr sessionHandle, IntPtr faceHandle, ApiAugmentedFaceRegionType regionType,
                 IntPtr poseHandle);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getMeshVertices(IntPtr sessionHandle, IntPtr faceHandle,
-                ref IntPtr vertices, ref Int32 numberOfVertices);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getMeshNormals(IntPtr sessionHandle, IntPtr faceHandle,
-                ref IntPtr normals, ref Int32 numberOfVertices);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getMeshTextureCoordinates(IntPtr sessionHandle, IntPtr faceHandle,
-                ref IntPtr uvs, ref Int32 numberOfVertices);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getMeshTriangleIndices(IntPtr sessionHandle, IntPtr faceHandle,
-                ref IntPtr indices, ref Int32 numberOfTriangles);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAugmentedFace_getRegionPose(IntPtr sessionHandle, IntPtr faceHandle,
-                ApiAugmentedFaceRegionType regionType, IntPtr poseHandle);
 #pragma warning restore 626
         }
     }

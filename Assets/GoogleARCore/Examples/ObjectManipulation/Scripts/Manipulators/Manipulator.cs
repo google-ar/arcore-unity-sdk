@@ -281,12 +281,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// </summary>
         protected virtual void Update()
         {
-            if (m_SelectedObject == gameObject && ManipulationSystem.Instance.SelectedObject != gameObject)
+            if (m_SelectedObject == gameObject &&
+                ManipulationSystem.Instance.SelectedObject != gameObject)
             {
                 m_SelectedObject = ManipulationSystem.Instance.SelectedObject;
                 OnDeselected();
             }
-            else if (m_SelectedObject != gameObject && ManipulationSystem.Instance.SelectedObject == gameObject)
+            else if (m_SelectedObject != gameObject &&
+                ManipulationSystem.Instance.SelectedObject == gameObject)
             {
                 m_SelectedObject = ManipulationSystem.Instance.SelectedObject;
                 OnSelected();
@@ -305,25 +307,29 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return;
             }
 
-            DragGestureRecognizer dragGestureRecognizer = ManipulationSystem.Instance.DragGestureRecognizer;
+            DragGestureRecognizer dragGestureRecognizer =
+                ManipulationSystem.Instance.DragGestureRecognizer;
             if (dragGestureRecognizer != null)
             {
                 dragGestureRecognizer.onGestureStarted += OnGestureStarted;
             }
 
-            PinchGestureRecognizer pinchGestureRecognizer = ManipulationSystem.Instance.PinchGestureRecognizer;
+            PinchGestureRecognizer pinchGestureRecognizer =
+                ManipulationSystem.Instance.PinchGestureRecognizer;
             if (pinchGestureRecognizer != null)
             {
                 pinchGestureRecognizer.onGestureStarted += OnGestureStarted;
             }
 
-            TapGestureRecognizer tapGestureRecognizer = ManipulationSystem.Instance.TapGestureRecognizer;
+            TapGestureRecognizer tapGestureRecognizer =
+                ManipulationSystem.Instance.TapGestureRecognizer;
             if (tapGestureRecognizer != null)
             {
                 tapGestureRecognizer.onGestureStarted += OnGestureStarted;
             }
 
-            TwistGestureRecognizer twistGestureRecognizer = ManipulationSystem.Instance.TwistGestureRecognizer;
+            TwistGestureRecognizer twistGestureRecognizer =
+                ManipulationSystem.Instance.TwistGestureRecognizer;
             if (twistGestureRecognizer != null)
             {
                 twistGestureRecognizer.onGestureStarted += OnGestureStarted;
@@ -345,25 +351,29 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return;
             }
 
-            DragGestureRecognizer dragGestureRecognizer = ManipulationSystem.Instance.DragGestureRecognizer;
+            DragGestureRecognizer dragGestureRecognizer =
+                ManipulationSystem.Instance.DragGestureRecognizer;
             if (dragGestureRecognizer != null)
             {
                 dragGestureRecognizer.onGestureStarted -= OnGestureStarted;
             }
 
-            PinchGestureRecognizer pinchGestureRecognizer = ManipulationSystem.Instance.PinchGestureRecognizer;
+            PinchGestureRecognizer pinchGestureRecognizer =
+                ManipulationSystem.Instance.PinchGestureRecognizer;
             if (pinchGestureRecognizer != null)
             {
                 pinchGestureRecognizer.onGestureStarted -= OnGestureStarted;
             }
 
-            TapGestureRecognizer tapGestureRecognizer = ManipulationSystem.Instance.TapGestureRecognizer;
+            TapGestureRecognizer tapGestureRecognizer =
+                ManipulationSystem.Instance.TapGestureRecognizer;
             if (tapGestureRecognizer != null)
             {
                 tapGestureRecognizer.onGestureStarted -= OnGestureStarted;
             }
 
-            TwistGestureRecognizer twistGestureRecognizer = ManipulationSystem.Instance.TwistGestureRecognizer;
+            TwistGestureRecognizer twistGestureRecognizer =
+                ManipulationSystem.Instance.TwistGestureRecognizer;
             if (twistGestureRecognizer != null)
             {
                 twistGestureRecognizer.onGestureStarted -= OnGestureStarted;

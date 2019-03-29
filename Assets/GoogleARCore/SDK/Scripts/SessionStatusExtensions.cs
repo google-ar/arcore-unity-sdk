@@ -36,7 +36,8 @@ namespace GoogleARCore
         /// Gets whether a SessionStatus is not yet initialized.
         /// </summary>
         /// <param name="status">The SessionStatus to check.</param>
-        /// <returns><c>true</c> if the SessionStatus is not initialized, otherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if the SessionStatus is not initialized, otherwise
+        /// <c>false</c>.</returns>
         public static bool IsNotInitialized(this SessionStatus status)
         {
             int normalizedValue = (int)status - k_NotInitializedGroupStart;

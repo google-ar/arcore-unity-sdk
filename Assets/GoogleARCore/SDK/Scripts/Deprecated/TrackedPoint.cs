@@ -25,7 +25,9 @@ namespace GoogleARCore
     /// <summary>
     /// Deprecated version of FeaturePoint.
     /// </summary>
-    [System.Obsolete("This class has been renamed to FeaturePoint. See https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
+    [System.Obsolete(
+        "This class has been renamed to FeaturePoint. See " +
+        "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
     public class TrackedPoint : FeaturePoint
     {
         /// <summary>
@@ -33,7 +35,8 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
         /// <param name="nativeApi">The ARCore native api.</param>
-        internal TrackedPoint(IntPtr nativeHandle, NativeSession nativeApi) : base(nativeHandle, nativeApi)
+        internal TrackedPoint(IntPtr nativeHandle, NativeSession nativeApi) :
+            base(nativeHandle, nativeApi)
         {
         }
 

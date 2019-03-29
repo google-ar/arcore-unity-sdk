@@ -80,7 +80,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             float sign = -1.0f;
             Vector3 forward = Camera.main.transform.TransformPoint(Vector3.forward);
-            Quaternion WorldToVerticalOrientedDevice = Quaternion.Inverse(Quaternion.LookRotation(forward, Vector3.up));
+            Quaternion WorldToVerticalOrientedDevice =
+                Quaternion.Inverse(Quaternion.LookRotation(forward, Vector3.up));
             Quaternion DeviceToWorld = Camera.main.transform.rotation;
             Vector3 rotatedDelta = WorldToVerticalOrientedDevice * DeviceToWorld * gesture.Delta;
 

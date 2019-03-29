@@ -50,13 +50,17 @@ namespace GoogleARCoreInternal
             }
 
             AndroidJavaClass contextClass = new AndroidJavaClass("android.content.Context");
-            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            AndroidJavaObject windowManager = unityActivity.Call<AndroidJavaObject>("getSystemService",
-                contextClass.GetStatic<string>("WINDOW_SERVICE"));
+            AndroidJavaClass unityPlayerClass =
+                new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity =
+                unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject windowManager =
+                unityActivity.Call<AndroidJavaObject>(
+                    "getSystemService", contextClass.GetStatic<string>("WINDOW_SERVICE"));
 
-            return (AndroidSurfaceRotation)windowManager.Call<AndroidJavaObject>("getDefaultDisplay")
-                .Call<int>("getRotation");
+            return
+                (AndroidSurfaceRotation)windowManager.Call<AndroidJavaObject>("getDefaultDisplay")
+                    .Call<int>("getRotation");
         }
     }
 }

@@ -33,7 +33,8 @@ namespace GoogleARCoreInternal
             var isARCoreRequired = ARCoreProjectSettings.Instance.IsARCoreRequired;
 
             Debug.LogFormat(
-                "Building \"{0}\" app. Use 'Edit > Project Settings > ARCore' to adjust ARCore settings.\n" +
+                "Building \"{0}\" app. Use 'Edit > Project Settings > ARCore' to adjust ARCore " +
+                "settings.\n" +
                 "See {1} for more information.",
                 isARCoreRequired ? "AR Required" : "AR Optional",
                 "https://developers.google.com/ar/develop/unity/enable-arcore");

@@ -53,7 +53,8 @@ namespace GoogleARCoreInternal
             ExternApi.ArConfig_destroy(configHandle);
         }
 
-        public void UpdateApiConfigWithArCoreSessionConfig(IntPtr configHandle, ARCoreSessionConfig arCoreSessionConfig)
+        public void UpdateApiConfigWithArCoreSessionConfig(
+            IntPtr configHandle, ARCoreSessionConfig arCoreSessionConfig)
         {
             var lightingMode = ApiLightEstimationMode.Disabled;
             if (arCoreSessionConfig.EnableLightEstimation)
@@ -61,7 +62,8 @@ namespace GoogleARCoreInternal
                 lightingMode = ApiLightEstimationMode.AmbientIntensity;
             }
 
-            ExternApi.ArConfig_setLightEstimationMode(m_NativeSession.SessionHandle, configHandle, lightingMode);
+            ExternApi.ArConfig_setLightEstimationMode(
+                m_NativeSession.SessionHandle, configHandle, lightingMode);
 
             var planeFindingMode = ApiPlaneFindingMode.Disabled;
             switch (arCoreSessionConfig.PlaneFindingMode)
@@ -79,18 +81,21 @@ namespace GoogleARCoreInternal
                 break;
             }
 
-            ExternApi.ArConfig_setPlaneFindingMode(m_NativeSession.SessionHandle, configHandle, planeFindingMode);
+            ExternApi.ArConfig_setPlaneFindingMode(
+                m_NativeSession.SessionHandle, configHandle, planeFindingMode);
 
             var updateMode = ApiUpdateMode.LatestCameraImage;
             if (arCoreSessionConfig.MatchCameraFramerate)
             {
                updateMode = ApiUpdateMode.Blocking;
 
-               // Set vSyncCount to 0 so frame in rendered only when we have a new background texture.
+               // Set vSyncCount to 0 so frame in rendered only when we have a new background
+               // texture.
                QualitySettings.vSyncCount = 0;
             }
 
-            ExternApi.ArConfig_setUpdateMode(m_NativeSession.SessionHandle, configHandle, updateMode);
+            ExternApi.ArConfig_setUpdateMode(
+                m_NativeSession.SessionHandle, configHandle, updateMode);
         }
 
         private struct ExternApi
@@ -103,16 +108,16 @@ namespace GoogleARCoreInternal
             public static extern void ArConfig_destroy(IntPtr config);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArConfig_setLightEstimationMode(IntPtr session, IntPtr config,
-                ApiLightEstimationMode light_estimation_mode);
+            public static extern void ArConfig_setLightEstimationMode(
+                IntPtr session, IntPtr config, ApiLightEstimationMode light_estimation_mode);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArConfig_setPlaneFindingMode(IntPtr session, IntPtr config,
-                ApiPlaneFindingMode plane_finding_mode);
+            public static extern void ArConfig_setPlaneFindingMode(
+                IntPtr session, IntPtr config, ApiPlaneFindingMode plane_finding_mode);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArConfig_setUpdateMode(IntPtr session, IntPtr config,
-                ApiUpdateMode update_mode);
+            public static extern void ArConfig_setUpdateMode(
+                IntPtr session, IntPtr config, ApiUpdateMode update_mode);
 #pragma warning restore 626
         }
     }

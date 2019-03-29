@@ -34,7 +34,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="recognizer">The gesture recognizer.</param>
         /// <param name="touch1">The first touch that started this gesture.</param>
         /// <param name="touch2">The second touch that started this gesture.</param>
-        public TwoFingerDragGesture(TwoFingerDragGestureRecognizer recognizer, Touch touch1, Touch touch2) : base(recognizer)
+        public TwoFingerDragGesture(
+            TwoFingerDragGestureRecognizer recognizer, Touch touch1, Touch touch2) :
+                base(recognizer)
         {
             FingerId1 = touch1.fingerId;
             StartPosition1 = touch1.position;
@@ -79,7 +81,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <returns>True if the gesture can start.</returns>
         protected internal override bool CanStart()
         {
-            if (GestureTouchesUtility.IsFingerIdRetained(FingerId1) || GestureTouchesUtility.IsFingerIdRetained(FingerId2))
+            if (GestureTouchesUtility.IsFingerIdRetained(FingerId1) ||
+                GestureTouchesUtility.IsFingerIdRetained(FingerId2))
             {
                 Cancel();
                 return false;
@@ -87,7 +90,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {
@@ -105,16 +109,19 @@ namespace GoogleARCore.Examples.ObjectManipulation
             float diff1 = (pos1 - StartPosition1).magnitude;
             Vector2 pos2 = touch2.position;
             float diff2 = (pos2 - StartPosition2).magnitude;
-            if (GestureTouchesUtility.PixelsToInches(diff1) < (m_Recognizer as TwoFingerDragGestureRecognizer).m_SlopInches
-                || GestureTouchesUtility.PixelsToInches(diff2) < (m_Recognizer as TwoFingerDragGestureRecognizer).m_SlopInches)
+            float slopInches = (m_Recognizer as TwoFingerDragGestureRecognizer).m_SlopInches;
+            if (GestureTouchesUtility.PixelsToInches(diff1) < slopInches ||
+                GestureTouchesUtility.PixelsToInches(diff2) < slopInches)
             {
                 return false;
             }
 
-            TwoFingerDragGestureRecognizer recognizer = m_Recognizer as TwoFingerDragGestureRecognizer;
+            TwoFingerDragGestureRecognizer recognizer =
+                m_Recognizer as TwoFingerDragGestureRecognizer;
 
             // Check both fingers move in the same direction.
-            float dot = Vector3.Dot(touch1.deltaPosition.normalized, touch2.deltaPosition.normalized);
+            float dot =
+                Vector3.Dot(touch1.deltaPosition.normalized, touch2.deltaPosition.normalized);
             if (dot < Mathf.Cos(recognizer.m_AngleThresholdRadians))
             {
                 return false;
@@ -165,7 +172,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {

@@ -24,6 +24,7 @@ namespace GoogleARCore.Examples.HelloAR
     using GoogleARCore;
     using GoogleARCore.Examples.Common;
     using UnityEngine;
+    using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
     // Set up touch input propagation while using Instant Preview in the editor.
@@ -36,7 +37,8 @@ namespace GoogleARCore.Examples.HelloAR
     public class HelloARController : MonoBehaviour
     {
         /// <summary>
-        /// The first-person camera being used to render the passthrough camera image (i.e. AR background).
+        /// The first-person camera being used to render the passthrough camera image (i.e. AR
+        /// background).
         /// </summary>
         public Camera FirstPersonCamera;
 
@@ -61,7 +63,8 @@ namespace GoogleARCore.Examples.HelloAR
         private const float k_ModelRotation = 180.0f;
 
         /// <summary>
-        /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
+        /// True if the app is in the process of quitting due to an ARCore connection error,
+        /// otherwise false.
         /// </summary>
         private bool m_IsQuitting = false;
 
@@ -75,6 +78,12 @@ namespace GoogleARCore.Examples.HelloAR
             // If the player has not touched the screen, we are done with this update.
             Touch touch;
             if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+            {
+                return;
+            }
+
+            // Should not handle input if the player is pointing on UI.
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
             {
                 return;
             }
@@ -110,11 +119,12 @@ namespace GoogleARCore.Examples.HelloAR
                     // Instantiate Andy model at the hit pose.
                     var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
 
-                    // Compensate for the hitPose rotation facing away from the raycast (i.e. camera).
+                    // Compensate for the hitPose rotation facing away from the raycast (i.e.
+                    // camera).
                     andyObject.transform.Rotate(0, k_ModelRotation, 0, Space.Self);
 
-                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
-                    // world evolves.
+                    // Create an anchor to allow ARCore to track the hitpoint as understanding of
+                    // the physical world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
                     // Make Andy model a child of the anchor.
@@ -150,7 +160,8 @@ namespace GoogleARCore.Examples.HelloAR
                 return;
             }
 
-            // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
+            // Quit if ARCore was unable to connect and give Unity some time for the toast to
+            // appear.
             if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
@@ -159,7 +170,8 @@ namespace GoogleARCore.Examples.HelloAR
             }
             else if (Session.Status.IsError())
             {
-                _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
+                _ShowAndroidToastMessage(
+                    "ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
                 Invoke("_DoQuit", 0.5f);
             }
@@ -180,15 +192,17 @@ namespace GoogleARCore.Examples.HelloAR
         private void _ShowAndroidToastMessage(string message)
         {
             AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject unityActivity =
+                unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
             if (unityActivity != null)
             {
                 AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
                 unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
                 {
-                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
-                        message, 0);
+                    AndroidJavaObject toastObject =
+                        toastClass.CallStatic<AndroidJavaObject>(
+                            "makeText", unityActivity, message, 0);
                     toastObject.Call("show");
                 }));
             }

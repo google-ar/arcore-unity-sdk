@@ -33,7 +33,8 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="permissionNames">The value for PermissionNames.</param>
         /// <param name="grantResults">The value for GrantResults.</param>
-        public AndroidPermissionsRequestResult(string[] permissionNames,  bool[] grantResults) : this()
+        public AndroidPermissionsRequestResult(
+            string[] permissionNames, bool[] grantResults) : this()
         {
             PermissionNames = permissionNames;
             GrantResults = grantResults;
@@ -54,7 +55,8 @@ namespace GoogleARCore
         /// </summary>
         public bool IsAllGranted
         {
-            [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
+            [SuppressMemoryAllocationError(
+                IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
                 if (PermissionNames == null || GrantResults == null)

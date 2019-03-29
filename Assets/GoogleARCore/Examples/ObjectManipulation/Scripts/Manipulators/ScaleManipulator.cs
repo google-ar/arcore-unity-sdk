@@ -126,7 +126,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnContinueManipulation(PinchGesture gesture)
         {
-            m_CurrentScaleRatio += k_Sensitivity * GestureTouchesUtility.PixelsToInches(gesture.GapDelta);
+            m_CurrentScaleRatio +=
+                k_Sensitivity * GestureTouchesUtility.PixelsToInches(gesture.GapDelta);
 
             float currentScale = m_CurrentScale;
             transform.localScale = new Vector3(currentScale, currentScale, currentScale);
@@ -173,7 +174,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             if (!m_IsScaling)
             {
-                m_CurrentScaleRatio = Mathf.Lerp(m_CurrentScaleRatio, m_ClampedScaleRatio, Time.deltaTime * 8.0f);
+                m_CurrentScaleRatio =
+                    Mathf.Lerp(m_CurrentScaleRatio, m_ClampedScaleRatio, Time.deltaTime * 8.0f);
                 float currentScale = m_CurrentScale;
                 transform.localScale = new Vector3(currentScale, currentScale, currentScale);
             }

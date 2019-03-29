@@ -115,7 +115,8 @@ namespace GoogleARCoreInternal
                         applicationIcons[i] = exampleIcon;
                     }
 
-                    PlayerSettings.SetIconsForTargetGroup(buildTargetGroup, applicationIcons, IconKind.Application);
+                    PlayerSettings.SetIconsForTargetGroup(
+                        buildTargetGroup, applicationIcons, IconKind.Application);
                     break;
                 }
             }

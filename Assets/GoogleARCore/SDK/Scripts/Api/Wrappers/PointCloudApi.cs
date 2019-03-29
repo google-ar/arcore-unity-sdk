@@ -49,29 +49,34 @@ namespace GoogleARCoreInternal
         public long GetTimestamp(IntPtr pointCloudHandle)
         {
             long timestamp = 0;
-            ExternApi.ArPointCloud_getTimestamp(m_NativeSession.SessionHandle, pointCloudHandle, ref timestamp);
+            ExternApi.ArPointCloud_getTimestamp(
+                m_NativeSession.SessionHandle, pointCloudHandle, ref timestamp);
             return timestamp;
         }
 
         public int GetNumberOfPoints(IntPtr pointCloudHandle)
         {
             int pointCount = 0;
-            ExternApi.ArPointCloud_getNumberOfPoints(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCount);
+            ExternApi.ArPointCloud_getNumberOfPoints(
+                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCount);
 
             return pointCount;
         }
 
         public PointCloudPoint GetPoint(IntPtr pointCloudHandle, int index)
         {
-            // Get a reference to the pointcloud data to extract position and condfidence of point at index.
+            // Get a reference to the pointcloud data to extract position and condfidence of point
+            // at index.
             IntPtr pointCloudDataHandle = IntPtr.Zero;
-            ExternApi.ArPointCloud_getData(m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudDataHandle);
+            ExternApi.ArPointCloud_getData(
+                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudDataHandle);
             IntPtr pointDataHandle = new IntPtr(pointCloudDataHandle.ToInt64() +
                 (Marshal.SizeOf(typeof(Vector4)) * index));
             Marshal.Copy(pointDataHandle, m_CachedVector, 0, 4);
 
             // Negate z axis because points are returned in OpenGl space.
-            Vector3 position = new Vector3(m_CachedVector[0], m_CachedVector[1], -m_CachedVector[2]);
+            Vector3 position = new Vector3(
+                m_CachedVector[0], m_CachedVector[1], -m_CachedVector[2]);
             float confidence = m_CachedVector[3];
 
             return new PointCloudPoint(_GetPointId(pointCloudHandle, index), position, confidence);
@@ -86,9 +91,10 @@ namespace GoogleARCoreInternal
         private int _GetPointId(IntPtr pointCloudHandle, int index)
         {
             IntPtr pointCloudIdsHandle = IntPtr.Zero;
-            ExternApi.ArPointCloud_getPointIds(m_NativeSession.SessionHandle, pointCloudHandle,
-                ref pointCloudIdsHandle);
-            IntPtr pointIdHandle = new IntPtr(pointCloudIdsHandle.ToInt64() + (Marshal.SizeOf(typeof(int)) * index));
+            ExternApi.ArPointCloud_getPointIds(
+                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudIdsHandle);
+            IntPtr pointIdHandle =
+                new IntPtr(pointCloudIdsHandle.ToInt64() + (Marshal.SizeOf(typeof(int)) * index));
             return Marshal.ReadInt32(pointIdHandle);
         }
 #else
@@ -102,20 +108,20 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPointCloud_getTimestamp(IntPtr session, IntPtr pointCloudHandle,
-                ref long timestamp);
+            public static extern void ArPointCloud_getTimestamp(
+                IntPtr session, IntPtr pointCloudHandle, ref long timestamp);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPointCloud_getNumberOfPoints(IntPtr session, IntPtr pointCloudHandle,
-                ref int pointCount);
+            public static extern void ArPointCloud_getNumberOfPoints(
+                IntPtr session, IntPtr pointCloudHandle, ref int pointCount);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPointCloud_getData(IntPtr session, IntPtr pointCloudHandle,
-                ref IntPtr pointCloudData);
+            public static extern void ArPointCloud_getData(
+                IntPtr session, IntPtr pointCloudHandle, ref IntPtr pointCloudData);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPointCloud_getPointIds(IntPtr session, IntPtr pointCloudHandle,
-                ref IntPtr pointIds);
+            public static extern void ArPointCloud_getPointIds(
+                IntPtr session, IntPtr pointCloudHandle, ref IntPtr pointIds);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_release(IntPtr pointCloudHandle);

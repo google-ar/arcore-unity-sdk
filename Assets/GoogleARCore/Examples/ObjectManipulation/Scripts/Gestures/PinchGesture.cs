@@ -34,7 +34,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="recognizer">The gesture recognizer.</param>
         /// <param name="touch1">The first touch that started this gesture.</param>
         /// <param name="touch2">The second touch that started this gesture.</param>
-        public PinchGesture(PinchGestureRecognizer recognizer, Touch touch1, Touch touch2) : base(recognizer)
+        public PinchGesture(PinchGestureRecognizer recognizer, Touch touch1, Touch touch2) :
+            base(recognizer)
         {
             FingerId1 = touch1.fingerId;
             FingerId2 = touch2.fingerId;
@@ -87,7 +88,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {
@@ -106,7 +108,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             Vector3 firstToSecondDirection = (StartPosition1 - StartPosition2).normalized;
             float dot1 = Vector3.Dot(touch1.deltaPosition.normalized, -firstToSecondDirection);
             float dot2 = Vector3.Dot(touch2.deltaPosition.normalized, firstToSecondDirection);
-            float dotThreshold = Mathf.Cos(pinchRecognizer.m_SlopMotionDirectionDegrees * Mathf.Deg2Rad);
+            float dotThreshold =
+                Mathf.Cos(pinchRecognizer.m_SlopMotionDirectionDegrees * Mathf.Deg2Rad);
 
             // Check angle of motion for the first touch.
             if (touch1.deltaPosition != Vector2.zero && Mathf.Abs(dot1) < dotThreshold)
@@ -148,7 +151,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {

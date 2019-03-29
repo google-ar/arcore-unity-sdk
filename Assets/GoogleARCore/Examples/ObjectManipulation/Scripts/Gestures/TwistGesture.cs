@@ -37,7 +37,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="recognizer">The gesture recognizer.</param>
         /// <param name="touch1">The first touch that started this gesture.</param>
         /// <param name="touch2">The second touch that started this gesture.</param>
-        public TwistGesture(TwistGestureRecognizer recognizer, Touch touch1, Touch touch2) : base(recognizer)
+        public TwistGesture(TwistGestureRecognizer recognizer, Touch touch1, Touch touch2) :
+            base(recognizer)
         {
             FingerId1 = touch1.fingerId;
             FingerId2 = touch2.fingerId;
@@ -85,7 +86,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {
@@ -101,7 +103,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
             TwistGestureRecognizer twistRecognizer = m_Recognizer as TwistGestureRecognizer;
 
-            float rotation = CalculateDeltaRotation(touch1.position, touch2.position, StartPosition1, StartPosition2);
+            float rotation = CalculateDeltaRotation(
+                touch1.position, touch2.position, StartPosition1, StartPosition2);
             if (Mathf.Abs(rotation) < twistRecognizer.m_SlopRotation)
             {
                 return false;
@@ -133,7 +136,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             Touch touch1, touch2;
             bool foundTouches = GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
-            foundTouches = GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
+            foundTouches =
+                GestureTouchesUtility.TryFindTouch(FingerId2, out touch2) && foundTouches;
 
             if (!foundTouches)
             {

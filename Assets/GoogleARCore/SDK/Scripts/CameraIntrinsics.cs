@@ -47,7 +47,8 @@ namespace GoogleARCore
         /// </summary>
         public Vector2Int ImageDimensions;
 
-        internal CameraIntrinsics(Vector2 focalLength, Vector2 principalPoint, Vector2Int imageDimensions)
+        internal CameraIntrinsics(
+            Vector2 focalLength, Vector2 principalPoint, Vector2Int imageDimensions)
         {
             FocalLength = focalLength;
             PrincipalPoint = principalPoint;

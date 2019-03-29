@@ -27,8 +27,8 @@ namespace GoogleARCore.Examples.CloudAnchors
 
     /// <summary>
     /// A helper script to set the apparent world origin of ARCore through applying an offset to the
-    /// ARCoreDevice (and therefore also it's FirstPersonCamera child); this also provides mechanisms
-    /// to handle resulting changes to ARCore plane positioning and raycasting.
+    /// ARCoreDevice (and therefore also it's FirstPersonCamera child); this also provides
+    /// mechanisms to handle resulting changes to ARCore plane positioning and raycasting.
     /// </summary>
     public class ARCoreWorldOriginHelper : MonoBehaviour
     {
@@ -43,8 +43,8 @@ namespace GoogleARCore.Examples.CloudAnchors
         public GameObject DetectedPlanePrefab;
 
         /// <summary>
-        /// A list to hold new planes ARCore began tracking in the current frame. This object is used across
-        /// the application to avoid per-frame allocations.
+        /// A list to hold new planes ARCore began tracking in the current frame. This object is
+        /// used across the application to avoid per-frame allocations.
         /// </summary>
         private List<DetectedPlane> m_NewPlanes = new List<DetectedPlane>();
 
@@ -54,7 +54,8 @@ namespace GoogleARCore.Examples.CloudAnchors
         private List<GameObject> m_PlanesBeforeOrigin = new List<GameObject>();
 
         /// <summary>
-        /// Indicates whether the Origin of the new World Coordinate System, i.e. the Cloud Anchor, was placed.
+        /// Indicates whether the Origin of the new World Coordinate System, i.e. the Cloud Anchor,
+        /// was placed.
         /// </summary>
         private bool m_IsOriginPlaced = false;
 
@@ -76,15 +77,16 @@ namespace GoogleARCore.Examples.CloudAnchors
 
             Pose worldPose = _WorldToAnchorPose(Pose.identity);
 
-            // Iterate over planes found in this frame and instantiate corresponding GameObjects to visualize them.
+            // Iterate over planes found in this frame and instantiate corresponding GameObjects to
+            // visualize them.
             Session.GetTrackables<DetectedPlane>(m_NewPlanes, TrackableQueryFilter.New);
             for (int i = 0; i < m_NewPlanes.Count; i++)
             {
-                // Instantiate a plane visualization prefab and set it to track the new plane. The transform is set to
-                // the origin with an identity rotation since the mesh for our prefab is updated in Unity World
-                // coordinates.
-                GameObject planeObject = Instantiate(DetectedPlanePrefab,
-                                                     worldPose.position, worldPose.rotation, transform);
+                // Instantiate a plane visualization prefab and set it to track the new plane. The
+                // transform is set to the origin with an identity rotation since the mesh for our
+                // prefab is updated in Unity World coordinates.
+                GameObject planeObject = Instantiate(
+                    DetectedPlanePrefab, worldPose.position, worldPose.rotation, transform);
                 planeObject.GetComponent<DetectedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
 
                 if (!m_IsOriginPlaced)
@@ -95,16 +97,17 @@ namespace GoogleARCore.Examples.CloudAnchors
         }
 
         /// <summary>
-        /// Sets the apparent world origin of ARCore through applying an offset to the ARCoreDevice (and therefore also
-        /// it's FirstPersonCamera child), so that the Origin of Unity's World Coordinate System coincides with the
-        /// Anchor. This function needs to be called once the Cloud Anchor is either hosted or resolved.
+        /// Sets the apparent world origin of ARCore through applying an offset to the ARCoreDevice
+        /// (and therefore also it's FirstPersonCamera child), so that the Origin of Unity's World
+        /// Coordinate System coincides with the Anchor. This function needs to be called once the
+        /// Cloud Anchor is either hosted or resolved.
         /// </summary>
         /// <param name="anchorTransform">Transform of the Cloud Anchor.</param>
         public void SetWorldOrigin(Transform anchorTransform)
         {
-            // Each client will store the anchorTransform, and will have to move the ARCoreDevice (and therefore also
-            // it's FirstPersonCamera child) and update other trakced poses (planes, anchors, etc.) so that they appear
-            // in the same position in the real world.
+            // Each client will store the anchorTransform, and will have to move the ARCoreDevice
+            // (and therefore also it's FirstPersonCamera child) and update other trakced poses
+            // (planes, anchors, etc.) so that they appear in the same position in the real world.
             if (m_IsOriginPlaced)
             {
                 Debug.LogWarning("The World Origin can be set only once.");
@@ -130,16 +133,17 @@ namespace GoogleARCore.Examples.CloudAnchors
 
         /// <summary>
         /// Performs a raycast against physical objects being tracked by ARCore. This function wraps
-        /// <c>Frame.Raycast</c> to add the necessary offset if the WorldOrigin is moved when a Cloud Anchor is placed.
+        /// <c>Frame.Raycast</c> to add the necessary offset if the WorldOrigin is moved when a
+        /// Cloud Anchor is placed.
         /// Output the closest hit from the camera.
-        /// Note that the Unity's screen coordinate (0, 0)
-        /// starts from bottom left.
+        /// Note that the Unity's screen coordinate (0, 0) starts from bottom left.
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
-        /// of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// represents a category of raycast hits the method call should consider valid.</param>
+        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is
+        /// successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         public bool Raycast(float x, float y, TrackableHitFlags filter, out TrackableHit hitResult)
         {
@@ -147,8 +151,8 @@ namespace GoogleARCore.Examples.CloudAnchors
             if (foundHit)
             {
                 Pose worldPose = _WorldToAnchorPose(hitResult.Pose);
-                TrackableHit newHit = new TrackableHit(worldPose, hitResult.Distance, hitResult.Flags,
-                                                       hitResult.Trackable);
+                TrackableHit newHit = new TrackableHit(
+                    worldPose, hitResult.Distance, hitResult.Flags, hitResult.Trackable);
                 hitResult = newHit;
             }
 
@@ -167,8 +171,8 @@ namespace GoogleARCore.Examples.CloudAnchors
                 return pose;
             }
 
-            Matrix4x4 anchorTWorld = Matrix4x4.TRS(m_AnchorTransform.position, m_AnchorTransform.rotation,
-                                                   Vector3.one).inverse;
+            Matrix4x4 anchorTWorld = Matrix4x4.TRS(
+                m_AnchorTransform.position, m_AnchorTransform.rotation, Vector3.one).inverse;
 
             Vector3 position = anchorTWorld.MultiplyPoint(pose.position);
             Quaternion rotation = pose.rotation * Quaternion.LookRotation(

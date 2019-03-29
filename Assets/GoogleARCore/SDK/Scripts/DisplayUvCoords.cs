@@ -30,8 +30,8 @@ namespace GoogleARCore
         /// <summary>
         /// Gets full screen uv coordinates.
         /// </summary>
-        public static readonly DisplayUvCoords FullScreenUvCoords =
-            new DisplayUvCoords(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 0));
+        public static readonly DisplayUvCoords FullScreenUvCoords = new DisplayUvCoords(
+            new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 0));
 
         /// <summary>
         /// The top-left UV coordinates for the display.
@@ -60,7 +60,8 @@ namespace GoogleARCore
         /// <param name="topRight">The top-right UV coordinates for the display.</param>
         /// <param name="bottomLeft">The bottom-left UV coordinates for the display.</param>
         /// <param name="bottomRight">The bottom-right UV coordinates for the display.</param>
-        public DisplayUvCoords(Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft, Vector2 bottomRight)
+        public DisplayUvCoords(
+            Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft, Vector2 bottomRight)
         {
             TopLeft = topLeft;
             TopRight = topRight;
@@ -70,13 +71,17 @@ namespace GoogleARCore
 
         //// @cond EXCLUDE_FROM_DOXYGEN
 
-        [System.Obsolete("The type ApiDisplayCoords is deprecated.  Please use GoogleARCore.DisplayUvCoords.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules",
-            "SA1600:ElementsMustBeDocumented", Justification = "Deprecated")]
-        public static implicit operator GoogleARCoreInternal.ApiDisplayUvCoords(DisplayUvCoords coords)
+        [System.Obsolete(
+            "The type ApiDisplayCoords is deprecated.  Please use GoogleARCore.DisplayUvCoords.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "StyleCop.CSharp.DocumentationRules",
+            "SA1600:ElementsMustBeDocumented",
+            Justification = "Deprecated")]
+        public static implicit operator GoogleARCoreInternal.ApiDisplayUvCoords(
+            DisplayUvCoords coords)
         {
-            return new GoogleARCoreInternal.ApiDisplayUvCoords(coords.TopLeft, coords.TopRight, coords.BottomLeft,
-                coords.BottomRight);
+            return new GoogleARCoreInternal.ApiDisplayUvCoords(
+                coords.TopLeft, coords.TopRight, coords.BottomLeft, coords.BottomRight);
         }
 
         //// @endcond

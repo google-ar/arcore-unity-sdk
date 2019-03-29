@@ -27,6 +27,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// If an object is selected, then doing a two finger drag along the vertical
     /// axis will elevate the object.
     /// </summary>
+    [RequireComponent(typeof(SelectionManipulator))]
     public class ElevationManipulator : Manipulator
     {
         /// <summary>
@@ -93,10 +94,13 @@ namespace GoogleARCore.Examples.ObjectManipulation
             {
                 transform.position = transform.parent.TransformPoint(
                     new Vector3(
-                        transform.localPosition.x, transform.parent.InverseTransformPoint(m_Origin).y,
+                        transform.localPosition.x,
+                        transform.parent.InverseTransformPoint(m_Origin).y,
                         transform.localPosition.z));
             }
 
+            GetComponent<SelectionManipulator>().OnElevationChangedScaled(
+                Mathf.Abs(transform.position.y - m_Origin.y));
             OnContinueElevationVisualization(transform.position);
         }
 

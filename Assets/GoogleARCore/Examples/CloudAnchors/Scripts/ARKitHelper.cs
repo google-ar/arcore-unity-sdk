@@ -73,8 +73,18 @@ namespace GoogleARCore.Examples.CloudAnchors
 
                 hitPose.position = UnityARMatrixOps.GetPosition(m_HitResultList[minDistanceIndex].worldTransform);
 
-                // Point the hitPose rotation roughly away from the raycast/camera to match ARCore.
-                hitPose.rotation.eulerAngles = new Vector3(0.0f, camera.transform.eulerAngles.y, 0.0f);
+                // Original ARKit hit pose is the plane rotation.
+                Quaternion planeRotation = UnityARMatrixOps.GetRotation(
+                    m_HitResultList[minDistanceIndex].worldTransform);
+
+                // Try to match the hit rotation to the one ARCore uses.
+                Vector3 planeNormal = planeRotation * Vector3.up;
+                Vector3 rayDir = camera.ViewportPointToRay(viewportPoint).direction;
+                Vector3 planeProjection = Vector3.ProjectOnPlane(rayDir, planeNormal);
+                Vector3 forwardDir = -planeProjection.normalized;
+
+                Quaternion hitRotation = Quaternion.LookRotation(forwardDir, planeNormal);
+                hitPose.rotation = hitRotation;
 
                 return true;
             }

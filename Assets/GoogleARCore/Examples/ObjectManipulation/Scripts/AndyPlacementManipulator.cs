@@ -29,7 +29,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     public class AndyPlacementManipulator : Manipulator
     {
         /// <summary>
-        /// The first-person camera being used to render the passthrough camera image (i.e. AR background).
+        /// The first-person camera being used to render the passthrough camera image (i.e. AR
+        /// background).
         /// </summary>
         public Camera FirstPersonCamera;
 
@@ -79,7 +80,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             TrackableHit hit;
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon;
 
-            if (Frame.Raycast(gesture.StartPosition.x, gesture.StartPosition.y, raycastFilter, out hit))
+            if (Frame.Raycast(
+                gesture.StartPosition.x, gesture.StartPosition.y, raycastFilter, out hit))
             {
                 // Use hit pose and camera pose to check if hittest is from the
                 // back of the plane, if it is, no need to create the anchor.
@@ -95,13 +97,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     var andyObject = Instantiate(AndyPrefab, hit.Pose.position, hit.Pose.rotation);
 
                     // Instantiate manipulator.
-                    var manipulator = Instantiate(ManipulatorPrefab, hit.Pose.position, hit.Pose.rotation);
+                    var manipulator =
+                        Instantiate(ManipulatorPrefab, hit.Pose.position, hit.Pose.rotation);
 
                     // Make Andy model a child of the manipulator.
                     andyObject.transform.parent = manipulator.transform;
 
-                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
-                    // world evolves.
+                    // Create an anchor to allow ARCore to track the hitpoint as understanding of
+                    // the physical world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
                     // Make manipulator a child of the anchor.

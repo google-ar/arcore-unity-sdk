@@ -54,7 +54,8 @@ namespace GoogleARCoreInternal
                 InstantPreviewManager.InstantPreviewWarningPrefabPath.Replace(".prefab",
                                                                               string.Empty);
             Debug.LogWarningFormat(
-                "Instant Preview has limited support for touch based input, see {0} for details.\n" +
+                "Instant Preview has limited support for touch based input, see {0} for " +
+                "details.\n" +
                 "To disable this warning, uncheck 'Show Editor Warning' in the '{1}' prefab.",
                 m_InstantPreviewDocumentationUrl, prefabPath);
         }

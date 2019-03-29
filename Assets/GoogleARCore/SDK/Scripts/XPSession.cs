@@ -36,8 +36,9 @@ namespace GoogleARCore.CrossPlatform
         /// Attempts to asynchronously host a new cloud anchor.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
-        /// <returns>A task that will complete when the attempt to host a new cloud anchor has finished.
-        /// The result will be a <c>CloudAnchorResult</c> associated with the operation.</returns>
+        /// <returns>A task that will complete when the attempt to host a new cloud anchor has
+        /// finished.  The result will be a <c>CloudAnchorResult</c> associated with the operation.
+        /// </returns>
         public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(Anchor anchor)
         {
             return CloudServiceManager.Instance.CreateCloudAnchor(anchor);
@@ -48,9 +49,11 @@ namespace GoogleARCore.CrossPlatform
         /// Attempts to asynchronously host a new cloud anchor.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
-        /// <returns>A task that will complete when the attempt to host a new cloud anchor has finished.
-        /// The result will be a <c>CloudAnchorResult</c> associated with the operation.</returns>
-        public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(UnityARUserAnchorComponent anchor)
+        /// <returns>A task that will complete when the attempt to host a new cloud anchor has
+        /// finished.  The result will be a <c>CloudAnchorResult</c> associated with the operation.
+        /// </returns>
+        public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(
+            UnityARUserAnchorComponent anchor)
         {
             return CloudServiceManager.Instance.CreateCloudAnchor(
                 new Pose(anchor.transform.position, anchor.transform.rotation));
@@ -61,8 +64,9 @@ namespace GoogleARCore.CrossPlatform
         /// Attempts to asynchronous resolve a cloud anchor.
         /// </summary>
         /// <param name="cloudAnchorId">The id of the cloud anchor to resolve.</param>
-        /// <returns>A task that will complete when the attempt to host a new cloud anchor has finished.
-        /// The result will be a <c>CloudAnchorResult</c> associated with the operation.</returns>
+        /// <returns>A task that will complete when the attempt to host a new cloud anchor has
+        /// finished.  The result will be a <c>CloudAnchorResult</c> associated with the operation.
+        /// </returns>
         public static AsyncTask<CloudAnchorResult> ResolveCloudAnchor(string cloudAnchorId)
         {
             return CloudServiceManager.Instance.ResolveCloudAnchor(cloudAnchorId);

@@ -34,8 +34,8 @@ namespace GoogleARCore
         /// The direction of the device camera used by the session.
         /// </summary>
         /// <remarks>
-        /// Note that changing this value will trigger a re-initialization of session. ARCore tracking
-        /// data (e.g. Trackables) are not shared between cameras.
+        /// Note that changing this value will trigger a re-initialization of session. ARCore
+        /// tracking data (e.g. Trackables) are not shared between cameras.
         /// </remarks>
         [Tooltip("The direction of the device camera used by the session.")]
         public DeviceCameraDirection DeviceCameraDirection = DeviceCameraDirection.BackFacing;
@@ -58,17 +58,19 @@ namespace GoogleARCore
         /// but devices might provide higher or lower resolution textures, depending
         /// on device capabilities. The CPU image resolutions returned are VGA, 720p,
         /// and a resolution matching the GPU texture.</param>
-        /// <returns>The index of the camera configuration in <c>supportedConfigurations</c> to be used for the
-        /// ARCore session.  If the return value is not a valid index (e.g. the value -1), then no camera
-        /// configuration will be set and the ARCore session will use the previously selected camera
-        /// configuration or a default configuration if no previous selection exists.</returns>
-        public delegate int OnChooseCameraConfigurationDelegate(List<CameraConfig> supportedConfigurations);
+        /// <returns>The index of the camera configuration in <c>supportedConfigurations</c> to be
+        /// used for the ARCore session.  If the return value is not a valid index (e.g. the value
+        /// -1), then no camera configuration will be set and the ARCore session will use the
+        /// previously selected camera configuration or a default configuration if no previous
+        /// selection exists.</returns>
+        public delegate int OnChooseCameraConfigurationDelegate(
+            List<CameraConfig> supportedConfigurations);
 
         /// <summary>
         /// Unity Awake.
         /// </summary>
         [SuppressMemoryAllocationError(Reason = "Could create new LifecycleManager")]
-        public void Awake()
+        public virtual void Awake()
         {
             LifecycleManager.Instance.CreateSession(this);
         }
@@ -76,8 +78,9 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnDestroy.
         /// </summary>
-        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
-        public void OnDestroy()
+        [SuppressMemoryAllocationError(
+            IsWarning = true, Reason = "Requires further investigation.")]
+        public virtual void OnDestroy()
         {
             LifecycleManager.Instance.ResetSession();
         }
@@ -85,7 +88,8 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnEnable.
         /// </summary>
-        [SuppressMemoryAllocationError(Reason = "Enabling session creates a new ARSessionConfiguration")]
+        [SuppressMemoryAllocationError(
+            Reason = "Enabling session creates a new ARSessionConfiguration")]
         public void OnEnable()
         {
             LifecycleManager.Instance.EnableSession();
@@ -94,19 +98,24 @@ namespace GoogleARCore
         /// <summary>
         /// Unity OnDisable.
         /// </summary>
-        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
+        [SuppressMemoryAllocationError(
+            IsWarning = true, Reason = "Requires further investigation.")]
         public void OnDisable()
         {
             LifecycleManager.Instance.DisableSession();
         }
 
         /// <summary>
-        /// Registers a callback that allows a camera configuration to be selected from a list of valid configurations.
-        /// The callback will be invoked each time the ARCore session is resumed which can happen when the ARCoreSession
-        /// component becomes enabled or the Android application moves from 'paused' to 'resumed' state.
+        /// Registers a callback that allows a camera configuration to be selected from a list of
+        /// valid configurations.
+        /// The callback will be invoked each time the ARCore session is resumed which can happen
+        /// when the ARCoreSession component becomes enabled or the Android application moves from
+        /// 'paused' to 'resumed' state.
         /// </summary>
-        /// <param name="onChooseCameraConfiguration">The callback to register for selecting a camera configuration.</param>
-        public void RegisterChooseCameraConfigurationCallback(OnChooseCameraConfigurationDelegate onChooseCameraConfiguration)
+        /// <param name="onChooseCameraConfiguration">The callback to register for selecting a
+        /// camera configuration.</param>
+        public void RegisterChooseCameraConfigurationCallback(
+            OnChooseCameraConfigurationDelegate onChooseCameraConfiguration)
         {
             m_OnChooseCameraConfiguration = onChooseCameraConfiguration;
         }

@@ -64,7 +64,8 @@ namespace GoogleARCore
         /// Creates a new Anchor at the given <c>Pose</c> that is attached to the <c>Trackable</c>.
         /// If trackable is null, it creates a new anchor at a world pose.
         /// As ARCore updates its understading of the space, it will update the
-        /// virtual pose of the of the anchor to attempt to keep the anchor in the same real world location.
+        /// virtual pose of the of the anchor to attempt to keep the anchor in the same real world
+        /// location.
         /// </summary>
         /// <param name="pose">The Unity world pose where the anchor is to be creates.</param>
         /// <param name="trackable">The Trackable to attach the Anchor to.</param>
@@ -92,10 +93,13 @@ namespace GoogleARCore
         /// Gets Trackables ARCore has tracked.
         /// </summary>
         /// <typeparam name="T">The Trackable type to get.</typeparam>
-        /// <param name="trackables">A reference to a list of T that will be filled by the method call.</param>
+        /// <param name="trackables">A reference to a list of T that will be filled by the method
+        /// call.</param>
         /// <param name="filter">A filter on the type of data to return.</param>
         [SuppressMemoryAllocationError(Reason = "List could be resized.")]
-        public static void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter = TrackableQueryFilter.All) where T : Trackable
+        public static void GetTrackables<T>(
+            List<T> trackables, TrackableQueryFilter filter = TrackableQueryFilter.All)
+            where T : Trackable
         {
             trackables.Clear();
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -110,8 +114,8 @@ namespace GoogleARCore
         /// <summary>
         /// Get the camera configuration the ARCore session is currently running with.
         /// </summary>
-        /// <returns>The CameraConfig that the ARCore session is currently running with. The value is only currect
-        /// when there is a valid running ARCore session. </returns>
+        /// <returns>The CameraConfig that the ARCore session is currently running with. The value
+        /// is only correct when there is a valid running ARCore session. </returns>
         public static CameraConfig GetCameraConfig()
         {
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -126,7 +130,8 @@ namespace GoogleARCore
         /// <summary>
         /// Checks the availability of the ARCore APK on the device.
         /// </summary>
-        /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability is known.</returns>
+        /// <returns>An AsyncTask that completes with an ApkAvailabilityStatus when the availability
+        /// is known.</returns>
         [SuppressMemoryAllocationError(Reason = "Creates a new AsyncTask")]
         public static AsyncTask<ApkAvailabilityStatus> CheckApkAvailability()
         {
@@ -136,7 +141,8 @@ namespace GoogleARCore
         /// <summary>
         /// Requests an installation of the ARCore APK on the device.
         /// </summary>
-        /// <param name="userRequested">Whether the installation was requested explicity by a user action.</param>
+        /// <param name="userRequested">Whether the installation was requested explicity by a user
+        /// action.</param>
         /// <returns>An AsyncTask that completes with an ApkInstallationStatus when the installation
         /// status is resolved.</returns>
         [SuppressMemoryAllocationError(Reason = "Creates a new AsyncTask")]

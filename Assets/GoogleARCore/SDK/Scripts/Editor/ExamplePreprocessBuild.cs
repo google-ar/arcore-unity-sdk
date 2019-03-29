@@ -63,7 +63,7 @@ namespace GoogleARCoreInternal
                     ProductName = "AugmentedFaces U3D",
                     PackageName = "com.google.ar.core.examples.unity.augmentedfaces",
                     SceneGuid = "7d2be221c0e8f4e259a08279fab0da42",
-                    IconGuid = "36b7440e71f344bef8fca770c2d365f8"
+                    IconGuid = "c63c0025880214284b97a9d1b5de07dc"
                 });
             _AddExampleScene(new ExampleScene()
             {

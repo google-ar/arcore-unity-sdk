@@ -34,7 +34,8 @@ namespace GoogleARCoreInternal
         /// <param name="arguments">Command line arguments, space delimited.</param>
         /// <param name="output">Filled out with the result as printed to stdout.</param>
         /// <param name="error">Filled out with the result as printed to stderr.</param>
-        public static void RunCommand(string fileName, string arguments, out string output, out string error)
+        public static void RunCommand(
+            string fileName, string arguments, out string output, out string error)
         {
             using (var process = new System.Diagnostics.Process())
             {

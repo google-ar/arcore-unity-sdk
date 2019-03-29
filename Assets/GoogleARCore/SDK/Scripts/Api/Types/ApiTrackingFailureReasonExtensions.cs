@@ -24,7 +24,8 @@ namespace GoogleARCoreInternal
 
     internal static class ApiTrackingFailureReasonExtensions
     {
-        public static LostTrackingReason ToLostTrackingReason(this ApiTrackingFailureReason apiTrackingFailureReason)
+        public static LostTrackingReason ToLostTrackingReason(
+            this ApiTrackingFailureReason apiTrackingFailureReason)
         {
             switch (apiTrackingFailureReason)
             {

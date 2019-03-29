@@ -34,7 +34,8 @@ namespace GoogleARCore
         /// <param name="distance">Hit's distance from the origin of the ray to the hit.</param>
         /// <param name="flags">Type of the hit.</param>
         /// <param name="trackable">Trackable object of the hit.</param>
-        internal TrackableHit(Pose pose, float distance, TrackableHitFlags flags, Trackable trackable) : this()
+        internal TrackableHit(
+            Pose pose, float distance, TrackableHitFlags flags, Trackable trackable) : this()
         {
             Pose = pose;
             Distance = distance;

@@ -28,6 +28,6 @@ namespace GoogleARCore
         /// <summary>
         /// The current ARCore SDK version.
         /// </summary>
-        public static readonly string Version = "1.7.0";
+        public static readonly string Version = "1.8.0";
     }
 }

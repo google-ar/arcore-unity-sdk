@@ -40,8 +40,9 @@ namespace GoogleARCore
                 int width, height;
                 IntPtr y, u, v;
                 int yRowStride, uvPixelStride, uvRowStride;
-                LifecycleManager.Instance.NativeSession.ImageApi.GetImageBuffer(m_ImageHandle, out width, out height,
-                    out y, out u, out v, out yRowStride, out uvPixelStride, out uvRowStride);
+                LifecycleManager.Instance.NativeSession.ImageApi.GetImageBuffer(
+                    m_ImageHandle, out width, out height, out y, out u, out v, out yRowStride,
+                    out uvPixelStride, out uvRowStride);
 
                 IsAvailable = true;
                 Width = width;
@@ -63,8 +64,8 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets a value indicating whether the image bytes are available. The struct should not be accessed if
-        /// this value is <c>false</c>.
+        /// Gets a value indicating whether the image bytes are available. The struct should not be
+        /// accessed if this value is <c>false</c>.
         /// </summary>
         public bool IsAvailable { get; private set; }
 
@@ -79,19 +80,20 @@ namespace GoogleARCore
         public int Height { get; private set; }
 
         /// <summary>
-        /// Gets a pointer to the Y buffer with a pixel stride of 1 and a row stride of <c>YRowStride</c>.
+        /// Gets a pointer to the Y buffer with a pixel stride of 1 and a row stride of
+        /// <c>YRowStride</c>.
         /// </summary>
         public IntPtr Y { get; private set; }
 
         /// <summary>
-        /// Gets a pointer to the U buffer with a pixel stride of <c>UVPixelStride</c> and a row stride of
-        /// <c>UVRowStride</c>.
+        /// Gets a pointer to the U buffer with a pixel stride of <c>UVPixelStride</c> and a row
+        /// stride of <c>UVRowStride</c>.
         /// </summary>
         public IntPtr U { get; private set; }
 
         /// <summary>
-        /// Gets a pointer to the V buffer with a pixel stride of <c>UVPixelStride</c> and a row stride of
-        /// <c>UVRowStride</c>.
+        /// Gets a pointer to the V buffer with a pixel stride of <c>UVPixelStride</c> and a row
+        /// stride of <c>UVRowStride</c>.
         /// </summary>
         public IntPtr V { get; private set; }
 
@@ -111,8 +113,8 @@ namespace GoogleARCore
         public int UVRowStride { get; private set; }
 
         /// <summary>
-        /// Releases the camera image and associated resources, and signifies the developer will no longer access those
-        /// resources.
+        /// Releases the camera image and associated resources, and signifies the developer will no
+        /// longer access those resources.
         /// </summary>
         public void Release()
         {
@@ -126,7 +128,8 @@ namespace GoogleARCore
         /// <summary>
         /// Calls release as part of IDisposable pattern supporting 'using' statements.
         /// </summary>
-        [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
+        [SuppressMemoryAllocationError(
+            IsWarning = true, Reason = "Requires further investigation.")]
         public void Dispose()
         {
             Release();

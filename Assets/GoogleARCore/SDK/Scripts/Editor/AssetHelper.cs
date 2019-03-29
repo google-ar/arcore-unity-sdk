@@ -31,7 +31,8 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Get a PluginImporter object for a specific plugin file, anywhere in the project.
         ///
-        /// If the plugin file is not found or multiple exist, this will throw a BuildFailedException.
+        /// If the plugin file is not found or multiple exist, this will throw a
+        /// BuildFailedException.
         /// </summary>
         /// <param name="name">File name of the plugin including its extension.</param>
         /// <returns>The PluginImporter.</returns>
@@ -54,13 +55,16 @@ namespace GoogleARCoreInternal
             if (foundCount == 0)
             {
                 throw new BuildFailedException(
-                    string.Format("ARCore could not find plugin {0}. Was it removed from the ARCore SDK?", name));
+                    string.Format(
+                        "ARCore could not find plugin {0}. Was it removed from the ARCore SDK?",
+                        name));
             }
             else if (foundCount != 1)
             {
                 throw new BuildFailedException(
-                    string.Format("ARCore found multiple plugins named {0}. This project should only contain one such " +
-                        "plugin and it should be inside the ARCore SDK", name));
+                    string.Format(
+                        "ARCore found multiple plugins named {0}. This project should only " +
+                        "contain one such plugin and it should be inside the ARCore SDK", name));
             }
             else if (pluginImporter == null)
             {

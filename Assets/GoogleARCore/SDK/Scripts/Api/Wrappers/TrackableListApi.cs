@@ -64,8 +64,8 @@ namespace GoogleARCoreInternal
         public IntPtr AcquireItem(IntPtr listHandle, int index)
         {
             IntPtr trackableHandle = IntPtr.Zero;
-            ExternApi.ArTrackableList_acquireItem(m_NativeSession.SessionHandle, listHandle, index,
-                ref trackableHandle);
+            ExternApi.ArTrackableList_acquireItem(
+                m_NativeSession.SessionHandle, listHandle, index, ref trackableHandle);
             return trackableHandle;
         }
 
@@ -73,18 +73,20 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArTrackableList_create(IntPtr sessionHandle, ref IntPtr trackableListHandle);
+            public static extern void ArTrackableList_create(
+                IntPtr sessionHandle, ref IntPtr trackableListHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArTrackableList_destroy(IntPtr trackableListHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArTrackableList_getSize(IntPtr sessionHandle, IntPtr trackableListHandle,
-                ref int outSize);
+            public static extern void ArTrackableList_getSize(
+                IntPtr sessionHandle, IntPtr trackableListHandle, ref int outSize);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArTrackableList_acquireItem(IntPtr sessionHandle, IntPtr trackableListHandle,
-                int index, ref IntPtr outTrackable);
+            public static extern void ArTrackableList_acquireItem(
+                IntPtr sessionHandle, IntPtr trackableListHandle, int index,
+                ref IntPtr outTrackable);
 #pragma warning restore 626
         }
     }

@@ -62,14 +62,15 @@ namespace GoogleARCoreInternal
         private struct ExternApi
         {
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPose_create(IntPtr session, ref ApiPoseData rawPose, ref IntPtr poseHandle);
+            public static extern void ArPose_create(
+                IntPtr session, ref ApiPoseData rawPose, ref IntPtr poseHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPose_destroy(IntPtr poseHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArPose_getPoseRaw(IntPtr sessionHandle, IntPtr poseHandle,
-                ref ApiPoseData rawPose);
+            public static extern void ArPose_getPoseRaw(
+                IntPtr sessionHandle, IntPtr poseHandle, ref ApiPoseData rawPose);
         }
     }
 }

@@ -23,7 +23,9 @@ namespace GoogleARCore
     /// <summary>
     /// Deprecated version of FeaturePointOrientationMode.
     /// </summary>
-    [System.Obsolete("This enum has been renamed to FeaturePointOrientationMode. See https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
+    [System.Obsolete(
+        "This enum has been renamed to FeaturePointOrientationMode. See " +
+        "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
     public enum TrackedPointOrientationMode
     {
         Identity = 0,

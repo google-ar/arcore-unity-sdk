@@ -24,7 +24,8 @@ namespace GoogleARCoreInternal.CrossPlatform
 
     internal static class ApiCloudAnchorStateExtensions
     {
-        public static CloudServiceResponse ToCloudServiceResponse(this ApiCloudAnchorState anchorState)
+        public static CloudServiceResponse ToCloudServiceResponse(
+            this ApiCloudAnchorState anchorState)
         {
             switch (anchorState)
             {

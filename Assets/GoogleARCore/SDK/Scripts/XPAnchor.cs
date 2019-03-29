@@ -29,7 +29,8 @@ namespace GoogleARCore.CrossPlatform
     /// <summary>
     /// A cross-platform anchor.
     /// </summary>
-    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/CrossPlatform/XPAnchor")]
+    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/CrossPlatform/" +
+             "XPAnchor")]
     public class XPAnchor : MonoBehaviour
     {
         private static Dictionary<IntPtr, XPAnchor> s_AnchorDict =
@@ -40,8 +41,9 @@ namespace GoogleARCore.CrossPlatform
         private bool m_IsSessionDestroyed = false;
 
         /// <summary>
-        /// Gets the cloud id associated with this anchor or null if none exists.  Only anchors created via
-        /// <c>XPSession.CreateCloudAnchor</c> and <c>XPSession.ResolveCloudAnchor</c> will have a cloud id.
+        /// Gets the cloud id associated with this anchor or null if none exists.  Only anchors
+        /// created via <c>XPSession.CreateCloudAnchor</c> and <c>XPSession.ResolveCloudAnchor</c>
+        /// will have a cloud id.
         /// </summary>
         public string CloudId { get; private set; }
 
@@ -58,7 +60,8 @@ namespace GoogleARCore.CrossPlatform
                     return XPTrackingState.Stopped;
                 }
 
-                return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle).ToXPTrackingState();
+                return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle)
+                    .ToXPTrackingState();
             }
         }
 
@@ -105,7 +108,8 @@ namespace GoogleARCore.CrossPlatform
         {
             if (m_NativeHandle == IntPtr.Zero)
             {
-                Debug.LogError("Anchor components instantiated outside of ARCore are not supported. " +
+                Debug.LogError(
+                    "Anchor components instantiated outside of ARCore are not supported. " +
                     "Please use a 'Create' method within ARCore to instantiate anchors.");
                 return;
             }
@@ -151,8 +155,9 @@ namespace GoogleARCore.CrossPlatform
                 var nativeSession = LifecycleManager.Instance.NativeSession;
                 if (nativeSession != m_NativeSession)
                 {
-                    Debug.LogErrorFormat("The session which created this anchor has been destroyed. " +
-                    "The anchor on GameObject {0} can no longer update.",
+                    Debug.LogErrorFormat(
+                        "The session which created this anchor has been destroyed. " +
+                        "The anchor on GameObject {0} can no longer update.",
                         this.gameObject != null ? this.gameObject.name : "Unknown");
                     m_IsSessionDestroyed = true;
                 }

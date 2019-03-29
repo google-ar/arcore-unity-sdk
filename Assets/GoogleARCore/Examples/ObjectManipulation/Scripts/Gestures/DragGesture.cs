@@ -90,7 +90,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             {
                 Vector2 pos = touch.position;
                 float diff = (pos - StartPosition).magnitude;
-                if (GestureTouchesUtility.PixelsToInches(diff) >= (m_Recognizer as DragGestureRecognizer).m_SlopInches)
+                if (GestureTouchesUtility.PixelsToInches(diff) >=
+                    (m_Recognizer as DragGestureRecognizer).m_SlopInches)
                 {
                     return true;
                 }

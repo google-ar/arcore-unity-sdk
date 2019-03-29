@@ -33,8 +33,8 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning restore 618
     {
         /// <summary>
-        /// The Cloud Anchor ID that will be used to host and resolve the Cloud Anchor. This variable will be
-        /// syncrhonized over all clients.
+        /// The Cloud Anchor ID that will be used to host and resolve the Cloud Anchor. This
+        /// variable will be syncrhonized over all clients.
         /// </summary>
 #pragma warning disable 618
         [SyncVar(hook = "_OnChangeId")]
@@ -61,8 +61,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public void Start()
         {
-            m_CloudAnchorsExampleController = GameObject.Find("CloudAnchorsExampleController")
-                                                        .GetComponent<CloudAnchorsExampleController>();
+            m_CloudAnchorsExampleController =
+                GameObject.Find("CloudAnchorsExampleController")
+                    .GetComponent<CloudAnchorsExampleController>();
         }
 
         /// <summary>
@@ -129,11 +130,13 @@ namespace GoogleARCore.Examples.CloudAnchors
                 {
                     Debug.Log(string.Format("Failed to host Cloud Anchor: {0}", result.Response));
 
-                    m_CloudAnchorsExampleController.OnAnchorHosted(false, result.Response.ToString());
+                    m_CloudAnchorsExampleController.OnAnchorHosted(
+                        false, result.Response.ToString());
                     return;
                 }
 
-                Debug.Log(string.Format("Cloud Anchor {0} was created and saved.", result.Anchor.CloudId));
+                Debug.Log(string.Format(
+                    "Cloud Anchor {0} was created and saved.", result.Anchor.CloudId));
                 CmdSetCloudAnchorId(result.Anchor.CloudId);
 
                 m_CloudAnchorsExampleController.OnAnchorHosted(true, result.Response.ToString());
@@ -157,24 +160,29 @@ namespace GoogleARCore.Examples.CloudAnchors
 
             m_ShouldResolve = false;
 
-            XPSession.ResolveCloudAnchor(cloudAnchorId).ThenAction((System.Action<CloudAnchorResult>)(result =>
-            {
-                if (result.Response != CloudServiceResponse.Success)
-                {
-                    Debug.LogError(string.Format("Client could not resolve Cloud Anchor {0}: {1}",
-                                                 cloudAnchorId, result.Response));
+            XPSession.ResolveCloudAnchor(cloudAnchorId).ThenAction(
+                (System.Action<CloudAnchorResult>)(result =>
+                    {
+                        if (result.Response != CloudServiceResponse.Success)
+                        {
+                            Debug.LogError(string.Format(
+                                "Client could not resolve Cloud Anchor {0}: {1}",
+                                cloudAnchorId, result.Response));
 
-                    m_CloudAnchorsExampleController.OnAnchorResolved(false, result.Response.ToString());
-                    m_ShouldResolve = true;
-                    return;
-                }
+                            m_CloudAnchorsExampleController.OnAnchorResolved(
+                                false, result.Response.ToString());
+                            m_ShouldResolve = true;
+                            return;
+                        }
 
-                Debug.Log(string.Format("Client successfully resolved Cloud Anchor {0}.",
-                                        cloudAnchorId));
+                        Debug.Log(string.Format(
+                            "Client successfully resolved Cloud Anchor {0}.",
+                            cloudAnchorId));
 
-                m_CloudAnchorsExampleController.OnAnchorResolved(true, result.Response.ToString());
-                _OnResolved(result.Anchor.transform);
-            }));
+                        m_CloudAnchorsExampleController.OnAnchorResolved(
+                            true, result.Response.ToString());
+                        _OnResolved(result.Anchor.transform);
+                    }));
         }
 
         /// <summary>

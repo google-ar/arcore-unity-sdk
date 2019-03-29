@@ -76,8 +76,10 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// Helper function for creating one finger gestures when a touch begins.
         /// </summary>
-        /// <typeparam name="createGestureFunction">Function to be executed to create the gesture.</param>
-        protected internal void TryCreateOneFingerGestureOnTouchBegan(Func<Touch, T> createGestureFunction)
+        /// <typeparam name="createGestureFunction">Function to be executed to create the
+        /// gesture.</param>
+        protected internal void TryCreateOneFingerGestureOnTouchBegan(
+            Func<Touch, T> createGestureFunction)
         {
             for (int i = 0; i < Input.touches.Length; i++)
             {
@@ -97,8 +99,10 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// Helper function for creating two finger gestures when a touch begins.
         /// </summary>
-        /// <typeparam name="createGestureFunction">Function to be executed to create the gesture.</param>
-        protected internal void TryCreateTwoFingerGestureOnTouchBegan(Func<Touch, Touch, T> createGestureFunction)
+        /// <typeparam name="createGestureFunction">Function to be executed to create the
+        /// gesture.</param>
+        protected internal void TryCreateTwoFingerGestureOnTouchBegan(
+            Func<Touch, Touch, T> createGestureFunction)
         {
             if (Input.touches.Length < 2)
             {
@@ -134,7 +138,8 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
                     continue;
                 }
 
-                // Prevents the same two touches from creating two gestures if both touches began on the same frame.
+                // Prevents the same two touches from creating two gestures if both touches began on
+                // the same frame.
                 if (i < touchIndex && Input.touches[i].phase == TouchPhase.Began)
                 {
                     continue;

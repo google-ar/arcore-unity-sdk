@@ -76,8 +76,8 @@ namespace GoogleARCore
         SyncStart = SectionSync << 16,
         DepthStart = SectionDepth << 16,
 
-        // Note that we only expose the keys that could be used in the camera metadata from the capture
-        // result. The keys may only appear in CameraCharacteristics are not exposed here.
+        // Note that we only expose the keys that could be used in the camera metadata from the
+        // capture result. The keys may only appear in CameraCharacteristics are not exposed here.
         ColorCorrectionMode = // Byte (Enum)
                 ColorCorrectionStart,
 

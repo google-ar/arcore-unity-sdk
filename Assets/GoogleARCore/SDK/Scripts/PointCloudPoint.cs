@@ -51,9 +51,11 @@ namespace GoogleARCore
         /// <summary>
         /// Gets or sets a number that identifies the point within a point cloud and ARCore session.
         ///
-        /// This value is guarenteed to be unique if the ARCore session has been running for less than 24 hours.
+        /// This value is guarenteed to be unique if the ARCore session has been running for less
+        /// than 24 hours.
         /// </summary>
-        /// <value>A number that identifies the point within a point cloud and ARCore session.</value>
+        /// <value>A number that identifies the point within a point cloud and ARCore
+        /// session.</value>
         public int Id
         {
             get

@@ -106,7 +106,8 @@ namespace GoogleARCore.Examples.Common
         public void Initialize(DetectedPlane plane)
         {
             m_DetectedPlane = plane;
-            m_MeshRenderer.material.SetColor("_GridColor", k_PlaneColors[s_PlaneCount++ % k_PlaneColors.Length]);
+            m_MeshRenderer.material.SetColor(
+                "_GridColor", k_PlaneColors[s_PlaneCount++ % k_PlaneColors.Length]);
             m_MeshRenderer.material.SetFloat("_UvRotation", Random.Range(0.0f, 360.0f));
 
             Update();
@@ -135,9 +136,9 @@ namespace GoogleARCore.Examples.Common
 
             int planePolygonCount = m_MeshVertices.Count;
 
-            // The following code converts a polygon to a mesh with two polygons, inner
-            // polygon renders with 100% opacity and fade out to outter polygon with opacity 0%, as shown below.
-            // The indices shown in the diagram are used in comments below.
+            // The following code converts a polygon to a mesh with two polygons, inner polygon
+            // renders with 100% opacity and fade out to outter polygon with opacity 0%, as shown
+            // below.  The indices shown in the diagram are used in comments below.
             // _______________     0_______________1
             // |             |      |4___________5|
             // |             |      | |         | |

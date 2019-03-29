@@ -33,8 +33,9 @@ namespace GoogleARCoreInternal
 
     internal class ImageApi
     {
-        public void GetImageBuffer(IntPtr imageHandle, out int width, out int height, out IntPtr yPlane,
-            out IntPtr uPlane, out IntPtr vPlane, out int yRowStride, out int uvPixelStride, out int uvRowStride)
+        public void GetImageBuffer(
+            IntPtr imageHandle, out int width, out int height, out IntPtr yPlane, out IntPtr uPlane,
+            out IntPtr vPlane, out int yRowStride, out int uvPixelStride, out int uvRowStride)
         {
             IntPtr ndkImageHandle = IntPtr.Zero;
             ExternApi.ArImage_getNdkImage(imageHandle, ref ndkImageHandle);
@@ -90,14 +91,16 @@ namespace GoogleARCoreInternal
             public static extern int AImage_getHeight(IntPtr ndkImageHandle, ref int height);
 
             [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlaneData(IntPtr imageHandle, int planeIdx, ref IntPtr data,
-                ref int dataLength);
+            public static extern int AImage_getPlaneData(
+                IntPtr imageHandle, int planeIdx, ref IntPtr data, ref int dataLength);
 
             [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlanePixelStride(IntPtr imageHandle, int planeIdx, ref int pixelStride);
+            public static extern int AImage_getPlanePixelStride(
+                IntPtr imageHandle, int planeIdx, ref int pixelStride);
 
             [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlaneRowStride(IntPtr imageHandle, int planeIdx, ref int rowStride);
+            public static extern int AImage_getPlaneRowStride(
+                IntPtr imageHandle, int planeIdx, ref int rowStride);
 #pragma warning restore 626
         }
     }

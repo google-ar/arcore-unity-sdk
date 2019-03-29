@@ -27,8 +27,9 @@ namespace GoogleARCore
     using UnityEngine;
 
     /// <summary>
-    /// Attaches a GameObject to an ARCore {@link Trackable}.  The transform of the GameObject will be updated to
-    /// maintain the semantics of the attachment relationship, which varies between sub-types of Trackable.
+    /// Attaches a GameObject to an ARCore {@link Trackable}.  The transform of the GameObject will
+    /// be updated to maintain the semantics of the attachment relationship, which varies between
+    /// sub-types of Trackable.
     /// </summary>
     [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/Anchor")]
     public class Anchor : MonoBehaviour
@@ -99,7 +100,8 @@ namespace GoogleARCore
         {
             if (m_NativeHandle == IntPtr.Zero)
             {
-                Debug.LogError("Anchor components instantiated outside of ARCore are not supported. " +
+                Debug.LogError(
+                    "Anchor components instantiated outside of ARCore are not supported. " +
                     "Please use a 'Create' method within ARCore to instantiate anchors.");
                 return;
             }
@@ -145,8 +147,9 @@ namespace GoogleARCore
                 var nativeSession = LifecycleManager.Instance.NativeSession;
                 if (nativeSession != m_NativeSession)
                 {
-                    Debug.LogErrorFormat("The session which created this anchor has been destroyed. " +
-                    "The anchor on GameObject {0} can no longer update.",
+                    Debug.LogErrorFormat(
+                        "The session which created this anchor has been destroyed. " +
+                        "The anchor on GameObject {0} can no longer update.",
                         this.gameObject != null ? this.gameObject.name : "Unknown");
                     m_IsSessionDestroyed = true;
                 }

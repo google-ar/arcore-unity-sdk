@@ -26,23 +26,27 @@ namespace GoogleARCore
     /// <summary>
     /// Holds settings that are used to configure the session.
     /// </summary>
-    [CreateAssetMenu(fileName = "ARCoreSessionConfig", menuName = "GoogleARCore/SessionConfig", order = 1)]
-    [HelpURL("https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSessionConfig")]
+    [CreateAssetMenu(
+        fileName = "ARCoreSessionConfig", menuName = "GoogleARCore/SessionConfig", order = 1)]
+    [HelpURL(
+        "https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSessionConfig")]
     public class ARCoreSessionConfig : ScriptableObject
     {
         /// <summary>
         /// Toggles whether ARCore may introduce a delay into Unity's frame update to
         /// match the rate that the camera sensor is delivering frames (this is 30 frames-per-second
-        /// on most devices).  Enabling this setting can reduce power consumption caused by rendering
-        /// the same background texture more than once.  Since enabling this setting also sets
-        /// QualitySetting.vSyncCount to 0 the entire Unity application (e.g animations, UI) will also
-        /// update at the camera sensor frame rate.
+        /// on most devices).  Enabling this setting can reduce power consumption caused by
+        /// rendering the same background texture more than once.  Since enabling this setting also
+        /// sets QualitySetting.vSyncCount to 0 the entire Unity application (e.g animations, UI)
+        /// will also update at the camera sensor frame rate.
         ///
-        /// Note that enabling this setting does not guarentee each Unity frame will have a new and unique
-        /// camera background texture.  This is because the period of time ARCore will wait for a new camera
-        /// frame to become available is capped (currently at 66ms) to avoid a deadlock.
+        /// Note that enabling this setting does not guarentee each Unity frame will have a new and
+        /// unique camera background texture.  This is because the period of time ARCore will wait
+        /// for a new camera frame to become available is capped (currently at 66ms) to avoid a
+        /// deadlock.
         /// </summary>
-        [Tooltip("Toggles whether the rendering frame rate matches the background camera frame rate")]
+        [Tooltip(
+            "Toggles whether the rendering frame rate matches the background camera frame rate")]
         public bool MatchCameraFramerate = true;
 
         /// <summary>
@@ -50,7 +54,8 @@ namespace GoogleARCore
         /// </summary>
         [Tooltip("Chooses which plane finding mode will be used.")]
         [FormerlySerializedAs("EnablePlaneFinding")]
-        public DetectedPlaneFindingMode PlaneFindingMode = DetectedPlaneFindingMode.HorizontalAndVertical;
+        public DetectedPlaneFindingMode PlaneFindingMode =
+            DetectedPlaneFindingMode.HorizontalAndVertical;
 
         /// <summary>
         /// Toggles whether light estimation is enabled.
@@ -75,10 +80,12 @@ namespace GoogleARCore
         /// Chooses the desired focus mode to be used by the ARCore camera.
         /// </summary>
         /// <remarks>
-        /// Currently, the default focus mode is <see cref="CameraFocusMode.Fixed"/>, but this default might change in
-        /// the future. Note: on devices where ARCore does not support Auto Focus due to the use of a fixed focus
-        /// camera, focus mode will remain AR_FOCUS_MODE_FIXED. See the
-        /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore Supported Devices</a> 
+        /// Currently, the default focus mode is <see cref="CameraFocusMode.Fixed"/>, but this
+        /// default might change in the future. Note: on devices where ARCore does not support Auto
+        /// Focus due to the use of a fixed focus camera, focus mode will remain
+        /// AR_FOCUS_MODE_FIXED. See the
+        /// <a href="https://developers.google.com/ar/discover/supported-devices">
+        /// ARCore Supported Devices</a>
         /// page for a  list of affected devices.
         /// </remarks>
         [Tooltip("Chooses the desired focus mode to be used by the ARCore camera.")]
@@ -92,7 +99,9 @@ namespace GoogleARCore
         /// <summary>
         ///  Gets or sets a value indicating whether PlaneFinding is enabled.
         /// </summary>
-        [System.Obsolete("This field has be replaced by GoogleARCore.DetectedPlaneFindingMode. See https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
+        [System.Obsolete(
+            "This field has be replaced by GoogleARCore.DetectedPlaneFindingMode. See " +
+            "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
         public bool EnablePlaneFinding
         {
             get
@@ -111,7 +120,8 @@ namespace GoogleARCore
         /// ValueType check if two SessionConfig objects are equal.
         /// </summary>
         /// <param name="other">The other SessionConfig.</param>
-        /// <returns>True if the two SessionConfig objects are value-type equal, otherwise false.</returns>
+        /// <returns>True if the two SessionConfig objects are value-type equal, otherwise
+        /// false.</returns>
         public override bool Equals(object other)
         {
             ARCoreSessionConfig otherConfig = other as ARCoreSessionConfig;

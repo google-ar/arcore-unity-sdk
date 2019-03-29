@@ -48,14 +48,17 @@ namespace GoogleARCoreInternal
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
-                    UnityEngine.Debug.Log("Unable to load types from assembly:: " + assembly.ToString() + ":: "
-                        + ex.Message);
+                    UnityEngine.Debug.Log(
+                        "Unable to load types from assembly:: " + assembly.ToString() + ":: " +
+                        ex.Message);
                 }
             }
 
             foreach (var type in allTypes)
             {
-                if (!type.IsClass || type.IsAbstract || !typeof(ExperimentBase).IsAssignableFrom(type))
+                if (!type.IsClass ||
+                    type.IsAbstract ||
+                    !typeof(ExperimentBase).IsAssignableFrom(type))
                 {
                     continue;
                 }
@@ -64,7 +67,8 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private delegate void OnBeforeSetConfigurationCallback(IntPtr sessionHandhle, IntPtr configHandle);
+        private delegate void OnBeforeSetConfigurationCallback(
+            IntPtr sessionHandhle, IntPtr configHandle);
 
         public static ExperimentManager Instance
         {
@@ -119,7 +123,7 @@ namespace GoogleARCoreInternal
             }
 
             throw new NotImplementedException(
-                    "ExperimentManager.TrackableFactory::No constructor for requested trackable type.");
+                "ExperimentManager.TrackableFactory::No constructor for requested trackable type.");
         }
 
         private void _OnEarlyUpdate()

@@ -141,7 +141,8 @@ namespace GoogleARCoreInternal
             return m_TrackableManager.TrackableFactory(nativeHandle);
         }
 
-        public void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter) where T : Trackable
+        public void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter)
+            where T : Trackable
         {
             m_TrackableManager.GetTrackables<T>(trackables, filter);
         }

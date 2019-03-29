@@ -71,7 +71,8 @@ namespace GoogleARCoreInternal
 
             if (config.AugmentedImageDatabase != null)
             {
-                ArPrestoAugmentedImageDatabase = config.AugmentedImageDatabase.m_ArPrestoDatabaseHandle;
+                ArPrestoAugmentedImageDatabase =
+                    config.AugmentedImageDatabase.m_ArPrestoDatabaseHandle;
             }
             else
             {

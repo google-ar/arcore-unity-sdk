@@ -61,7 +61,8 @@ namespace GoogleARCore
             {
                 if (_IsSessionDestroyed())
                 {
-                    Debug.LogError("CenterPose:: Trying to access a session that has already been destroyed.");
+                    Debug.LogError(
+                        "CenterPose:: Trying to access a session that has already been destroyed.");
                     return new Pose();
                 }
 
@@ -78,11 +79,13 @@ namespace GoogleARCore
         {
             if (_IsSessionDestroyed())
             {
-                Debug.LogError("GetRegionPose: Trying to access a session that has already been destroyed.");
+                Debug.LogError(
+                    "GetRegionPose: Trying to access a session that has already been destroyed.");
                 return new Pose();
             }
 
-            return m_NativeSession.AugmentedFaceApi.GetRegionPose(m_TrackableNativeHandle, (ApiAugmentedFaceRegionType)region);
+            return m_NativeSession.AugmentedFaceApi.GetRegionPose(
+                m_TrackableNativeHandle, (ApiAugmentedFaceRegionType)region);
         }
 
         /// <summary>
@@ -100,7 +103,8 @@ namespace GoogleARCore
         {
             if (_IsSessionDestroyed())
             {
-                Debug.LogError("GetVertices:: Trying to access a session that has already been destroyed.");
+                Debug.LogError(
+                    "GetVertices:: Trying to access a session that has already been destroyed.");
                 return;
             }
 
@@ -119,11 +123,14 @@ namespace GoogleARCore
         {
             if (_IsSessionDestroyed())
             {
-                Debug.LogError("GetTextureCoordinates:: Trying to access a session that has already been destroyed.");
+                Debug.LogError(
+                    "GetTextureCoordinates:: Trying to access a session that has already been " +
+                    "destroyed.");
                 return;
             }
 
-            m_NativeSession.AugmentedFaceApi.GetTextureCoordinates(m_TrackableNativeHandle, textureCoordinates);
+            m_NativeSession.AugmentedFaceApi.GetTextureCoordinates(
+                m_TrackableNativeHandle, textureCoordinates);
         }
 
         /// <summary>
@@ -138,7 +145,8 @@ namespace GoogleARCore
         {
             if (_IsSessionDestroyed())
             {
-                Debug.LogError("GetNormals:: Trying to access a session that has already been destroyed.");
+                Debug.LogError(
+                    "GetNormals:: Trying to access a session that has already been destroyed.");
                 return;
             }
 
@@ -157,7 +165,9 @@ namespace GoogleARCore
         {
             if (_IsSessionDestroyed())
             {
-                Debug.LogError("GetTriangleIndices:: Trying to access a session that has already been destroyed.");
+                Debug.LogError(
+                    "GetTriangleIndices:: Trying to access a session that has already been " +
+                    "destroyed.");
                 return;
             }
 

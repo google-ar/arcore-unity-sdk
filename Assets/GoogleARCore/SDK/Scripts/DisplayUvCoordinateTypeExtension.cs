@@ -24,7 +24,8 @@ namespace GoogleARCore
 
     internal static class DisplayUvCoordinateTypeExtension
     {
-        public static ApiCoordinates2dType ToApiCoordinates2dType(this DisplayUvCoordinateType coordinateType)
+        public static ApiCoordinates2dType ToApiCoordinates2dType(
+            this DisplayUvCoordinateType coordinateType)
         {
             switch (coordinateType)
             {

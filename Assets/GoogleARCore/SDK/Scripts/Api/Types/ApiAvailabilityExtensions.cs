@@ -44,7 +44,8 @@ namespace GoogleARCoreInternal
                 case ApiAvailability.SupportedInstalled:
                     return ApkAvailabilityStatus.SupportedInstalled;
                 default:
-                    UnityEngine.Debug.LogErrorFormat("Unexpected ApiAvailability status {0}", apiStatus);
+                    UnityEngine.Debug.LogErrorFormat(
+                        "Unexpected ApiAvailability status {0}", apiStatus);
                     return ApkAvailabilityStatus.UnknownError;
             }
         }

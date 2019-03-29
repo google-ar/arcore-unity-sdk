@@ -26,10 +26,10 @@ namespace GoogleARCore
     using UnityEngine;
 
     /// <summary>
-    /// Provides a snapshot of the state of ARCore at a specific timestamp associated with the current frame.  Frame
-    /// holds information about ARCore's state including tracking status, the pose of the camera relative to the world,
-    /// estimated lighting parameters, and information on updates to objects (like Planes or Point Clouds) that ARCore
-    /// is tracking.
+    /// Provides a snapshot of the state of ARCore at a specific timestamp associated with the
+    /// current frame.  Frame holds information about ARCore's state including tracking status, the
+    /// pose of the camera relative to the world, estimated lighting parameters, and information on
+    /// updates to objects (like Planes or Point Clouds) that ARCore is tracking.
     /// </summary>
     public class Frame
     {
@@ -84,9 +84,10 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
-        /// of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// represents a category of raycast hits the method call should consider valid.</param>
+        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is
+        /// successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
         public static bool Raycast(float x, float y, TrackableHitFlags filter,
@@ -100,8 +101,8 @@ namespace GoogleARCore
             }
 
             // Note that the Unity's screen coordinate (0, 0) starts from bottom left.
-            bool foundHit = nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, x, Screen.height - y, filter,
-                s_TmpTrackableHitList);
+            bool foundHit = nativeSession.HitTestApi.Raycast(
+                nativeSession.FrameHandle, x, Screen.height - y, filter, s_TmpTrackableHitList);
 
             if (foundHit && s_TmpTrackableHitList.Count != 0)
             {
@@ -117,14 +118,17 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>
         /// <param name="direction">The direction of the ray.</param>
-        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is
+        /// successful.</param>
         /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
-        /// of raycast hits the method call should consider valid.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// represents a category of raycast hits the method call should consider valid.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
-        public static bool Raycast(Vector3 origin, Vector3 direction, out TrackableHit hitResult,
-            float maxDistance = Mathf.Infinity, TrackableHitFlags filter = TrackableHitFlags.Default)
+        public static bool Raycast(
+            Vector3 origin, Vector3 direction, out TrackableHit hitResult,
+            float maxDistance = Mathf.Infinity,
+            TrackableHitFlags filter = TrackableHitFlags.Default)
         {
             hitResult = new TrackableHit();
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -133,8 +137,10 @@ namespace GoogleARCore
                 return false;
             }
 
-            bool foundHit = nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, origin, direction, maxDistance,
-                filter, s_TmpTrackableHitList);
+            bool foundHit =
+                nativeSession.HitTestApi.Raycast(
+                    nativeSession.FrameHandle, origin, direction, maxDistance, filter,
+                    s_TmpTrackableHitList);
 
             if (foundHit && s_TmpTrackableHitList.Count != 0)
             {
@@ -152,12 +158,14 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
-        /// of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// represents a category of raycast hits the method call should consider valid.</param>
+        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast
+        /// is successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
-        public static bool RaycastAll(float x, float y, TrackableHitFlags filter, List<TrackableHit> hitResults)
+        public static bool RaycastAll(
+            float x, float y, TrackableHitFlags filter, List<TrackableHit> hitResults)
         {
             hitResults.Clear();
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -166,8 +174,8 @@ namespace GoogleARCore
                 return false;
             }
 
-            return nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, x, Screen.height - y, filter,
-                hitResults);
+            return nativeSession.HitTestApi.Raycast(
+                nativeSession.FrameHandle, x, Screen.height - y, filter, hitResults);
         }
 
         /// <summary>
@@ -176,15 +184,18 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>
         /// <param name="direction">The direction of the ray.</param>
-        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast is successful.</param>
+        /// <param name="hitResults">A list of {@link TrackableHit} that will be set if the raycast
+        /// is successful.</param>
         /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags} represents a category
+        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// represents a category
         /// of raycast hits the method call should consider valid.</param>
-        /// successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
-        public static bool RaycastAll(Vector3 origin, Vector3 direction, List<TrackableHit> hitResults,
-            float maxDistance = Mathf.Infinity, TrackableHitFlags filter = TrackableHitFlags.Default)
+        public static bool RaycastAll(
+            Vector3 origin, Vector3 direction, List<TrackableHit> hitResults,
+            float maxDistance = Mathf.Infinity,
+            TrackableHitFlags filter = TrackableHitFlags.Default)
         {
             hitResults.Clear();
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -193,8 +204,8 @@ namespace GoogleARCore
                 return false;
             }
 
-            return nativeSession.HitTestApi.Raycast(nativeSession.FrameHandle, origin, direction, maxDistance,
-                filter, hitResults);
+            return nativeSession.HitTestApi.Raycast(
+                nativeSession.FrameHandle, origin, direction, maxDistance, filter, hitResults);
         }
 
         /// <summary>
@@ -203,13 +214,16 @@ namespace GoogleARCore
         public static class CameraMetadata
         {
             /// <summary>
-            /// Get camera image metadata value. The querying value type needs to match the returned type.
+            /// Get camera image metadata value. The querying value type needs to match the returned
+            /// type.
             /// The type could be checked in CameraMetadata.cs.
             /// </summary>
             /// <param name="metadataTag">Metadata type.</param>
             /// <param name="outMetadataList">Result list of the requested values.</param>
-            /// <returns><c>true</c> if getting metadata value successfully, otherwise <c>false</c>.</returns>
-            public static bool TryGetValues(CameraMetadataTag metadataTag, List<CameraMetadataValue> outMetadataList)
+            /// <returns><c>true</c> if getting metadata value successfully, otherwise
+            /// <c>false</c>.</returns>
+            public static bool TryGetValues(
+                CameraMetadataTag metadataTag, List<CameraMetadataValue> outMetadataList)
             {
                 outMetadataList.Clear();
                 var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -224,7 +238,8 @@ namespace GoogleARCore
                     return false;
                 }
 
-                var isSuccess = nativeSession.CameraMetadataApi.TryGetValues(metadataHandle, metadataTag, outMetadataList);
+                var isSuccess = nativeSession.CameraMetadataApi.TryGetValues(
+                    metadataHandle, metadataTag, outMetadataList);
                 nativeSession.CameraMetadataApi.Release(metadataHandle);
                 return isSuccess;
             }
@@ -249,8 +264,9 @@ namespace GoogleARCore
                     return false;
                 }
 
-                var isSuccess = nativeSession.CameraMetadataApi.GetAllCameraMetadataTags(metadataHandle,
-                    outMetadataTags);
+                var isSuccess =
+                    nativeSession.CameraMetadataApi.GetAllCameraMetadataTags(
+                        metadataHandle, outMetadataTags);
                 nativeSession.CameraMetadataApi.Release(metadataHandle);
                 return isSuccess;
             }
@@ -262,10 +278,11 @@ namespace GoogleARCore
         public static class PointCloud
         {
             /// <summary>
-            /// Gets a value indicating whether new point cloud data became available in the current frame.
+            /// Gets a value indicating whether new point cloud data became available in the current
+            /// frame.
             /// </summary>
-            /// <returns><c>true</c> if new point cloud data became available in the current frame, otherwise
-            /// <c>false</c>.</returns>
+            /// <returns><c>true</c> if new point cloud data became available in the current frame,
+            /// otherwise <c>false</c>.</returns>
             public static bool IsUpdatedThisFrame
             {
                 get
@@ -298,17 +315,20 @@ namespace GoogleARCore
                         return 0;
                     }
 
-                     return nativeSession.PointCloudApi.GetNumberOfPoints(nativeSession.PointCloudHandle);
+                     return nativeSession.PointCloudApi.GetNumberOfPoints(
+                         nativeSession.PointCloudHandle);
                 }
             }
 
             /// <summary>
             /// Gets a point from the point cloud at a given index.
-            /// The point returned will be a Vector4 in the form <x,y,z,c> where the first three dimensions describe
-            /// the position of the point in the world and the last represents a confidence estimation in the range [0, 1).
+            /// The point returned will be a Vector4 in the form <x,y,z,c> where the first three
+            /// dimensions describe the position of the point in the world and the last represents a
+            /// confidence estimation in the range [0, 1).
             /// </summary>
             /// <param name="index">The index of the point cloud point to get.</param>
-            /// <returns>The point from the point cloud at <c>index</c> along with its confidence.</returns>
+            /// <returns>The point from the point cloud at <c>index</c> along with its
+            /// confidence.</returns>
             /// @deprecated Please use Frame.PointCloud.GetPointAsStruct instead.
 
             [System.Obsolete("Frame.PointCloud.GetPoint has been deprecated. " +
@@ -316,13 +336,14 @@ namespace GoogleARCore
             public static Vector4 GetPoint(int index)
             {
                 var point = GetPointAsStruct(index);
-                return new Vector4(point.Position.x, point.Position.y, point.Position.z, point.Confidence);
+                return new Vector4(
+                    point.Position.x, point.Position.y, point.Position.z, point.Confidence);
             }
 
             /// <summary>
-            /// Gets a point from the point cloud at the given index.  If the point is inaccessible due to session
-            /// state or an out-of-range index a point will be returns with the <c>Id</c> field set to
-            /// <c>PointCloudPoint.k_InvalidPointId</c>.
+            /// Gets a point from the point cloud at the given index.  If the point is inaccessible
+            /// due to session state or an out-of-range index a point will be returns with the
+            /// <c>Id</c> field set to <c>PointCloudPoint.k_InvalidPointId</c>.
             /// </summary>
             /// <param name="index">The index of the point cloud point to get.</param>
             /// <returns>The point from the point cloud at <c>index</c>.</returns>
@@ -339,12 +360,15 @@ namespace GoogleARCore
 
             /// <summary>
             /// Copies the point cloud into the supplied parameter <c>points</c>.
-            /// Each point will be a Vector4 in the form <x,y,z,c> where the first three dimensions describe the position
-            /// of the point in the world and the last represents a confidence estimation in the range [0, 1).
+            /// Each point will be a Vector4 in the form <x,y,z,c> where the first three dimensions
+            /// describe the position of the point in the world and the last represents a confidence
+            /// estimation in the range [0, 1).
             /// </summary>
-            /// <param name="points">A list that will be filled with point cloud points by this method call.</param>
+            /// <param name="points">A list that will be filled with point cloud points by this
+            /// method call.</param>
             /// @deprecated Please copy points manually instead.
-            [System.Obsolete("Frame.PointCloud.CopyPoints has been deprecated. Please copy points manually instead.")]
+            [System.Obsolete("Frame.PointCloud.CopyPoints has been deprecated. " +
+                             "Please copy points manually instead.")]
             public static void CopyPoints(List<Vector4> points)
             {
                 points.Clear();
@@ -357,7 +381,8 @@ namespace GoogleARCore
                 for (int i = 0; i < PointCount; i++)
                 {
                     var point = GetPointAsStruct(i);
-                    points.Add(new Vector4(point.Position.x, point.Position.y, point.Position.z, point.Confidence));
+                    points.Add(new Vector4(
+                        point.Position.x, point.Position.y, point.Position.z, point.Confidence));
                 }
             }
         }
@@ -386,7 +411,8 @@ namespace GoogleARCore
 
             //// @cond EXCLUDE_FROM_DOXYGEN
 
-            [Obsolete("This field has been deprecated. Please use Frame.CameraImage.TextureDisplayUvs.")]
+            [Obsolete(
+                "This field has been deprecated. Please use Frame.CameraImage.TextureDisplayUvs.")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules",
                 "SA1600:ElementsMustBeDocumented", Justification = "Deprecated")]
             public static DisplayUvCoords DisplayUvCoords
@@ -418,20 +444,29 @@ namespace GoogleARCore
                             return new DisplayUvCoords();
                         }
 
-                        var apiCoords = new ApiDisplayUvCoords(displayUvCoords.TopLeft, displayUvCoords.TopRight,
+                        var apiCoords = new ApiDisplayUvCoords(
+                            displayUvCoords.TopLeft, displayUvCoords.TopRight,
                             displayUvCoords.BottomLeft, displayUvCoords.BottomRight);
                         nativeSession.FrameApi.TransformDisplayUvCoords(ref apiCoords);
                         return apiCoords.ToDisplayUvCoords();
                     }
 
-                    displayUvCoords.TopLeft = TransformCoordinate(displayUvCoords.TopLeft,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
-                    displayUvCoords.TopRight = TransformCoordinate(displayUvCoords.TopRight,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
-                    displayUvCoords.BottomLeft = TransformCoordinate(displayUvCoords.BottomLeft,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
-                    displayUvCoords.BottomRight = TransformCoordinate(displayUvCoords.BottomRight,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.TopLeft = TransformCoordinate(
+                        displayUvCoords.TopLeft,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.TopRight = TransformCoordinate(
+                        displayUvCoords.TopRight,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.BottomLeft = TransformCoordinate(
+                        displayUvCoords.BottomLeft,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundTexture);
+                    displayUvCoords.BottomRight = TransformCoordinate(
+                        displayUvCoords.BottomRight,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundTexture);
 
                     return displayUvCoords;
                 }
@@ -447,20 +482,29 @@ namespace GoogleARCore
                 {
                     if (InstantPreviewManager.IsProvidingPlatform)
                     {
-                        InstantPreviewManager.LogLimitedSupportMessage("access CPU image display UVs");
+                        InstantPreviewManager.LogLimitedSupportMessage(
+                            "access CPU image display UVs");
                         return DisplayUvCoords.FullScreenUvCoords;
                     }
 
                     DisplayUvCoords displayUvCoords = DisplayUvCoords.FullScreenUvCoords;
 
-                    displayUvCoords.TopLeft = TransformCoordinate(displayUvCoords.TopLeft,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
-                    displayUvCoords.TopRight = TransformCoordinate(displayUvCoords.TopRight,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
-                    displayUvCoords.BottomLeft = TransformCoordinate(displayUvCoords.BottomLeft,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
-                    displayUvCoords.BottomRight = TransformCoordinate(displayUvCoords.BottomRight,
-                        DisplayUvCoordinateType.UnityScreen, DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.TopLeft = TransformCoordinate(
+                        displayUvCoords.TopLeft,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.TopRight = TransformCoordinate(
+                        displayUvCoords.TopRight,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.BottomLeft = TransformCoordinate(
+                        displayUvCoords.BottomLeft,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundImage);
+                    displayUvCoords.BottomRight = TransformCoordinate(
+                        displayUvCoords.BottomRight,
+                        DisplayUvCoordinateType.UnityScreen,
+                        DisplayUvCoordinateType.BackgroundImage);
 
                     return displayUvCoords;
                 }
@@ -480,7 +524,8 @@ namespace GoogleARCore
                     }
 
                     var cameraHandle = nativeSession.FrameApi.AcquireCamera();
-                    CameraIntrinsics result = nativeSession.CameraApi.GetTextureIntrinsics(cameraHandle);
+                    CameraIntrinsics result =
+                        nativeSession.CameraApi.GetTextureIntrinsics(cameraHandle);
                     nativeSession.CameraApi.Release(cameraHandle);
                     return result;
                 }
@@ -495,7 +540,8 @@ namespace GoogleARCore
                 {
                     if (InstantPreviewManager.IsProvidingPlatform)
                     {
-                        InstantPreviewManager.LogLimitedSupportMessage("access CPU Image intrinsics");
+                        InstantPreviewManager.LogLimitedSupportMessage(
+                            "access CPU Image intrinsics");
                         return new CameraIntrinsics();
                     }
 
@@ -506,28 +552,35 @@ namespace GoogleARCore
                     }
 
                     var cameraHandle = nativeSession.FrameApi.AcquireCamera();
-                    CameraIntrinsics result = nativeSession.CameraApi.GetImageIntrinsics(cameraHandle);
+                    CameraIntrinsics result =
+                        nativeSession.CameraApi.GetImageIntrinsics(cameraHandle);
                     nativeSession.CameraApi.Release(cameraHandle);
                     return result;
                 }
             }
 
             /// <summary>
-            /// Transforms a coordinate between the <c>source</c> and <c>target</c> display UV coordinate types.
+            /// Transforms a coordinate between the <c>source</c> and <c>target</c> display UV
+            /// coordinate types.
             /// </summary>
             /// <remarks>
-            /// This can be used for the conversion of coordinates accessed in the same Unity update.
+            /// This can be used for the conversion of coordinates accessed in the same Unity
+            /// update.
             /// </remarks>
             /// <param name="coordinate">The coordinate to transform.</param>
-            /// <param name="sourceType">The source type of the desired transformation matrix.</param>
-            /// <param name="targetType">The target type of the desired transformation matrix.</param>
+            /// <param name="sourceType">The source type of the desired transformation
+            /// matrix.</param>
+            /// <param name="targetType">The target type of the desired transformation
+            /// matrix.</param>
             /// <returns>A corresponding position in the target frame.</returns>
-            public static Vector2 TransformCoordinate(Vector2 coordinate, DisplayUvCoordinateType sourceType,
+            public static Vector2 TransformCoordinate(
+                Vector2 coordinate, DisplayUvCoordinateType sourceType,
                 DisplayUvCoordinateType targetType)
             {
                 if (InstantPreviewManager.IsProvidingPlatform)
                 {
-                    InstantPreviewManager.LogLimitedSupportMessage("access 'Frame.TransformCoordinate'");
+                    InstantPreviewManager.LogLimitedSupportMessage(
+                        "access 'Frame.TransformCoordinate'");
                     return Vector2.zero;
                 }
 
@@ -538,7 +591,8 @@ namespace GoogleARCore
                     return Vector2.zero;
                 }
 
-                nativeSession.FrameApi.TransformCoordinates2d(ref coordinate, sourceType, targetType);
+                nativeSession.FrameApi.TransformCoordinates2d(
+                    ref coordinate, sourceType, targetType);
                 return coordinate;
             }
 
@@ -549,8 +603,9 @@ namespace GoogleARCore
             /// Not supported on all devices
             /// (see https://developers.google.com/ar/discover/supported-devices).
             /// </remarks>
-            /// <returns>A <c>CameraImageBytes</c> struct with <c>IsAvailable</c> property set to <c>true</c> if
-            /// successful and <c>false</c> if the image could not be acquired.</returns>
+            /// <returns>A <c>CameraImageBytes</c> struct with <c>IsAvailable</c> property set to
+            /// <c>true</c> if successful and <c>false</c> if the image could not be
+            /// acquired.</returns>
             public static GoogleARCore.CameraImageBytes AcquireCameraImageBytes()
             {
                 var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -565,7 +620,8 @@ namespace GoogleARCore
             /// <summary>
             /// Gets the projection matrix for the frame.
             /// </summary>
-            /// <param name="nearClipping">The near clipping plane for the projection matrix.</param>
+            /// <param name="nearClipping">The near clipping plane for the projection
+            /// matrix.</param>
             /// <param name="farClipping">The far clipping plane for the projection matrix.</param>
             /// <returns>The projection matrix for the frame.</returns>
             public static Matrix4x4 GetCameraProjectionMatrix(float nearClipping, float farClipping)
@@ -577,7 +633,8 @@ namespace GoogleARCore
                 }
 
                 var cameraHandle = nativeSession.FrameApi.AcquireCamera();
-                var result = nativeSession.CameraApi.GetProjectionMatrix(cameraHandle, nearClipping, farClipping);
+                var result = nativeSession.CameraApi.GetProjectionMatrix(
+                    cameraHandle, nearClipping, farClipping);
                 nativeSession.CameraApi.Release(cameraHandle);
                 return result;
             }

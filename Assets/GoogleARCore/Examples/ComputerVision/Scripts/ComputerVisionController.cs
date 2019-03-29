@@ -32,8 +32,8 @@ namespace GoogleARCore.Examples.ComputerVision
     #endif  // UNITY_EDITOR
 
     /// <summary>
-    /// Controller for the ComputerVision example that accesses the CPU camera image (i.e. image bytes), performs
-    /// edge detection on the image, and renders an overlay to the screen.
+    /// Controller for the ComputerVision example that accesses the CPU camera image (i.e. image
+    /// bytes), performs edge detection on the image, and renders an overlay to the screen.
     /// </summary>
     public class ComputerVisionController : MonoBehaviour
     {
@@ -43,8 +43,8 @@ namespace GoogleARCore.Examples.ComputerVision
         public ARCoreSession ARSessionManager;
 
         /// <summary>
-        /// An image using a material with EdgeDetectionBackground.shader to render a
-        /// percentage of the edge detection background to the screen over the standard camera background.
+        /// An image using a material with EdgeDetectionBackground.shader to render a percentage of
+        /// the edge detection background to the screen over the standard camera background.
         /// </summary>
         public Image EdgeDetectionBackgroundImage;
 
@@ -79,7 +79,8 @@ namespace GoogleARCore.Examples.ComputerVision
         public Toggle AutoFocusToggle;
 
         /// <summary>
-        /// A buffer that stores the result of performing edge detection on the camera image each frame.
+        /// A buffer that stores the result of performing edge detection on the camera image each
+        /// frame.
         /// </summary>
         private byte[] m_EdgeDetectionResultImage = null;
 
@@ -89,8 +90,9 @@ namespace GoogleARCore.Examples.ComputerVision
         private Texture2D m_EdgeDetectionBackgroundTexture = null;
 
         /// <summary>
-        /// These UVs are applied to the background material to crop and rotate 'm_EdgeDetectionBackgroundTexture'
-        /// to match the aspect ratio and rotation of the device display.
+        /// These UVs are applied to the background material to crop and rotate
+        /// 'm_EdgeDetectionBackgroundTexture' to match the aspect ratio and rotation of the device
+        /// display.
         /// </summary>
         private DisplayUvCoords m_CameraImageToDisplayUvTransformation;
 
@@ -98,7 +100,9 @@ namespace GoogleARCore.Examples.ComputerVision
         private Vector2 m_CachedScreenDimensions = Vector2.zero;
         private bool m_IsQuitting = false;
         private bool m_UseHighResCPUTexture = false;
-        private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration = null;
+        private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration =
+            null;
+
         private bool m_Resolutioninitialized = false;
         private Text m_ImageTextureToggleText;
 
@@ -114,7 +118,8 @@ namespace GoogleARCore.Examples.ComputerVision
             m_ImageTextureToggleText = ImageTextureToggle.GetComponentInChildren<Text>();
 #if UNITY_EDITOR
             AutoFocusToggle.GetComponentInChildren<Text>().text += "\n(Not supported in editor)";
-            HighResConfigToggle.GetComponentInChildren<Text>().text += "\n(Not supported in editor)";
+            HighResConfigToggle.GetComponentInChildren<Text>().text +=
+                "\n(Not supported in editor)";
             SnackbarText.text =
                 "Use mouse/keyboard in the editor Game view to toggle settings.\n" +
                 "(Tapping on the device screen will not work while running in the editor)";
@@ -124,7 +129,8 @@ namespace GoogleARCore.Examples.ComputerVision
 
             // Register the callback to set camera config before arcore session is enabled.
             m_OnChoseCameraConfiguration = _ChooseCameraConfiguration;
-            ARSessionManager.RegisterChooseCameraConfigurationCallback(m_OnChoseCameraConfiguration);
+            ARSessionManager.RegisterChooseCameraConfigurationCallback(
+                m_OnChoseCameraConfiguration);
 
             ARSessionManager.enabled = true;
         }
@@ -164,8 +170,10 @@ namespace GoogleARCore.Examples.ComputerVision
 
             var cameraIntrinsics = EdgeDetectionBackgroundImage.enabled
                 ? Frame.CameraImage.ImageIntrinsics : Frame.CameraImage.TextureIntrinsics;
-            string intrinsicsType = EdgeDetectionBackgroundImage.enabled ? "CPU Image" : "GPU Texture";
-            CameraIntrinsicsOutput.text = _CameraIntrinsicsToString(cameraIntrinsics, intrinsicsType);
+            string intrinsicsType =
+                EdgeDetectionBackgroundImage.enabled ? "CPU Image" : "GPU Texture";
+            CameraIntrinsicsOutput.text =
+                _CameraIntrinsicsToString(cameraIntrinsics, intrinsicsType);
         }
 
         /// <summary>
@@ -205,7 +213,8 @@ namespace GoogleARCore.Examples.ComputerVision
             var config = ARSessionManager.SessionConfig;
             if (config != null)
             {
-                config.CameraFocusMode = autoFocusEnabled ? CameraFocusMode.Auto : CameraFocusMode.Fixed;
+                config.CameraFocusMode =
+                    autoFocusEnabled ? CameraFocusMode.Auto : CameraFocusMode.Fixed;
             }
         }
 
@@ -225,22 +234,27 @@ namespace GoogleARCore.Examples.ComputerVision
         /// <param name="rowStride">Row stride of the image, in pixels.</param>
         /// <param name="pixelBuffer">Pointer to raw image buffer.</param>
         /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
-        private void _OnImageAvailable(int width, int height, int rowStride, IntPtr pixelBuffer, int bufferSize)
+        private void _OnImageAvailable(
+            int width, int height, int rowStride, IntPtr pixelBuffer, int bufferSize)
         {
             if (!EdgeDetectionBackgroundImage.enabled)
             {
                 return;
             }
 
-            if (m_EdgeDetectionBackgroundTexture == null || m_EdgeDetectionResultImage == null ||
-                m_EdgeDetectionBackgroundTexture.width != width || m_EdgeDetectionBackgroundTexture.height != height)
+            if (m_EdgeDetectionBackgroundTexture == null ||
+                m_EdgeDetectionResultImage == null ||
+                m_EdgeDetectionBackgroundTexture.width != width ||
+                m_EdgeDetectionBackgroundTexture.height != height)
             {
-                m_EdgeDetectionBackgroundTexture = new Texture2D(width, height, TextureFormat.R8, false, false);
+                m_EdgeDetectionBackgroundTexture =
+                    new Texture2D(width, height, TextureFormat.R8, false, false);
                 m_EdgeDetectionResultImage = new byte[width * height];
                 m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
             }
 
-            if (m_CachedOrientation != Screen.orientation || m_CachedScreenDimensions.x != Screen.width ||
+            if (m_CachedOrientation != Screen.orientation ||
+                m_CachedScreenDimensions.x != Screen.width ||
                 m_CachedScreenDimensions.y != Screen.height)
             {
                 m_CameraImageToDisplayUvTransformation = Frame.CameraImage.ImageDisplayUvs;
@@ -249,12 +263,14 @@ namespace GoogleARCore.Examples.ComputerVision
             }
 
             // Detect edges within the image.
-            if (EdgeDetector.Detect(m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride))
+            if (EdgeDetector.Detect(
+                m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride))
             {
                 // Update the rendering texture with the edge image.
                 m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
                 m_EdgeDetectionBackgroundTexture.Apply();
-                EdgeDetectionBackgroundImage.material.SetTexture("_ImageTex", m_EdgeDetectionBackgroundTexture);
+                EdgeDetectionBackgroundImage.material.SetTexture(
+                    "_ImageTex", m_EdgeDetectionBackgroundTexture);
 
                 const string TOP_LEFT_RIGHT = "_UvTopLeftRight";
                 const string BOTTOM_LEFT_RIGHT = "_UvBottomLeftRight";
@@ -281,7 +297,8 @@ namespace GoogleARCore.Examples.ComputerVision
                 return;
             }
 
-            // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
+            // Quit if ARCore was unable to connect and give Unity some time for the toast to
+            // appear.
             if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
@@ -290,7 +307,8 @@ namespace GoogleARCore.Examples.ComputerVision
             }
             else if (Session.Status == SessionStatus.FatalError)
             {
-                _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
+                _ShowAndroidToastMessage(
+                    "ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
                 Invoke("_DoQuit", 0.5f);
             }
@@ -303,15 +321,17 @@ namespace GoogleARCore.Examples.ComputerVision
         private void _ShowAndroidToastMessage(string message)
         {
             AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject unityActivity =
+                unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
             if (unityActivity != null)
             {
                 AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
                 unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
                 {
-                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
-                        message, 0);
+                    AndroidJavaObject toastObject =
+                        toastClass.CallStatic<AndroidJavaObject>(
+                            "makeText", unityActivity, message, 0);
                     toastObject.Call("show");
                 }));
             }
@@ -329,15 +349,20 @@ namespace GoogleARCore.Examples.ComputerVision
         /// Generate string to print the value in CameraIntrinsics.
         /// </summary>
         /// <param name="intrinsics">The CameraIntrinsics to generate the string from.</param>
-        /// <param name="intrinsicsType">The string that describe the type of the intrinsics.</param>
+        /// <param name="intrinsicsType">The string that describe the type of the
+        /// intrinsics.</param>
         /// <returns>The generated string.</returns>
         private string _CameraIntrinsicsToString(CameraIntrinsics intrinsics, string intrinsicsType)
         {
-            float fovX = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.x, 2 * intrinsics.FocalLength.x) * Mathf.Rad2Deg;
-            float fovY = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.y, 2 * intrinsics.FocalLength.y) * Mathf.Rad2Deg;
+            float fovX = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(
+                intrinsics.ImageDimensions.x, 2 * intrinsics.FocalLength.x);
+            float fovY = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(
+                intrinsics.ImageDimensions.y, 2 * intrinsics.FocalLength.y);
 
-            string message = string.Format("Unrotated Camera {4} Intrinsics:{0}  Focal Length: {1}{0}  " +
-                "Principal Point: {2}{0}  Image Dimensions: {3}{0}  Unrotated Field of View: ({5}°, {6}°)",
+            string message = string.Format(
+                "Unrotated Camera {4} Intrinsics:{0}  Focal Length: {1}{0}  " +
+                "Principal Point: {2}{0}  Image Dimensions: {3}{0}  " +
+                "Unrotated Field of View: ({5}°, {6}°)",
                 Environment.NewLine, intrinsics.FocalLength.ToString(),
                 intrinsics.PrincipalPoint.ToString(), intrinsics.ImageDimensions.ToString(),
                 intrinsicsType, fovX, fovY);
@@ -347,7 +372,8 @@ namespace GoogleARCore.Examples.ComputerVision
         /// <summary>
         /// Select the desired camera configuration.
         /// </summary>
-        /// <param name="supportedConfigurations">A list of all supported camera configuration.</param>
+        /// <param name="supportedConfigurations">A list of all supported camera
+        /// configuration.</param>
         /// <returns>The desired configuration index.</returns>
         private int _ChooseCameraConfiguration(List<CameraConfig> supportedConfigurations)
         {

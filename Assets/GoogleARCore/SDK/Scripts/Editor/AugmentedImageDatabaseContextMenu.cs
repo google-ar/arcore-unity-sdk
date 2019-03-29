@@ -53,8 +53,9 @@ namespace GoogleARCoreInternal
             selectedImagePaths = _GetSelectedImagePaths(out unsupportedImagesSelected);
             if (unsupportedImagesSelected)
             {
-                var message = string.Format("Some selected images could not be added to the AugmentedImageDatabase because " +
-                    "they are not in a supported format.  Supported image formats are {0}.",
+                var message = string.Format(
+                    "Some selected images could not be added to the AugmentedImageDatabase " +
+                    "because they are not in a supported format.  Supported image formats are {0}.",
                     k_SupportedImageFormatListMessage);
                 Debug.LogWarningFormat(message);
                 EditorUtility.DisplayDialog("Unsupported Images Selected", message, "Ok");
@@ -87,7 +88,8 @@ namespace GoogleARCoreInternal
                 }
                 else if (Path.GetExtension(selectedPath) != string.Empty)
                 {
-                    selectedPath = selectedPath.Replace(Path.GetFileName(selectedPath), string.Empty);
+                    selectedPath =
+                        selectedPath.Replace(Path.GetFileName(selectedPath), string.Empty);
                 }
 
                 var newAssetPath = AssetDatabase.GenerateUniqueAssetPath(

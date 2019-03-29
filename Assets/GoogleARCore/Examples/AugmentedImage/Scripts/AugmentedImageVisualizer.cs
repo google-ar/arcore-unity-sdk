@@ -73,10 +73,14 @@ namespace GoogleARCore.Examples.AugmentedImage
 
             float halfWidth = Image.ExtentX / 2;
             float halfHeight = Image.ExtentZ / 2;
-            FrameLowerLeft.transform.localPosition = (halfWidth * Vector3.left) + (halfHeight * Vector3.back);
-            FrameLowerRight.transform.localPosition = (halfWidth * Vector3.right) + (halfHeight * Vector3.back);
-            FrameUpperLeft.transform.localPosition = (halfWidth * Vector3.left) + (halfHeight * Vector3.forward);
-            FrameUpperRight.transform.localPosition = (halfWidth * Vector3.right) + (halfHeight * Vector3.forward);
+            FrameLowerLeft.transform.localPosition =
+                (halfWidth * Vector3.left) + (halfHeight * Vector3.back);
+            FrameLowerRight.transform.localPosition =
+                (halfWidth * Vector3.right) + (halfHeight * Vector3.back);
+            FrameUpperLeft.transform.localPosition =
+                (halfWidth * Vector3.left) + (halfHeight * Vector3.forward);
+            FrameUpperRight.transform.localPosition =
+                (halfWidth * Vector3.right) + (halfHeight * Vector3.forward);
 
             FrameLowerLeft.SetActive(true);
             FrameLowerRight.SetActive(true);

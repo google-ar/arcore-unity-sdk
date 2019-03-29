@@ -44,7 +44,8 @@ namespace GoogleARCoreInternal
         public IntPtr Create()
         {
             IntPtr lightEstimateHandle = IntPtr.Zero;
-            ExternApi.ArLightEstimate_create(m_NativeSession.SessionHandle, ref lightEstimateHandle);
+            ExternApi.ArLightEstimate_create(
+                m_NativeSession.SessionHandle, ref lightEstimateHandle);
             return lightEstimateHandle;
         }
 
@@ -56,23 +57,24 @@ namespace GoogleARCoreInternal
         public LightEstimateState GetState(IntPtr lightEstimateHandle)
         {
             ApiLightEstimateState state = ApiLightEstimateState.NotValid;
-            ExternApi.ArLightEstimate_getState(m_NativeSession.SessionHandle, lightEstimateHandle, ref state);
+            ExternApi.ArLightEstimate_getState(
+                m_NativeSession.SessionHandle, lightEstimateHandle, ref state);
             return state.ToLightEstimateState();
         }
 
         public float GetPixelIntensity(IntPtr lightEstimateHandle)
         {
             float pixelIntensity = 0;
-            ExternApi.ArLightEstimate_getPixelIntensity(m_NativeSession.SessionHandle,
-                lightEstimateHandle, ref pixelIntensity);
+            ExternApi.ArLightEstimate_getPixelIntensity(
+                m_NativeSession.SessionHandle, lightEstimateHandle, ref pixelIntensity);
             return pixelIntensity;
         }
 
         public Color GetColorCorrection(IntPtr lightEstimateHandle)
         {
             Color colorCorrection = Color.black;
-            ExternApi.ArLightEstimate_getColorCorrection(m_NativeSession.SessionHandle,
-                lightEstimateHandle, ref colorCorrection);
+            ExternApi.ArLightEstimate_getColorCorrection(
+                m_NativeSession.SessionHandle, lightEstimateHandle, ref colorCorrection);
             return colorCorrection;
         }
 
@@ -80,23 +82,23 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArLightEstimate_create(IntPtr sessionHandle,
-                ref IntPtr lightEstimateHandle);
+            public static extern void ArLightEstimate_create(
+                IntPtr sessionHandle, ref IntPtr lightEstimateHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_destroy(IntPtr lightEstimateHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArLightEstimate_getState(IntPtr sessionHandle,
-                IntPtr lightEstimateHandle, ref ApiLightEstimateState state);
+            public static extern void ArLightEstimate_getState(
+                IntPtr sessionHandle, IntPtr lightEstimateHandle, ref ApiLightEstimateState state);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArLightEstimate_getPixelIntensity(IntPtr sessionHandle,
-                IntPtr lightEstimateHandle, ref float pixelIntensity);
+            public static extern void ArLightEstimate_getPixelIntensity(
+                IntPtr sessionHandle, IntPtr lightEstimateHandle, ref float pixelIntensity);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArLightEstimate_getColorCorrection(IntPtr sessionHandle,
-                IntPtr lightEstimateHandle, ref Color colorCorrection);
+            public static extern void ArLightEstimate_getColorCorrection(
+                IntPtr sessionHandle, IntPtr lightEstimateHandle, ref Color colorCorrection);
 #pragma warning restore 626
         }
     }
