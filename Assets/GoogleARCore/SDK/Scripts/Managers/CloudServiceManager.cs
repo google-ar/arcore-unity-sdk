@@ -109,7 +109,7 @@ namespace GoogleARCoreInternal.CrossPlatform
                 return task;
             }
 
-            _CreateAndTrackCloudAnchorRequest(cloudAnchorHandle, onComplete);
+            _CreateAndTrackCloudAnchorRequest(cloudAnchorHandle, onComplete, cloudAnchorId);
             return task;
         }
 
@@ -150,7 +150,7 @@ namespace GoogleARCoreInternal.CrossPlatform
         /// <param name="onComplete">The on complete Action that was created for the
         /// AsyncTask<CloudAnchorResult>.</param>
         protected internal void _CreateAndTrackCloudAnchorRequest(IntPtr cloudAnchorHandle,
-            Action<CloudAnchorResult> onComplete)
+            Action<CloudAnchorResult> onComplete, String cloudAnchorId = null)
         {
             if (LifecycleManager.Instance.NativeSession == null || cloudAnchorHandle == IntPtr.Zero)
             {
@@ -169,6 +169,7 @@ namespace GoogleARCoreInternal.CrossPlatform
             {
                 IsComplete = false,
                 NativeSession = LifecycleManager.Instance.NativeSession,
+                CloudAnchorId = cloudAnchorId,
                 AnchorHandle = cloudAnchorHandle,
                 OnTaskComplete = onComplete,
             };
@@ -204,6 +205,40 @@ namespace GoogleARCoreInternal.CrossPlatform
             return;
         }
 
+        protected internal void _CancelCloudAnchorRequest(String cloudAnchorId)
+        {
+            bool cancelledCloudAnchorRequest = false;
+            foreach (var request in m_CloudAnchorRequests)
+            {
+                if (request.CloudAnchorId == null || !request.CloudAnchorId.Equals(cloudAnchorId))
+                {
+                    continue;
+                }
+
+                request.NativeSession.AnchorApi.Detach(request.AnchorHandle);
+                request.NativeSession.AnchorApi.Release(request.AnchorHandle);
+
+                var result = new CloudAnchorResult()
+                {
+                    // TODO (b/128930901): Change to "ErrorRequestCancelled" for API promotion.
+                    Response = CloudServiceResponse.ErrorCloudIdNotFound,
+                    Anchor = null,
+                };
+
+                request.OnTaskComplete(result);
+                request.IsComplete = true;
+                cancelledCloudAnchorRequest = true;
+            }
+
+            m_CloudAnchorRequests.RemoveAll(x => x.IsComplete);
+
+            if (!cancelledCloudAnchorRequest)
+            {
+                Debug.LogWarning("Didn't find pending operation for cloudAnchorId: " +
+                    cloudAnchorId);
+            }
+        }
+
         private void _OnEarlyUpdate()
         {
             foreach (var request in m_CloudAnchorRequests)
@@ -226,7 +261,7 @@ namespace GoogleARCoreInternal.CrossPlatform
                 CloudServiceResponse response = CloudServiceResponse.Success;
                 try
                 {
-                     xpAnchor = XPAnchor.Factory(request.NativeSession, request.AnchorHandle);
+                    xpAnchor = XPAnchor.Factory(request.NativeSession, request.AnchorHandle);
                 }
                 catch (Exception e)
                 {
@@ -278,6 +313,8 @@ namespace GoogleARCoreInternal.CrossPlatform
             public bool IsComplete;
 
             public NativeSession NativeSession;
+
+            public String CloudAnchorId;
 
             public IntPtr AnchorHandle;
 

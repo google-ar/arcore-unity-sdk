@@ -1,34 +1,28 @@
-fileFormatVersion: 2
-guid: 3c57f9baecc8405c9c206d8b9d3ffdab
-labels:
-- gvh_version-1.2.100.0
-- gvh
-- gvh_targets-editor
 PluginImporter:
-  externalObjects: {}
-  serializedVersion: 2
-  iconMap: {}
+  assetBundleName:
+  assetBundleVariant:
   executionOrder: {}
-  isPreloaded: 0
+  externalObjects: {}
+  iconMap: {}
   isOverridable: 0
+  isPreloaded: 0
   platformData:
-  - first:
-      Any: 
+  - first: {Any: !!null ''}
     second:
       enabled: 0
       settings: {}
-  - first:
-      Editor: Editor
+  - first: {Editor: Editor}
     second:
       enabled: 0
-      settings:
-        DefaultValueInitialized: true
-  - first:
-      Windows Store Apps: WindowsStoreApps
+      settings: {DefaultValueInitialized: true}
+  - first: {Windows Store Apps: WindowsStoreApps}
     second:
       enabled: 0
-      settings:
-        CPU: AnyCPU
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+      settings: {CPU: AnyCPU}
+  serializedVersion: 2
+  userData:
+fileFormatVersion: 2
+guid: 3c57f9baecc8405c9c206d8b9d3ffdab
+labels: [gvh, gvh_targets-editor, gvh_version-1.2.100.0]
+ssetBundleVariant:
+

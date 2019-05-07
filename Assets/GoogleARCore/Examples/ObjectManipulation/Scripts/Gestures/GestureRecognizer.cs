@@ -24,6 +24,11 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
     using System.Collections.Generic;
     using UnityEngine;
 
+#if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
+    using Input = GoogleARCore.InstantPreviewInput;
+#endif
+
     /// <summary>
     /// Base class for all Gesture Recognizers (i.e. TapGestureRecognizer).
     ///

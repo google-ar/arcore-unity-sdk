@@ -168,8 +168,15 @@ namespace GoogleARCoreInternal
             }
             else
             {
-                m_NativeSession.PoseApi.Destroy(poseHandle);
-                return false;
+                ApiTrackableType trackableType =
+                    m_NativeSession.TrackableApi.GetType(trackableHandle);
+                if (!ExperimentManager.Instance.IsManagingTrackableType((int)trackableType))
+                {
+                    m_NativeSession.PoseApi.Destroy(poseHandle);
+                    return false;
+                }
+
+                flag |= ExperimentManager.Instance.GetTrackableHitFlags((int)trackableType);
             }
 
             outTrackableHit = new TrackableHit(hitPose, hitDistance, flag, trackable);

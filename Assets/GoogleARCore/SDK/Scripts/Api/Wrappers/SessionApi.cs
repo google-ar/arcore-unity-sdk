@@ -102,6 +102,13 @@ namespace GoogleARCoreInternal
         public CameraConfig GetCameraConfig()
         {
             IntPtr cameraConfigHandle = m_NativeSession.CameraConfigApi.Create();
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access camera config");
+                return new CameraConfig();
+            }
+
             ExternApi.ArSession_getCameraConfig(m_NativeSession.SessionHandle, cameraConfigHandle);
             CameraConfig currentCameraConfig = _CreateCameraConfig(cameraConfigHandle);
             m_NativeSession.CameraConfigApi.Destroy(cameraConfigHandle);

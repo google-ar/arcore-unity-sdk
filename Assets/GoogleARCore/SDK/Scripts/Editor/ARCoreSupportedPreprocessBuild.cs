@@ -38,6 +38,15 @@ namespace GoogleARCoreInternal
             {
                 CheckARCoreSupported();
             }
+
+#if UNITY_2018_1_OR_NEWER
+            if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset != null)
+            {
+                Debug.LogWarning("Custom Rendering Pipeline Asset is not supported by ARCore. " +
+                    "To ensure ACore work correctly, set Rendering Pipeline Asset to None in " +
+                    "'Project Settings > Graphics > Scriptable Render Pipeline Settings'.");
+            }
+#endif // UNITY_2018_1_OR_NEWER
         }
 
         public void OnActiveBuildTargetChanged(BuildTarget previousTarget, BuildTarget newTarget)

@@ -133,6 +133,13 @@ namespace GoogleARCoreInternal
             IntPtr cameraMetadataHandle, List<CameraMetadataTag> resultList)
         {
             IntPtr ndkMetadataHandle = IntPtr.Zero;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access camera metadata tags");
+                return false;
+            }
+
             ExternApi.ArImageMetadata_getNdkCameraMetadata(m_NativeSession.SessionHandle,
                 cameraMetadataHandle, ref ndkMetadataHandle);
 

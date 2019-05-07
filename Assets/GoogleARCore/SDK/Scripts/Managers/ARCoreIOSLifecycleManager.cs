@@ -45,6 +45,8 @@ namespace GoogleARCoreInternal
 
         private IntPtr m_RealArKitSessionHandle = IntPtr.Zero;
 
+        public event Action UpdateSessionFeatures;
+
         public event Action EarlyUpdate;
 
         public event Action<bool> OnSessionSetEnabled;

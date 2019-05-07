@@ -65,6 +65,8 @@ namespace GoogleARCoreInternal
 
         private List<CameraConfig> m_TempCameraConfigs = new List<CameraConfig>();
 
+        public event Action UpdateSessionFeatures;
+
         public event Action EarlyUpdate;
 
         public event Action<bool> OnSessionSetEnabled;
@@ -80,6 +82,8 @@ namespace GoogleARCoreInternal
                     ARPrestoCallbackManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
                     ARPrestoCallbackManager.Instance.BeforeResumeSession +=
                         s_Instance._OnBeforeResumeSession;
+
+                    ExperimentManager.Instance.Initialize();
                 }
 
                 return s_Instance;
@@ -227,12 +231,33 @@ namespace GoogleARCoreInternal
             }
 
             // Perform updates before calling ArPresto_update.
-            _UpdateDisplayGeometry();
             if (SessionComponent != null)
             {
+                IntPtr previousSession = IntPtr.Zero;
+                ExternApi.ArPresto_getSession(ref previousSession);
+
+                if (UpdateSessionFeatures != null)
+                {
+                    UpdateSessionFeatures();
+                }
+
                 _SetCameraDirection(SessionComponent.DeviceCameraDirection);
+
+                IntPtr currentSession = IntPtr.Zero;
+                ExternApi.ArPresto_getSession(ref currentSession);
+
+                // Fire the session enabled event when the underlying session has been changed
+                // due to session feature update(camera direction etc).
+                if (previousSession != currentSession)
+                {
+                    _FireOnSessionSetEnabled(false);
+                    _FireOnSessionSetEnabled(true);
+                }
+
                 _SetConfiguration(SessionComponent.SessionConfig);
             }
+
+            _UpdateDisplayGeometry();
 
             // Update ArPresto and potentially ArCore.
             ExternApi.ArPresto_update();
@@ -348,19 +373,19 @@ namespace GoogleARCoreInternal
             ExternApi.ArPresto_setEnabled(sessionEnabled);
         }
 
-        private void _SetCameraDirection(DeviceCameraDirection cameraDirection)
+        private bool _SetCameraDirection(DeviceCameraDirection cameraDirection)
         {
             // The camera direction has not changed.
             if (m_CachedCameraDirection.HasValue &&
                 m_CachedCameraDirection.Value == cameraDirection)
             {
-                return;
+                return false;
             }
 
             if (InstantPreviewManager.IsProvidingPlatform &&
                 cameraDirection == DeviceCameraDirection.BackFacing)
             {
-                return;
+                return false;
             }
             else if (InstantPreviewManager.IsProvidingPlatform)
             {
@@ -372,7 +397,7 @@ namespace GoogleARCoreInternal
                     SessionComponent.DeviceCameraDirection = DeviceCameraDirection.BackFacing;
                 }
 
-                return;
+                return false;
             }
 
             m_CachedCameraDirection = cameraDirection;
@@ -381,9 +406,9 @@ namespace GoogleARCoreInternal
                     ApiPrestoDeviceCameraDirection.BackFacing :
                     ApiPrestoDeviceCameraDirection.FrontFacing;
 
-            _FireOnSessionSetEnabled(false);
             ExternApi.ArPresto_setDeviceCameraDirection(apiCameraDirection);
-            _FireOnSessionSetEnabled(true);
+
+            return true;
         }
 
         private void _SetConfiguration(ARCoreSessionConfig config)

@@ -36,28 +36,34 @@ namespace GoogleARCoreInternal
         public bool IsIOSSupportEnabled;
         public string CloudServicesApiKey;
         public string IosCloudServicesApiKey;
-        private const string k_VersionString = "V1.4.0";
         private const string k_ProjectSettingsPath = "ProjectSettings/ARCoreProjectSettings.json";
+        private static ARCoreProjectSettings s_Instance = null;
 
-        static ARCoreProjectSettings()
+        public static ARCoreProjectSettings Instance
         {
-            if (Application.isEditor)
+            get
             {
-                Instance = new ARCoreProjectSettings();
-                Instance.Load();
-            }
-            else
-            {
-                Instance = null;
-                Debug.LogError("Cannot access ARCoreProjectSettings outside of Unity Editor.");
+                if (s_Instance == null)
+                {
+                    if (Application.isEditor)
+                    {
+                        s_Instance = new ARCoreProjectSettings();
+                        s_Instance.Load();
+                    }
+                    else
+                    {
+                        Debug.LogError("Cannot access ARCoreProjectSettings outside of " +
+                            "Unity Editor.");
+                    }
+                }
+
+                return s_Instance;
             }
         }
 
-        public static ARCoreProjectSettings Instance { get; private set; }
-
         public void Load()
         {
-            Version = k_VersionString;
+            Version = GoogleARCore.VersionInfo.Version;
             IsARCoreRequired = true;
             IsInstantPreviewEnabled = true;
             CloudServicesApiKey = string.Empty;
@@ -75,18 +81,24 @@ namespace GoogleARCoreInternal
                 IsIOSSupportEnabled = settings.IsIOSSupportEnabled;
             }
 
-            // Upgrades settings from v1.0.0 to v1.1.0
+            // Upgrades settings from V1.0.0 to V1.1.0.
             if (Version.Equals("V1.0.0"))
             {
                 IsInstantPreviewEnabled = true;
-                Version = k_VersionString;
+                Version = "V1.1.0";
             }
 
-            // Upgrades setting from v1.1.0 and v1.2.0 to v1.3.0.
-            // Note: v1.2.0 went out with k_VersionString = v1.1.0
+            // Upgrades setting from V1.1.0 and V1.2.0 to V1.3.0.
+            // Note: V1.2.0 went out with k_VersionString = V1.1.0
             if (Version.Equals("V1.1.0"))
             {
                 IosCloudServicesApiKey = CloudServicesApiKey;
+                Version = "V1.3.0";
+            }
+
+            if (!Version.Equals(GoogleARCore.VersionInfo.Version))
+            {
+                Version = GoogleARCore.VersionInfo.Version;
             }
         }
 

@@ -1,4 +1,18 @@
-Except as indicated at the end of this LICENSE file,
+===============================================================================
+
+All files in the following folders:
+- Assets/GoogleARCore/SDK/Plugins/
+- Assets/GoogleARCore/SDK/InstantPreview/Plugins/
+- Assets/PlayServicesResolver/
+
+are licensed as follows:
+
+Covered by the **Google APIs Terms of Service** at
+[https://developers.google.com/terms/](https://developers.google.com/terms/)
+
+===============================================================================
+
+Except as indicated previously in this LICENSE file
 files in this SDK are licensed as follows:
 
 Copyright (c) 2017, Google Inc.
@@ -160,14 +174,27 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
     of your accepting any such warranty or additional liability.
 END OF TERMS AND CONDITIONS
 
-===============================================================================
+APPENDIX: How to apply the Apache License to your work.
 
-All files in the following folders:
-- Assets/GoogleARCore/SDK/Plugins/
-- Assets/GoogleARCore/SDK/InstantPreview/Plugins/
-- Assets/PlayServicesResolver/
+   To apply the Apache License to your work, attach the following
+   boilerplate notice, with the fields enclosed by brackets "[]"
+   replaced with your own identifying information. (Don't include
+   the brackets!)  The text should be enclosed in the appropriate
+   comment syntax for the file format. We also recommend that a
+   file or class name and description of purpose be included on the
+   same "printed page" as the copyright notice for easier
+   identification within third-party archives.
 
-are licensed as follows:
+Copyright [yyyy] [name of copyright owner]
 
-Covered by the **Google APIs Terms of Service** at
-[https://developers.google.com/terms/](https://developers.google.com/terms/)
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

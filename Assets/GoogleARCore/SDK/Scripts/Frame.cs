@@ -538,13 +538,6 @@ namespace GoogleARCore
             {
                 get
                 {
-                    if (InstantPreviewManager.IsProvidingPlatform)
-                    {
-                        InstantPreviewManager.LogLimitedSupportMessage(
-                            "access CPU Image intrinsics");
-                        return new CameraIntrinsics();
-                    }
-
                     var nativeSession = LifecycleManager.Instance.NativeSession;
                     if (nativeSession == null)
                     {
@@ -597,11 +590,12 @@ namespace GoogleARCore
             }
 
             /// <summary>
-            /// Attempts to acquire the camera image for CPU access.
+            /// Attempts to acquire the camera image for CPU access that corresponds to the current
+            /// frame.
             /// </summary>
             /// <remarks>
-            /// Not supported on all devices
-            /// (see https://developers.google.com/ar/discover/supported-devices).
+            /// Depending on device performance, this can fail for several frames after session
+            /// start, and for a few frames at a time while the session is running.
             /// </remarks>
             /// <returns>A <c>CameraImageBytes</c> struct with <c>IsAvailable</c> property set to
             /// <c>true</c> if successful and <c>false</c> if the image could not be

@@ -27,7 +27,7 @@ namespace GoogleARCore
     /// Holds settings that are used to configure the session.
     /// </summary>
     [CreateAssetMenu(
-        fileName = "ARCoreSessionConfig", menuName = "GoogleARCore/SessionConfig", order = 1)]
+        fileName = "ARCoreSessionConfig", menuName = "Google ARCore/SessionConfig", order = 1)]
     [HelpURL(
         "https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSessionConfig")]
     public class ARCoreSessionConfig : ScriptableObject

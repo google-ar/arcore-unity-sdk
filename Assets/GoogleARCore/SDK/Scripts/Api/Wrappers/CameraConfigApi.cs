@@ -45,6 +45,13 @@ namespace GoogleARCoreInternal
         public IntPtr Create()
         {
             IntPtr cameraConfigHandle = IntPtr.Zero;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("create ARCamera config");
+                return cameraConfigHandle;
+            }
+
             ExternApi.ArCameraConfig_create(m_NativeSession.SessionHandle, ref cameraConfigHandle);
             return cameraConfigHandle;
         }
@@ -59,6 +66,12 @@ namespace GoogleARCoreInternal
             width = 0;
             height = 0;
 
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access ARCamera image dimensions");
+                return;
+            }
+
             ExternApi.ArCameraConfig_getImageDimensions(
                 m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
@@ -68,6 +81,13 @@ namespace GoogleARCoreInternal
             width = 0;
             height = 0;
 
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage(
+                    "access ARCamera texture dimensions");
+                return;
+            }
+
             ExternApi.ArCameraConfig_getTextureDimensions(
                 m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
@@ -75,6 +95,13 @@ namespace GoogleARCoreInternal
         public ApiCameraConfigFacingDirection GetFacingDirection(IntPtr cameraConfigHandle)
         {
             ApiCameraConfigFacingDirection direction = ApiCameraConfigFacingDirection.Back;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access ARCamera facing direction");
+                return direction;
+            }
+
             ExternApi.ArCameraConfig_getFacingDirection(
                 m_NativeSession.SessionHandle, cameraConfigHandle, ref direction);
 

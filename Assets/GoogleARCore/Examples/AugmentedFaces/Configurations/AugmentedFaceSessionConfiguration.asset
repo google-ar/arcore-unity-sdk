@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 53ac32fab2599402fb6d154adf4c1e40, type: 3}
-  m_Name: AumgnetedFaceSessionConfiguration
+  m_Name: AugmentedFaceSessionConfiguration
   m_EditorClassIdentifier: 
   MatchCameraFramerate: 1
   PlaneFindingMode: 0

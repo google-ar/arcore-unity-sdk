@@ -51,6 +51,13 @@ namespace GoogleARCoreInternal
 
         public LostTrackingReason GetLostTrackingReason(IntPtr cameraHandle)
         {
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("determine tracking failure " +
+                    "reasons");
+                return LostTrackingReason.None;
+            }
+
             ApiTrackingFailureReason apiTrackingFailureReason = ApiTrackingFailureReason.None;
             ExternApi.ArCamera_getTrackingFailureReason(m_NativeSession.SessionHandle,
                 cameraHandle, ref apiTrackingFailureReason);
@@ -83,6 +90,13 @@ namespace GoogleARCoreInternal
         public CameraIntrinsics GetTextureIntrinsics(IntPtr cameraHandle)
         {
             IntPtr cameraIntrinsicsHandle = IntPtr.Zero;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access GPU texture intrinsics");
+                return new CameraIntrinsics();
+            }
+
             ExternApi.ArCameraIntrinsics_create(
                 m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 
@@ -99,6 +113,13 @@ namespace GoogleARCoreInternal
         public CameraIntrinsics GetImageIntrinsics(IntPtr cameraHandle)
         {
             IntPtr cameraIntrinsicsHandle = IntPtr.Zero;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access CPU image intrinsics");
+                return new CameraIntrinsics();
+            }
+          
             ExternApi.ArCameraIntrinsics_create(
                 m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 

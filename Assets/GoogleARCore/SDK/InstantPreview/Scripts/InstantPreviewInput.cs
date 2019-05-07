@@ -59,6 +59,7 @@ namespace GoogleARCore
         {
             get
             {
+                NativeApi.UnityGotTouches();
                 return s_Touches;
             }
         }
@@ -238,6 +239,9 @@ namespace GoogleARCore
         {
             [DllImport(InstantPreviewManager.InstantPreviewNativeApi)]
             public static extern void GetTouches(out IntPtr touches, out int count);
+
+            [DllImport(InstantPreviewManager.InstantPreviewNativeApi)]
+            public static extern void UnityGotTouches();
         }
     }
 }

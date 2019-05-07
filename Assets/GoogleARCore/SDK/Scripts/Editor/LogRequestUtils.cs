@@ -34,6 +34,7 @@ namespace GoogleARCoreInternal
     public class LogRequestUtils
     {
         private const string k_GoogleAnalyticsId = "GoogleAnalyticsId";
+        private static string s_SessionId = string.Empty;
 
         /// <summary>
         /// Generates a new LogRequest using the current system configuration.
@@ -62,6 +63,7 @@ namespace GoogleARCoreInternal
                 OsVersion = SystemInfo.operatingSystem,
                 ArcoreSdkVersion = GoogleARCore.VersionInfo.Version,
                 Unity = engine,     // Unity engine version.
+                SdkSessionId = _SessionId(),
             };
 
             // Assemble the Clearcut log event data.
@@ -117,6 +119,22 @@ namespace GoogleARCoreInternal
             EditorPrefs.SetString(k_GoogleAnalyticsId, id);
 
             return id;
+        }
+
+        /// <summary>
+        /// The current session id. This is generated on first request and
+        /// used while the current project remains open.
+        /// </summary>
+        /// <returns>The current session id.</returns>
+        private static string _SessionId()
+        {
+            // Generate on first request.
+            if (s_SessionId == string.Empty)
+            {
+                s_SessionId = Guid.NewGuid().ToString();
+            }
+
+            return s_SessionId;
         }
 
         /// <summary>

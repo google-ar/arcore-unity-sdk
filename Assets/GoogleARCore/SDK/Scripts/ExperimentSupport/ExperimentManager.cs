@@ -77,7 +77,6 @@ namespace GoogleARCoreInternal
                 if (s_Instance == null)
                 {
                     s_Instance = new ExperimentManager();
-                    LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
                 }
 
                 return s_Instance;
@@ -101,6 +100,13 @@ namespace GoogleARCoreInternal
             }
         }
 
+        public void Initialize()
+        {
+            LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
+            LifecycleManager.Instance.UpdateSessionFeatures +=
+                s_Instance.OnUpdateSessionFeatures;
+        }
+
         public void OnBeforeSetConfiguration(IntPtr sessionHandle, IntPtr configHandle)
         {
             foreach (var experiment in m_Experiments)
@@ -114,6 +120,17 @@ namespace GoogleARCoreInternal
             return _GetTrackableTypeManager(trackableType) != null;
         }
 
+        public TrackableHitFlags GetTrackableHitFlags(int trackableType)
+        {
+            ExperimentBase trackableManager = _GetTrackableTypeManager(trackableType);
+            if (trackableManager != null)
+            {
+                return trackableManager.GetTrackableHitFlags(trackableType);
+            }
+
+            return TrackableHitFlags.None;
+        }
+
         public Trackable TrackableFactory(int trackableType, IntPtr trackableHandle)
         {
             ExperimentBase trackableManager = _GetTrackableTypeManager(trackableType);
@@ -122,8 +139,15 @@ namespace GoogleARCoreInternal
                 return trackableManager.TrackableFactory(trackableType, trackableHandle);
             }
 
-            throw new NotImplementedException(
-                "ExperimentManager.TrackableFactory::No constructor for requested trackable type.");
+            return null;
+        }
+
+        public void OnUpdateSessionFeatures()
+        {
+            foreach (var experiment in m_Experiments)
+            {
+                experiment.OnUpdateSessionFeatures();
+            }
         }
 
         private void _OnEarlyUpdate()

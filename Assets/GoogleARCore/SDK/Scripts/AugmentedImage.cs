@@ -123,5 +123,17 @@ namespace GoogleARCore
                 return m_NativeSession.AugmentedImageApi.GetExtentZ(m_TrackableNativeHandle);
             }
         }
+
+        /// <summary>
+        /// Gets the current method being used to track this Augmented Image.
+        /// </summary>
+        /// <value>The current tracking method being used.</value>
+        public AugmentedImageTrackingMethod TrackingMethod
+        {
+            get
+            {
+                return m_NativeSession.AugmentedImageApi.GetTrackingMethod(m_TrackableNativeHandle);
+            }
+        }
     }
 }

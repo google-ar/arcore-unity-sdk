@@ -24,6 +24,11 @@ namespace GoogleARCore.Examples.CloudAnchors
     using UnityEngine;
     using UnityEngine.Networking;
 
+#if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
+    using Input = GoogleARCore.InstantPreviewInput;
+#endif
+
     /// <summary>
     /// Controller for the Cloud Anchors Example. Handles the ARCore lifecycle.
     /// </summary>

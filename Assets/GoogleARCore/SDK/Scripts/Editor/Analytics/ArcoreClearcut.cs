@@ -2927,10 +2927,6 @@ namespace GoogleARCoreInternal.Proto {
         /// </summary>
         [pbr::OriginalName("APPS_TELEPATH_ANDROID_PRIMES")] AppsTelepathAndroidPrimes = 479,
         /// <summary>
-        /// Logs for Paisa Experimental apps (go/paisa)
-        /// </summary>
-        [pbr::OriginalName("PIGEON_EXPERIMENTAL")] PigeonExperimental = 480,
-        /// <summary>
         /// (go/speakeasy)
         /// </summary>
         [pbr::OriginalName("SPEAKEASY_BARKEEP_CLIENT")] SpeakeasyBarkeepClient = 481,

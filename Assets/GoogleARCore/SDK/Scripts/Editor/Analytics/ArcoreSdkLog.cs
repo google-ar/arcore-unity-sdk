@@ -24,20 +24,20 @@ namespace GoogleARCoreInternal.Proto {
     static ArcoreSdkLogReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChRhcmNvcmVfc2RrX2xvZy5wcm90bxIRY29tLmdvb2dsZS5hcmNvcmUizAIK",
+            "ChRhcmNvcmVfc2RrX2xvZy5wcm90bxIRY29tLmdvb2dsZS5hcmNvcmUi5AIK",
             "DEFyQ29yZVNka0xvZxIXCg9zZGtfaW5zdGFuY2VfaWQYASABKAkSGgoSYXJj",
             "b3JlX3Nka192ZXJzaW9uGAIgASgJEhIKCm9zX3ZlcnNpb24YAyABKAkSOgoF",
             "dW5pdHkYBCABKAsyKy5jb20uZ29vZ2xlLmFyY29yZS5BckNvcmVTZGtMb2cu",
-            "VW5pdHlFbmdpbmUatgEKC1VuaXR5RW5naW5lEg8KB3ZlcnNpb24YASABKAkS",
-            "TQoMZWRpdGlvbl90eXBlGAIgASgOMjcuY29tLmdvb2dsZS5hcmNvcmUuQXJD",
-            "b3JlU2RrTG9nLlVuaXR5RW5naW5lLkVkaXRpb25UeXBlIkcKC0VkaXRpb25U",
-            "eXBlEhgKFFVOS05PV05fRURJVElPTl9UWVBFEAASDAoIUEVSU09OQUwQARIQ",
-            "CgxQUk9GRVNTSU9OQUwQAkIdqgIaR29vZ2xlQVJDb3JlSW50ZXJuYWwuUHJv",
-            "dG9iBnByb3RvMw=="));
+            "VW5pdHlFbmdpbmUSFgoOc2RrX3Nlc3Npb25faWQYBSABKAkatgEKC1VuaXR5",
+            "RW5naW5lEg8KB3ZlcnNpb24YASABKAkSTQoMZWRpdGlvbl90eXBlGAIgASgO",
+            "MjcuY29tLmdvb2dsZS5hcmNvcmUuQXJDb3JlU2RrTG9nLlVuaXR5RW5naW5l",
+            "LkVkaXRpb25UeXBlIkcKC0VkaXRpb25UeXBlEhgKFFVOS05PV05fRURJVElP",
+            "Tl9UWVBFEAASDAoIUEVSU09OQUwQARIQCgxQUk9GRVNTSU9OQUwQAkIdqgIa",
+            "R29vZ2xlQVJDb3JlSW50ZXJuYWwuUHJvdG9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog), global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Parser, new[]{ "SdkInstanceId", "ArcoreSdkVersion", "OsVersion", "Unity" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine), global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine.Parser, new[]{ "Version", "EditionType" }, null, new[]{ typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine.Types.EditionType) }, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog), global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Parser, new[]{ "SdkInstanceId", "ArcoreSdkVersion", "OsVersion", "Unity", "SdkSessionId" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine), global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine.Parser, new[]{ "Version", "EditionType" }, null, new[]{ typeof(global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine.Types.EditionType) }, null)})
           }));
     }
     #endregion
@@ -48,7 +48,7 @@ namespace GoogleARCoreInternal.Proto {
   /// Message with log extension for ARCore SDK within development engines, like
   /// Unity and Unreal.
   ///
-  /// Next ID: 5
+  /// Next ID: 6
   /// </summary>
   public sealed partial class ArCoreSdkLog : pb::IMessage<ArCoreSdkLog> {
     private static readonly pb::MessageParser<ArCoreSdkLog> _parser = new pb::MessageParser<ArCoreSdkLog>(() => new ArCoreSdkLog());
@@ -79,6 +79,7 @@ namespace GoogleARCoreInternal.Proto {
       arcoreSdkVersion_ = other.arcoreSdkVersion_;
       osVersion_ = other.osVersion_;
       unity_ = other.unity_ != null ? other.unity_.Clone() : null;
+      sdkSessionId_ = other.sdkSessionId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -147,6 +148,23 @@ namespace GoogleARCoreInternal.Proto {
       }
     }
 
+    /// <summary>Field number for the "sdk_session_id" field.</summary>
+    public const int SdkSessionIdFieldNumber = 5;
+    private string sdkSessionId_ = "";
+    /// <summary>
+    /// Session identifier to distinguish between events where a single project
+    /// is open for a long time, or multiple individual projects. A new id is
+    /// generated each time the user opens any project, it does not map to an
+    /// individual or project.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string SdkSessionId {
+      get { return sdkSessionId_; }
+      set {
+        sdkSessionId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ArCoreSdkLog);
@@ -164,6 +182,7 @@ namespace GoogleARCoreInternal.Proto {
       if (ArcoreSdkVersion != other.ArcoreSdkVersion) return false;
       if (OsVersion != other.OsVersion) return false;
       if (!object.Equals(Unity, other.Unity)) return false;
+      if (SdkSessionId != other.SdkSessionId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -174,6 +193,7 @@ namespace GoogleARCoreInternal.Proto {
       if (ArcoreSdkVersion.Length != 0) hash ^= ArcoreSdkVersion.GetHashCode();
       if (OsVersion.Length != 0) hash ^= OsVersion.GetHashCode();
       if (unity_ != null) hash ^= Unity.GetHashCode();
+      if (SdkSessionId.Length != 0) hash ^= SdkSessionId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -203,6 +223,10 @@ namespace GoogleARCoreInternal.Proto {
         output.WriteRawTag(34);
         output.WriteMessage(Unity);
       }
+      if (SdkSessionId.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(SdkSessionId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -222,6 +246,9 @@ namespace GoogleARCoreInternal.Proto {
       }
       if (unity_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Unity);
+      }
+      if (SdkSessionId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(SdkSessionId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -248,6 +275,9 @@ namespace GoogleARCoreInternal.Proto {
           unity_ = new global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine();
         }
         Unity.MergeFrom(other.Unity);
+      }
+      if (other.SdkSessionId.Length != 0) {
+        SdkSessionId = other.SdkSessionId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -277,6 +307,10 @@ namespace GoogleARCoreInternal.Proto {
               unity_ = new global::GoogleARCoreInternal.Proto.ArCoreSdkLog.Types.UnityEngine();
             }
             input.ReadMessage(unity_);
+            break;
+          }
+          case 42: {
+            SdkSessionId = input.ReadString();
             break;
           }
         }

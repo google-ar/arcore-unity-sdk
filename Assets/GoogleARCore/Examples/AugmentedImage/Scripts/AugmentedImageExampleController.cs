@@ -29,6 +29,15 @@ namespace GoogleARCore.Examples.AugmentedImage
     /// <summary>
     /// Controller for AugmentedImage example.
     /// </summary>
+    /// <remarks>
+    /// In this sample, we assume all images are static or moving slowly with
+    /// a large occupation of the screen. If the target is actively moving,
+    /// we recommend to check <see cref="AugmentedImage.TrackingMethod"/> and
+    /// render only when the tracking method equals to
+    /// <see cref="AugmentedImageTrackingMethod.FullTracking"/>.
+    /// See details in <a href="https://developers.google.com/ar/develop/c/augmented-images/">
+    /// Recognize and Augment Images</a>
+    /// </remarks>
     public class AugmentedImageExampleController : MonoBehaviour
     {
         /// <summary>
@@ -55,12 +64,6 @@ namespace GoogleARCore.Examples.AugmentedImage
             if (Input.GetKey(KeyCode.Escape))
             {
                 Application.Quit();
-            }
-
-            // Check that motion tracking is tracking.
-            if (Session.Status != SessionStatus.Tracking)
-            {
-                return;
             }
 
             // Get updated augmented images for this frame.

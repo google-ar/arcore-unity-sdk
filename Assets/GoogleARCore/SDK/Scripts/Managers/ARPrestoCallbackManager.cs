@@ -101,6 +101,13 @@ namespace GoogleARCoreInternal
             AsyncTask<ApkAvailabilityStatus> task =
                 new AsyncTask<ApkAvailabilityStatus>(out onComplete);
 
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("determine ARCore APK " +
+                    "availability");
+                return task;
+            }
+
             ExternApi.ArPresto_checkApkAvailability(m_CheckApkAvailabilityResultCallback,
                 IntPtr.Zero);
 
@@ -114,6 +121,13 @@ namespace GoogleARCoreInternal
             Action<ApkInstallationStatus> onComplete;
             AsyncTask<ApkInstallationStatus> task =
                 new AsyncTask<ApkInstallationStatus>(out onComplete);
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("request installation of ARCore " +
+                    "APK");
+                return task;
+            }
 
             ExternApi.ArPresto_requestApkInstallation(userRequested,
                 m_RequestApkInstallationResultCallback, IntPtr.Zero);

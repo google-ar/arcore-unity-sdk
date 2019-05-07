@@ -36,11 +36,11 @@ namespace GoogleARCoreInternal
 
         private List<Trackable> m_NewTrackables = new List<Trackable>();
 
-        private List<Trackable> m_AllTrackables  = new List<Trackable>();
+        private List<Trackable> m_AllTrackables = new List<Trackable>();
 
-        private List<Trackable> m_UpdatedTrackables  = new List<Trackable>();
+        private List<Trackable> m_UpdatedTrackables = new List<Trackable>();
 
-        private HashSet<Trackable> m_OldTrackables  = new HashSet<Trackable>();
+        private HashSet<Trackable> m_OldTrackables = new HashSet<Trackable>();
 
         public TrackableManager(NativeSession nativeSession)
         {
@@ -96,7 +96,7 @@ namespace GoogleARCoreInternal
             }
             else
             {
-                throw new NotImplementedException(
+                Debug.LogWarning(
                     "TrackableFactory::No constructor for requested trackable type.");
             }
 #pragma warning restore 618

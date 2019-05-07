@@ -55,12 +55,6 @@ namespace GoogleARCoreInternal
         /// </summary>
         public const string InstantPreviewNativeApi = "arcore_instant_preview_unity_plugin";
 
-        /// <summary>
-        /// Location of the Instant Preview warning prefab.
-        /// </summary>
-        public const string InstantPreviewWarningPrefabPath =
-            "Assets/GoogleARCore/SDK/InstantPreview/Prefabs/Instant Preview Touch Warning.prefab";
-
         // Guid is taken from meta file and should never change.
         private const string k_ApkGuid = "cf7b10762fe921e40a18151a6c92a8a6";
         private const string k_NoDevicesFoundAdbResult = "error: no devices/emulators found";
@@ -71,9 +65,22 @@ namespace GoogleARCoreInternal
             " To avoid distorted preview while using Instant Preview, set the Game view Aspect " +
             "to match the camera texture resolution ({2}x{3}).";
 
+        private const string k_InstantPreviewInputWarning =
+            "Touch ignored. Make sure your script contains `using Input = InstantPreviewInput;` " +
+            "when using editor Play mode.\nTo learn more, see " +
+            "https://developers.google.com/ar/develop/unity/instant-preview";
+
+        private const string k_WarningToastFormat = "Instant Preview is not able to {0}. See " +
+          "Unity console.";
+
+        private const int k_WarningThrottleTimeSeconds = 5;
+
         private const float k_UnknownGameViewScale = (float)Single.MinValue;
 
         private static readonly WaitForEndOfFrame k_WaitForEndOfFrame = new WaitForEndOfFrame();
+
+        private static Dictionary<string, DateTime> s_SentWarnings =
+            new Dictionary<string, DateTime>();
 
         /// <summary>
         /// Gets a value indicating whether Instant Preview is providing the ARCore platform for the
@@ -98,6 +105,15 @@ namespace GoogleARCoreInternal
             Debug.LogErrorFormat(
                 "Attempted to {0} which is not yet supported by Instant Preview.\n" +
                 "Please build and run on device to use this feature.", featureName);
+
+            if (!s_SentWarnings.ContainsKey(featureName) ||
+                (DateTime.UtcNow - s_SentWarnings[featureName]).TotalSeconds >=
+                k_WarningThrottleTimeSeconds)
+            {
+                string warning = string.Format(k_WarningToastFormat, featureName);
+                NativeApi.SendToast(warning);
+                s_SentWarnings[featureName] = DateTime.UtcNow;
+            }
         }
 
         /// <summary>
@@ -174,7 +190,7 @@ namespace GoogleARCoreInternal
             }
 #endif
 
-            var adbPath = InstantPreviewManager.GetAdbPath();
+            var adbPath = ShellHelper.GetAdbPath();
             if (adbPath == null)
             {
                 Debug.LogError("Instant Preview requires your Unity Android SDK path to be set. " +
@@ -259,18 +275,6 @@ namespace GoogleARCoreInternal
             RenderTexture targetTexture = null;
             RenderTexture bgrTexture = null;
 
-#if UNITY_EDITOR
-            // If enabled, instantiate dismissable warning message.
-            InstantPreviewWarning prefab =
-                AssetDatabase.LoadAssetAtPath<InstantPreviewWarning>(
-                    InstantPreviewWarningPrefabPath);
-            if (prefab != null && prefab.ShowEditorWarning)
-            {
-                GameObject warningCanvas = GameObject.Instantiate(prefab.gameObject) as GameObject;
-                GameObject.DontDestroyOnLoad(warningCanvas);
-            }
-#endif  // UNITY_EDITOR
-
             // Begins update loop. The coroutine will cease when the
             // ARCoreSession component it's called from is destroyed.
             for (;;)
@@ -320,6 +324,13 @@ namespace GoogleARCoreInternal
 
                 NativeApi.Update();
                 InstantPreviewInput.Update();
+
+                if (NativeApi.AppShowedTouchWarning())
+                {
+                    Debug.LogWarning(k_InstantPreviewInputWarning);
+                    NativeApi.UnityLoggedTouchWarning();
+                }
+
                 AddInstantPreviewTrackedPoseDriverWhenNeeded();
 
                 Graphics.Blit(null, screenTexture);
@@ -367,31 +378,6 @@ namespace GoogleARCoreInternal
                     gameObject.AddComponent<InstantPreviewTrackedPoseDriver>();
                 }
             }
-        }
-
-        private static string GetAdbPath()
-        {
-            string sdkRoot = null;
-#if UNITY_EDITOR
-            // Gets adb path and starts instant preview server.
-            sdkRoot = UnityEditor.EditorPrefs.GetString("AndroidSdkRoot");
-#endif // UNITY_EDITOR
-
-            if (string.IsNullOrEmpty(sdkRoot))
-            {
-                return null;
-            }
-
-            // Gets adb path from known directory.
-            var adbPath = Path.Combine(Path.GetFullPath(sdkRoot),
-                                       "platform-tools" + Path.DirectorySeparatorChar + "adb");
-
-            if (Application.platform == RuntimePlatform.WindowsEditor)
-            {
-                adbPath = Path.ChangeExtension(adbPath, "exe");
-            }
-
-            return adbPath;
         }
 
         /// <summary>
@@ -633,6 +619,15 @@ namespace GoogleARCoreInternal
 
             [AndroidImport(InstantPreviewNativeApi)]
             public static extern bool IsConnected();
+
+            [AndroidImport(InstantPreviewNativeApi)]
+            public static extern bool AppShowedTouchWarning();
+
+            [AndroidImport(InstantPreviewNativeApi)]
+            public static extern bool UnityLoggedTouchWarning();
+
+            [AndroidImport(InstantPreviewNativeApi)]
+            public static extern void SendToast(string toastMessage);
 #pragma warning restore 626
         }
 

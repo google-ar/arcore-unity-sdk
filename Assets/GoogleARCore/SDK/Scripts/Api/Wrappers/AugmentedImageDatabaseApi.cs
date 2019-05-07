@@ -77,6 +77,14 @@ namespace GoogleARCoreInternal
             IntPtr databaseHandle, string name, Texture2D image, float width)
         {
             Int32 outIndex = -1;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("add images to Augmented Image " +
+                    "database");
+                return outIndex;
+            }
+
             GCHandle grayscaleBytesHandle = _ConvertTextureToGrayscaleBytes(image);
             if (grayscaleBytesHandle.AddrOfPinnedObject() == IntPtr.Zero)
             {

@@ -89,6 +89,14 @@ namespace GoogleARCoreInternal
             return name;
         }
 
+        public AugmentedImageTrackingMethod GetTrackingMethod(IntPtr augmentedImageHandle)
+        {
+            AugmentedImageTrackingMethod trackingMethod = AugmentedImageTrackingMethod.NotTracking;
+            ExternApi.ArAugmentedImage_getTrackingMethod(
+                m_NativeSession.SessionHandle, augmentedImageHandle, ref trackingMethod);
+            return trackingMethod;
+        }
+
         private struct ExternApi
         {
 #pragma warning disable 626
@@ -111,6 +119,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArAugmentedImage_acquireName(IntPtr sessionHandle,
                 IntPtr augmentedImageHandle, ref IntPtr outName);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedImage_getTrackingMethod(IntPtr sessionHandle,
+                IntPtr augmentedImageHandle, ref AugmentedImageTrackingMethod trackingMethod);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArString_release(IntPtr str);

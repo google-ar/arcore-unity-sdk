@@ -39,6 +39,14 @@ namespace GoogleARCoreInternal
         }
 
         /// <summary>
+        /// Called before lifecycle manager call ArPresto_update to update session features
+        /// that requre session recreation.
+        /// </summary>
+        public virtual void OnUpdateSessionFeatures()
+        {
+        }
+
+        /// <summary>
         /// Called at the beginnging of the frame.
         /// </summary>
         public virtual void OnEarlyUpdate()
@@ -73,6 +81,17 @@ namespace GoogleARCoreInternal
         public virtual bool IsManagingTrackableType(int trackableType)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Called to retrieve TrackableHitFlags associated with the trackable managed by the
+        /// experiment.
+        /// </summary>
+        /// <param name="trackableType">The trackable type.</param>
+        /// <returns>TrackableHitFlags value for the associated trackable.</returns>
+        public virtual TrackableHitFlags GetTrackableHitFlags(int trackableType)
+        {
+            return TrackableHitFlags.None;
         }
 
         /// <summary>
