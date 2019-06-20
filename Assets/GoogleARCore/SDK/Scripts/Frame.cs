@@ -69,7 +69,8 @@ namespace GoogleARCore
                 var nativeSession = LifecycleManager.Instance.NativeSession;
                 if (nativeSession == null)
                 {
-                    return new LightEstimate(LightEstimateState.NotValid, 0.0f, Color.black);
+                    return new LightEstimate(LightEstimateState.NotValid, 0.0f, Color.black,
+                        Quaternion.LookRotation(Vector3.down), Color.white, null, -1);
                 }
 
                 return nativeSession.FrameApi.GetLightEstimate();

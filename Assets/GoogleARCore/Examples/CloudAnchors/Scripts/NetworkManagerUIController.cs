@@ -31,7 +31,7 @@ namespace GoogleARCore.Examples.CloudAnchors
     /// Controller managing UI for joining and creating rooms.
     /// </summary>
 #pragma warning disable 618
-    [RequireComponent(typeof(NetworkManager))]
+    [RequireComponent(typeof(CloudAnchorsNetworkManager))]
 #pragma warning restore 618
     public class NetworkManagerUIController : MonoBehaviour
     {
@@ -79,7 +79,7 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// The Network Manager.
         /// </summary>
 #pragma warning disable 618
-        private NetworkManager m_Manager;
+        private CloudAnchorsNetworkManager m_Manager;
 #pragma warning restore 618
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             }
 
 #pragma warning disable 618
-            m_Manager = GetComponent<NetworkManager>();
+            m_Manager = GetComponent<CloudAnchorsNetworkManager>();
 #pragma warning restore 618
             m_Manager.StartMatchMaker();
             m_Manager.matchMaker.ListMatches(
@@ -207,10 +207,10 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// <summary>
         /// Use the snackbar to display the error message.
         /// </summary>
-        /// <param name="errorMessage">The error message to be displayed on the snackbar.</param>
-        public void ShowErrorMessage(string errorMessage)
+        /// <param name="debugMessage">The debug message to be displayed on the snackbar.</param>
+        public void ShowDebugMessage(string debugMessage)
         {
-            SnackbarText.text = errorMessage;
+            SnackbarText.text = debugMessage;
         }
 
         /// <summary>
@@ -225,7 +225,6 @@ namespace GoogleARCore.Examples.CloudAnchors
             m_Manager.matchName = match.name;
             m_Manager.matchMaker.JoinMatch(match.networkId, string.Empty, string.Empty,
                                          string.Empty, 0, 0, _OnMatchJoined);
-            CloudAnchorsExampleController.OnEnterResolvingModeClick();
         }
 
         /// <summary>
@@ -276,6 +275,8 @@ namespace GoogleARCore.Examples.CloudAnchors
                     button.GetComponentInChildren<Text>().text = text;
                     button.GetComponentInChildren<Button>().onClick.AddListener(() =>
                         _OnJoinRoomClicked(match));
+                    button.GetComponentInChildren<Button>().onClick.AddListener(
+                        CloudAnchorsExampleController.OnEnterResolvingModeClick);
                     button.SetActive(true);
                 }
             }
@@ -300,8 +301,8 @@ namespace GoogleARCore.Examples.CloudAnchors
             }
 
             m_CurrentRoomNumber = _GetRoomNumberFromNetworkId(matchInfo.networkId);
+            SnackbarText.text = "Connecting to server...";
             _ChangeLobbyUIVisibility(false);
-            SnackbarText.text = "Find a plane, tap to create a Cloud Anchor.";
             CurrentRoomLabel.GetComponentInChildren<Text>().text = "Room: " + m_CurrentRoomNumber;
         }
 
@@ -324,8 +325,8 @@ namespace GoogleARCore.Examples.CloudAnchors
             }
 
             m_CurrentRoomNumber = _GetRoomNumberFromNetworkId(matchInfo.networkId);
+            SnackbarText.text = "Connecting to server...";
             _ChangeLobbyUIVisibility(false);
-            SnackbarText.text = "Waiting for Cloud Anchor to be hosted...";
             CurrentRoomLabel.GetComponentInChildren<Text>().text = "Room: " + m_CurrentRoomNumber;
         }
 

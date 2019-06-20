@@ -56,12 +56,7 @@ namespace GoogleARCoreInternal
         public void UpdateApiConfigWithArCoreSessionConfig(
             IntPtr configHandle, ARCoreSessionConfig arCoreSessionConfig)
         {
-            var lightingMode = ApiLightEstimationMode.Disabled;
-            if (arCoreSessionConfig.EnableLightEstimation)
-            {
-                lightingMode = ApiLightEstimationMode.AmbientIntensity;
-            }
-
+            var lightingMode = arCoreSessionConfig.LightEstimationMode.ToApiLightEstimationMode();
             ExternApi.ArConfig_setLightEstimationMode(
                 m_NativeSession.SessionHandle, configHandle, lightingMode);
 

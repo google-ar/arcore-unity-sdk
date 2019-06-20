@@ -124,7 +124,6 @@ namespace GoogleARCoreInternal
                         Path.GetFullPath(filePath));
                     break;
                 default:
-                    // TODO(b/128345421): Implement windows bug report
                     string dialogMessage = "ARCore does not support capturing bug reports for " +
                         SystemInfo.operatingSystemFamily + " at this time.";
 

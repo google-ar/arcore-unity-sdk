@@ -72,6 +72,14 @@ namespace GoogleARCore
         [SuppressMemoryAllocationError(Reason = "Could create new LifecycleManager")]
         public virtual void Awake()
         {
+            if (SessionConfig != null &&
+                SessionConfig.LightEstimationMode != LightEstimationMode.Disabled &&
+                Object.FindObjectsOfType<EnvironmentalLight>().Length == 0)
+            {
+                Debug.Log("Light Estimation may not work properly when EnvironmentalLight is not" +
+                    " attached to the scene.");
+            }
+
             LifecycleManager.Instance.CreateSession(this);
         }
 
@@ -103,6 +111,47 @@ namespace GoogleARCore
         public void OnDisable()
         {
             LifecycleManager.Instance.DisableSession();
+        }
+
+        /// <summary>
+        /// Unity OnValidate.
+        /// </summary>
+        public void OnValidate()
+        {
+            if (DeviceCameraDirection == DeviceCameraDirection.FrontFacing && SessionConfig != null)
+            {
+                if (SessionConfig.PlaneFindingMode != DetectedPlaneFindingMode.Disabled)
+                {
+                    Debug.LogErrorFormat("Plane Finding requires back-facing camera.");
+                }
+
+                if (SessionConfig.LightEstimationMode ==
+                        LightEstimationMode.EnvironmentalHDRWithoutReflections ||
+                    SessionConfig.LightEstimationMode ==
+                        LightEstimationMode.EnvironmentalHDRWithReflections)
+                {
+                    Debug.LogErrorFormat("LightEstimationMode.{0} is incompatible with" +
+                        "front-facing (selfie) camera.", SessionConfig.LightEstimationMode);
+                }
+
+                if (SessionConfig.EnableCloudAnchor)
+                {
+                    Debug.LogErrorFormat("Cloud Anchors require back-facing camera.");
+                }
+
+                if (SessionConfig.AugmentedImageDatabase != null)
+                {
+                    Debug.LogErrorFormat("Augmented Images require back-facing camera.");
+                }
+            }
+
+            if (DeviceCameraDirection == DeviceCameraDirection.BackFacing &&
+                SessionConfig != null && SessionConfig.AugmentedFaceMode !=
+                    AugmentedFaceMode.Disabled)
+            {
+                Debug.LogErrorFormat("AugmentedFaceMode.{0} requires front-facing (selfie) camera.",
+                    SessionConfig.AugmentedFaceMode);
+            }
         }
 
         /// <summary>

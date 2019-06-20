@@ -110,10 +110,8 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// The Network Manager.
         /// </summary>
 #pragma warning disable 618
-        private NetworkManager m_NetworkManager;
+        private CloudAnchorsNetworkManager m_NetworkManager;
 #pragma warning restore 618
-
-        private bool m_MatchStarted = false;
 
         /// <summary>
         /// Enumerates modes the example application can be in.
@@ -131,8 +129,10 @@ namespace GoogleARCore.Examples.CloudAnchors
         public void Start()
         {
 #pragma warning disable 618
-            m_NetworkManager = UIController.GetComponent<NetworkManager>();
+            m_NetworkManager = UIController.GetComponent<CloudAnchorsNetworkManager>();
 #pragma warning restore 618
+            m_NetworkManager.OnClientConnected += _OnConnectedToServer;
+            m_NetworkManager.OnClientDisconnected += _OnDisconnectedFromServer;
 
             // A Name is provided to the Game Object so it can be found by other Scripts
             // instantiated as prefabs in the scene.
@@ -256,7 +256,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             {
                 m_CurrentMode = ApplicationMode.Ready;
                 _ResetStatus();
-                return;
+                Debug.Log("Reset ApplicationMode from Hosting to Ready.");
             }
 
             m_CurrentMode = ApplicationMode.Hosting;
@@ -273,7 +273,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             {
                 m_CurrentMode = ApplicationMode.Ready;
                 _ResetStatus();
-                return;
+                Debug.Log("Reset ApplicationMode from Resolving to Ready.");
             }
 
             m_CurrentMode = ApplicationMode.Resolving;
@@ -317,6 +317,35 @@ namespace GoogleARCore.Examples.CloudAnchors
         public void OnAnchorResolved(bool success, string response)
         {
             UIController.OnAnchorResolved(success, response);
+        }
+
+        /// <summary>
+        /// Callback that happens when the client successfully connected to the server.
+        /// </summary>
+        private void _OnConnectedToServer()
+        {
+            if (m_CurrentMode == ApplicationMode.Hosting)
+            {
+                UIController.ShowDebugMessage("Find a plane, tap to create a Cloud Anchor.");
+            }
+            else if (m_CurrentMode == ApplicationMode.Resolving)
+            {
+                UIController.ShowDebugMessage("Waiting for Cloud Anchor to be hosted...");
+            }
+            else
+            {
+                _QuitWithReason("Connected to server with neither Hosting nor Resolving mode. " +
+                                "Please start the app again.");
+            }
+        }
+
+        /// <summary>
+        /// Callback that happens when the client disconnected from the server.
+        /// </summary>
+        private void _OnDisconnectedFromServer()
+        {
+            _QuitWithReason("Network session disconnected! " +
+                "Please start the app again and try another room.");
         }
 
         /// <summary>
@@ -396,11 +425,6 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         private void _UpdateApplicationLifecycle()
         {
-            if (!m_MatchStarted && m_NetworkManager.IsClientConnected())
-            {
-                m_MatchStarted = true;
-            }
-
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -425,29 +449,32 @@ namespace GoogleARCore.Examples.CloudAnchors
                 return;
             }
 
-            // Quit if ARCore was unable to connect and give Unity some time for the toast to
-            // appear.
+            // Quit if ARCore was unable to connect.
             if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
-                UIController.ShowErrorMessage(
-                    "Camera permission is needed to run this application.");
-                m_IsQuitting = true;
-                Invoke("_DoQuit", 5.0f);
+                _QuitWithReason("Camera permission is needed to run this application.");
             }
             else if (Session.Status.IsError())
             {
-                UIController.ShowErrorMessage(
-                    "ARCore encountered a problem connecting.  Please start the app again.");
-                m_IsQuitting = true;
-                Invoke("_DoQuit", 5.0f);
+                _QuitWithReason("ARCore encountered a problem connecting. " +
+                    "Please start the app again.");
             }
-            else if (m_MatchStarted && !m_NetworkManager.IsClientConnected())
+        }
+
+        /// <summary>
+        /// Quits the application after 5 seconds for the toast to appear.
+        /// </summary>
+        /// <param name="reason">The reason of quitting the application.</param>
+        private void _QuitWithReason(string reason)
+        {
+            if (m_IsQuitting)
             {
-                UIController.ShowErrorMessage(
-                    "Network session disconnected!  Please start the app again.");
-                m_IsQuitting = true;
-                Invoke("_DoQuit", 5.0f);
+                return;
             }
+
+            UIController.ShowDebugMessage(reason);
+            m_IsQuitting = true;
+            Invoke("_DoQuit", 5.0f);
         }
 
         /// <summary>

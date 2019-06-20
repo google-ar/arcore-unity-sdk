@@ -64,8 +64,7 @@ namespace GoogleARCoreInternal
             }
 
             PlaneFindingMode = planeFindingMode;
-            LightEstimationMode = config.EnableLightEstimation ?
-                ApiLightEstimationMode.AmbientIntensity : ApiLightEstimationMode.Disabled;
+            LightEstimationMode = config.LightEstimationMode.ToApiLightEstimationMode();
             CloudAnchorMode = config.EnableCloudAnchor ?
                 ApiCloudAnchorMode.Enabled : ApiCloudAnchorMode.Disabled;
 

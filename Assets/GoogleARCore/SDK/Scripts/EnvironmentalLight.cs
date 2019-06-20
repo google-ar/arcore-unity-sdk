@@ -25,7 +25,7 @@ namespace GoogleARCore
     using UnityEngine.Rendering;
 
     /// <summary>
-    /// A component that automatically adjust lighting settings for the scene
+    /// A component that automatically adjusts lighting settings for the scene
     /// to be inline with those estimated by ARCore.
     /// </summary>
     [ExecuteInEditMode]
@@ -33,6 +33,16 @@ namespace GoogleARCore
         "https://developers.google.com/ar/reference/unity/class/GoogleARCore/EnvironmentalLight")]
     public class EnvironmentalLight : MonoBehaviour
     {
+        /// <summary>
+        /// The directional light used by
+        /// <see cref="LightEstimationMode.EnvironmentalHDRWithReflections"/> and
+        /// <see cref="LightEstimationMode.EnvironmentalHDRWithoutReflections"/>.
+        /// The rotation and color will be updated automatically by this component.
+        /// </summary>
+        public Light DirectionalLight;
+
+        private long m_LightEstimateTimestamp = -1;
+
         /// <summary>
         /// Unity update method that sets global light estimation shader constant to match
         /// ARCore's calculated values.
@@ -42,7 +52,7 @@ namespace GoogleARCore
         public void Update()
         {
             if (Application.isEditor && (!Application.isPlaying ||
-                 !GoogleARCoreInternal.ARCoreProjectSettings.Instance.IsInstantPreviewEnabled))
+                 !ARCoreProjectSettings.Instance.IsInstantPreviewEnabled))
             {
                 // Set _GlobalColorCorrection to white in editor, if the value is not set, all
                 // materials using light estimation shaders will be black.
@@ -53,22 +63,51 @@ namespace GoogleARCore
                 return;
             }
 
-            if (Frame.LightEstimate.State != LightEstimateState.Valid)
+            LightEstimate estimate = Frame.LightEstimate;
+            if (estimate.State != LightEstimateState.Valid ||
+                estimate.Mode == LightEstimationMode.Disabled)
             {
                 return;
             }
 
-            // Normalize pixel intensity by middle gray in gamma space.
-            const float middleGray = 0.466f;
-            float normalizedIntensity = Frame.LightEstimate.PixelIntensity / middleGray;
+            if (estimate.Mode == LightEstimationMode.AmbientIntensity)
+            {
+                // Normalize pixel intensity by middle gray in gamma space.
+                const float middleGray = 0.466f;
+                float normalizedIntensity = estimate.PixelIntensity / middleGray;
 
-            // Apply color correction along with normalized pixel intensity in gamma space.
-            Shader.SetGlobalColor(
-                "_GlobalColorCorrection",
-                Frame.LightEstimate.ColorCorrection * normalizedIntensity);
+                // Apply color correction along with normalized pixel intensity in gamma space.
+                Shader.SetGlobalColor(
+                    "_GlobalColorCorrection",
+                    estimate.ColorCorrection * normalizedIntensity);
 
-            // Set _GlobalLightEstimation for backward compatibility.
-            Shader.SetGlobalFloat("_GlobalLightEstimation", normalizedIntensity);
+                // Set _GlobalLightEstimation for backward compatibility.
+                Shader.SetGlobalFloat("_GlobalLightEstimation", normalizedIntensity);
+            }
+            else if (m_LightEstimateTimestamp != estimate.Timestamp)
+            {
+                m_LightEstimateTimestamp = estimate.Timestamp;
+                if (DirectionalLight != null)
+                {
+                    if (!DirectionalLight.gameObject.activeSelf || !DirectionalLight.enabled)
+                    {
+                        DirectionalLight.gameObject.SetActive(true);
+                        DirectionalLight.enabled = true;
+                    }
+
+                    DirectionalLight.transform.rotation = estimate.DirectionalLightRotation;
+                    DirectionalLight.color = estimate.DirectionalLightColor;
+                }
+
+                RenderSettings.ambientMode = AmbientMode.Skybox;
+                RenderSettings.ambientProbe = estimate.AmbientProbe;
+
+                if (estimate.Mode == LightEstimationMode.EnvironmentalHDRWithReflections)
+                {
+                    RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+                    RenderSettings.customReflection = estimate.ReflectionProbe;
+                }
+            }
         }
     }
 }

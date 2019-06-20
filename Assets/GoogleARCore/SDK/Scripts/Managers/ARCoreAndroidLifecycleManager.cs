@@ -214,6 +214,16 @@ namespace GoogleARCoreInternal
             if (m_HaveDisableToEnableTransition)
             {
                 _SetSessionEnabled(false);
+
+                // Refresh SessionStatus after first _SetSessionEnabled() to catch any changes to
+                // the SessionStatus that may affect the subsequent _SetSessionEnabled().
+                // This fixes an issue where the session does not get re-enabled properly when an
+                // unsupported configuration is fixed, and the ARCoreSession component's enabled
+                // state is toggled in the same frame;
+                ApiPrestoStatus refreshPrestoStatus = ApiPrestoStatus.Uninitialized;
+                ExternApi.ArPresto_getStatus(ref refreshPrestoStatus);
+                SessionStatus = refreshPrestoStatus.ToSessionStatus();
+
                 _SetSessionEnabled(true);
                 m_HaveDisableToEnableTransition = false;
 
@@ -262,6 +272,8 @@ namespace GoogleARCoreInternal
             // Update ArPresto and potentially ArCore.
             ExternApi.ArPresto_update();
 
+            SessionStatus previousSessionStatus = SessionStatus;
+
             // Get state information from ARPresto.
             ApiPrestoStatus prestoStatus = ApiPrestoStatus.Uninitialized;
             ExternApi.ArPresto_getStatus(ref prestoStatus);
@@ -273,6 +285,14 @@ namespace GoogleARCoreInternal
                 var cameraHandle = NativeSession.FrameApi.AcquireCamera();
                 LostTrackingReason = NativeSession.CameraApi.GetLostTrackingReason(cameraHandle);
                 NativeSession.CameraApi.Release(cameraHandle);
+            }
+
+            // If the current status is an error, check if the SessionStatus error state changed.
+            if (SessionStatus.IsError() &&
+                previousSessionStatus.IsError() != SessionStatus.IsError())
+            {
+                // Disable internal session bits so we properly pause the session due to error.
+                _FireOnSessionSetEnabled(false);
             }
 
             // Get the current session from presto and note if it has changed.
@@ -369,7 +389,14 @@ namespace GoogleARCoreInternal
                 return;
             }
 
-            _FireOnSessionSetEnabled(sessionEnabled);
+            // If the session status is an error, do not fire the callback itself; but do
+            // ArPresto_setEnabled to signal the intention to resume once the session status is
+            // valid.
+            if (!SessionStatus.IsError())
+            {
+                _FireOnSessionSetEnabled(sessionEnabled);
+            }
+
             ExternApi.ArPresto_setEnabled(sessionEnabled);
         }
 
@@ -430,22 +457,10 @@ namespace GoogleARCoreInternal
 
             if (InstantPreviewManager.IsProvidingPlatform)
             {
-                if (config.PlaneFindingMode == DetectedPlaneFindingMode.Disabled)
+                if (config.LightEstimationMode != LightEstimationMode.Disabled)
                 {
-                    InstantPreviewManager.LogLimitedSupportMessage("disable 'Plane Finding'");
-                    config.PlaneFindingMode = DetectedPlaneFindingMode.Horizontal;
-                }
-
-                if (!config.EnableLightEstimation)
-                {
-                    InstantPreviewManager.LogLimitedSupportMessage("disable 'Light Estimation'");
-                    config.EnableLightEstimation = true;
-                }
-
-                if (config.CameraFocusMode == CameraFocusMode.Auto)
-                {
-                    InstantPreviewManager.LogLimitedSupportMessage("enable camera Auto Focus mode");
-                    config.CameraFocusMode = CameraFocusMode.Fixed;
+                    InstantPreviewManager.LogLimitedSupportMessage("enable 'Light Estimation'");
+                    config.LightEstimationMode = LightEstimationMode.Disabled;
                 }
 
                 if (config.AugmentedImageDatabase != null)

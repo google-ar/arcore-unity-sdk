@@ -28,5 +28,6 @@ namespace GoogleARCoreInternal
     {
         Disabled = 0,
         AmbientIntensity = 1,
+        EnvironmentalHDR = 2,
     }
 }

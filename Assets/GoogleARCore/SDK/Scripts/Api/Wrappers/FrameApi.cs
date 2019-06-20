@@ -38,6 +38,8 @@ namespace GoogleARCoreInternal
     {
         private NativeSession m_NativeSession;
 
+        private float[,] m_AmbientSH = new float[9, 3];
+
         public FrameApi(NativeSession nativeSession)
         {
             m_NativeSession = nativeSession;
@@ -116,11 +118,45 @@ namespace GoogleARCoreInternal
                 m_NativeSession.LightEstimateApi.GetState(lightEstimateHandle);
             Color colorCorrection =
                 m_NativeSession.LightEstimateApi.GetColorCorrection(lightEstimateHandle);
+            long timestamp = m_NativeSession.LightEstimateApi.GetTimestamp(
+                m_NativeSession.SessionHandle, lightEstimateHandle);
+
+            Quaternion mainLightRotation = Quaternion.identity;
+            Color mainLightColor = Color.black;
+
+            // TODO: remove if condition when b/132436697 is fixed.
+            if (state == LightEstimateState.Valid)
+            {
+                m_NativeSession.LightEstimateApi.GetMainDirectionalLight(
+                    m_NativeSession.SessionHandle, lightEstimateHandle,
+                    out mainLightRotation, out mainLightColor);
+                m_NativeSession.LightEstimateApi.GetAmbientSH(m_NativeSession.SessionHandle,
+                    lightEstimateHandle, m_AmbientSH);
+            }
 
             m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
-
             return new LightEstimate(state, colorCorrection.a,
-                new Color(colorCorrection.r, colorCorrection.g, colorCorrection.b, 1f));
+                new Color(colorCorrection.r, colorCorrection.g, colorCorrection.b, 1f),
+                mainLightRotation, mainLightColor, m_AmbientSH, timestamp);
+        }
+
+        public Cubemap GetReflectionCubemap()
+        {
+            IntPtr lightEstimateHandle = m_NativeSession.LightEstimateApi.Create();
+            ExternApi.ArFrame_getLightEstimate(
+                m_NativeSession.SessionHandle, m_NativeSession.FrameHandle, lightEstimateHandle);
+            LightEstimateState state =
+                m_NativeSession.LightEstimateApi.GetState(lightEstimateHandle);
+            if (state != LightEstimateState.Valid)
+            {
+                return null;
+            }
+
+            Cubemap cubemap = m_NativeSession.LightEstimateApi.GetReflectionCubemap(
+                m_NativeSession.SessionHandle, lightEstimateHandle);
+            m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
+
+            return cubemap;
         }
 
         public void TransformDisplayUvCoords(ref ApiDisplayUvCoords uv)

@@ -32,6 +32,8 @@ namespace GoogleARCore
         "https://developers.google.com/ar/reference/unity/class/GoogleARCore/ARCoreSessionConfig")]
     public class ARCoreSessionConfig : ScriptableObject
     {
+        [Header("Performance")]
+
         /// <summary>
         /// Toggles whether ARCore may introduce a delay into Unity's frame update to
         /// match the rate that the camera sensor is delivering frames (this is 30 frames-per-second
@@ -49,6 +51,8 @@ namespace GoogleARCore
             "Toggles whether the rendering frame rate matches the background camera frame rate")]
         public bool MatchCameraFramerate = true;
 
+        [Header("Plane Finding")]
+
         /// <summary>
         /// Chooses which plane finding mode will be used.
         /// </summary>
@@ -57,17 +61,25 @@ namespace GoogleARCore
         public DetectedPlaneFindingMode PlaneFindingMode =
             DetectedPlaneFindingMode.HorizontalAndVertical;
 
-        /// <summary>
-        /// Toggles whether light estimation is enabled.
-        /// </summary>
-        [Tooltip("Toggles whether light estimation is enabled.")]
-        public bool EnableLightEstimation = true;
+        [Header("Light Estimation")]
 
         /// <summary>
-        /// Toggles whether cloud anchor is enabled.
+        /// Choose which light estimation mode will be used.
         /// </summary>
-        [Tooltip("Toggles whether the cloud anchor feature is enabled.")]
+        [Tooltip("Chooses which light estimation mode will be used in ARCore session.")]
+        [FormerlySerializedAs("EnableLightEstimation")]
+        public LightEstimationMode LightEstimationMode =
+            LightEstimationMode.EnvironmentalHDRWithReflections;
+
+        [Header("Cloud Anchors")]
+
+        /// <summary>
+        /// Toggles whether the Cloud Anchors are enabled.
+        /// </summary>
+        [Tooltip("Toggles whether the Cloud Anchors are enabled.")]
         public bool EnableCloudAnchor = false;
+
+        [Header("Augmented Images")]
 
         /// <summary>
         /// The database to use for detecting AugmentedImage Trackables.
@@ -76,17 +88,18 @@ namespace GoogleARCore
         [Tooltip("The database to use for detecting AugmentedImage Trackables.")]
         public AugmentedImageDatabase AugmentedImageDatabase;
 
+        [Header("Camera")]
+
         /// <summary>
         /// Chooses the desired focus mode to be used by the ARCore camera.
         /// </summary>
         /// <remarks>
         /// Currently, the default focus mode is <see cref="CameraFocusMode.Fixed"/>, but this
-        /// default might change in the future. Note: on devices where ARCore does not support Auto
-        /// Focus due to the use of a fixed focus camera, focus mode will remain
-        /// AR_FOCUS_MODE_FIXED. See the
+        /// default might change in the future. Note, on devices where ARCore does not support auto
+        /// focus due to the use of a fixed focus camera, focus mode will remain
+        /// <see cref="CameraFocusMode.Fixed"/>. See the
         /// <a href="https://developers.google.com/ar/discover/supported-devices">
-        /// ARCore Supported Devices</a>
-        /// page for a  list of affected devices.
+        /// ARCore Supported Devices</a> page for a list of affected devices.
         /// </remarks>
         [Tooltip("Chooses the desired focus mode to be used by the ARCore camera.")]
         public CameraFocusMode CameraFocusMode = CameraFocusMode.Fixed;
@@ -100,7 +113,7 @@ namespace GoogleARCore
         ///  Gets or sets a value indicating whether PlaneFinding is enabled.
         /// </summary>
         [System.Obsolete(
-            "This field has be replaced by GoogleARCore.DetectedPlaneFindingMode. See " +
+            "This field has be replaced by ARCoreSessionConfig.DetectedPlaneFindingMode. See " +
             "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
         public bool EnablePlaneFinding
         {
@@ -113,6 +126,28 @@ namespace GoogleARCore
             {
                 PlaneFindingMode = value ? DetectedPlaneFindingMode.HorizontalAndVertical :
                     DetectedPlaneFindingMode.Disabled;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether light estimation is enabled.
+        /// </summary>
+        /// <value><c>true</c> if enable light estimation; otherwise, <c>false</c>.</value>
+        /// @deprecated Please use ARCoreSessionConfig.LightEstimationMode instead.
+        [System.Obsolete(
+            "This field has been replaced by ARCoreSessionConfig.LightEstimationMode. See " +
+            "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.10.0")]
+        public bool EnableLightEstimation
+        {
+            get
+            {
+                return LightEstimationMode != LightEstimationMode.Disabled;
+            }
+
+            set
+            {
+                LightEstimationMode = value ? LightEstimationMode.AmbientIntensity :
+                    LightEstimationMode.Disabled;
             }
         }
 
@@ -132,7 +167,7 @@ namespace GoogleARCore
 
             if (MatchCameraFramerate != otherConfig.MatchCameraFramerate ||
                 PlaneFindingMode != otherConfig.PlaneFindingMode ||
-                EnableLightEstimation != otherConfig.EnableLightEstimation ||
+                LightEstimationMode != otherConfig.LightEstimationMode ||
                 EnableCloudAnchor != otherConfig.EnableCloudAnchor ||
                 AugmentedImageDatabase != otherConfig.AugmentedImageDatabase ||
                 CameraFocusMode != otherConfig.CameraFocusMode ||
@@ -161,11 +196,26 @@ namespace GoogleARCore
         {
             MatchCameraFramerate = other.MatchCameraFramerate;
             PlaneFindingMode = other.PlaneFindingMode;
-            EnableLightEstimation = other.EnableLightEstimation;
+            LightEstimationMode = other.LightEstimationMode;
             EnableCloudAnchor = other.EnableCloudAnchor;
             AugmentedImageDatabase = other.AugmentedImageDatabase;
             CameraFocusMode = other.CameraFocusMode;
             AugmentedFaceMode = other.AugmentedFaceMode;
+        }
+
+        /// <summary>
+        /// Unity OnValidate.
+        /// </summary>
+        public void OnValidate()
+        {
+            if ((LightEstimationMode == LightEstimationMode.EnvironmentalHDRWithoutReflections ||
+                LightEstimationMode == LightEstimationMode.EnvironmentalHDRWithReflections) &&
+                AugmentedFaceMode != AugmentedFaceMode.Disabled)
+            {
+                Debug.LogErrorFormat("LightEstimationMode.{0} is incompatible with " +
+                    "AugmentedFaceMode.{1}, please use other LightEstimationMode or disable " +
+                    "Augmented Face.", LightEstimationMode, AugmentedFaceMode);
+            }
         }
     }
 }
