@@ -20,6 +20,7 @@
 
 namespace GoogleARCore
 {
+    using GoogleARCoreInternal;
     using UnityEngine;
     using UnityEngine.Serialization;
 
@@ -68,6 +69,13 @@ namespace GoogleARCore
         /// </summary>
         [Tooltip("Chooses which light estimation mode will be used in ARCore session.")]
         [FormerlySerializedAs("EnableLightEstimation")]
+        [Help("When \"Environmental HDR Without Reflections\" light is selected, ARCore:\n" +
+              "1. Updates rotation and color of the directional light on the " +
+              "EnvironmentalLight component.\n" +
+              "2. Updates Skybox ambient lighting Spherical Harmonics.\n\n" +
+              "When \"Environmental HDR With Reflections\" light is selected, ARCore also:\n" +
+              "3. Overrides the environmental reflections in the scene with a " +
+              "realtime reflections cubemap.")]
         public LightEstimationMode LightEstimationMode =
             LightEstimationMode.EnvironmentalHDRWithReflections;
 
@@ -94,10 +102,10 @@ namespace GoogleARCore
         /// Chooses the desired focus mode to be used by the ARCore camera.
         /// </summary>
         /// <remarks>
-        /// Currently, the default focus mode is <see cref="CameraFocusMode.Fixed"/>, but this
+        /// Currently, the default focus mode is <see cref="CameraFocusMode"/>.<c>Fixed</c>, but this
         /// default might change in the future. Note, on devices where ARCore does not support auto
         /// focus due to the use of a fixed focus camera, focus mode will remain
-        /// <see cref="CameraFocusMode.Fixed"/>. See the
+        /// <see cref="CameraFocusMode"/>.<c>Fixed</c>. See the
         /// <a href="https://developers.google.com/ar/discover/supported-devices">
         /// ARCore Supported Devices</a> page for a list of affected devices.
         /// </remarks>

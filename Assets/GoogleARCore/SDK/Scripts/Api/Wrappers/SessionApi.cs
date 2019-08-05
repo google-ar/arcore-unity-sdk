@@ -62,12 +62,16 @@ namespace GoogleARCoreInternal
             return ret;
         }
 
-        public void GetSupportedCameraConfigurations(
+        public void GetSupportedCameraConfigurationsWithFilter(
+            ARCoreCameraConfigFilter cameraConfigFilter,
             IntPtr cameraConfigListHandle, List<IntPtr> supportedCameraConfigHandles,
             List<CameraConfig> supportedCameraConfigs, DeviceCameraDirection cameraFacingDirection)
         {
-            ExternApi.ArSession_getSupportedCameraConfigs(
-                m_NativeSession.SessionHandle, cameraConfigListHandle);
+            IntPtr cameraConfigFilterHandle =
+                m_NativeSession.CameraConfigFilterApi.Create(cameraConfigFilter);
+            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(m_NativeSession.SessionHandle,
+                cameraConfigFilterHandle, cameraConfigListHandle);
+            m_NativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
 
             supportedCameraConfigHandles.Clear();
             supportedCameraConfigs.Clear();
@@ -204,13 +208,19 @@ namespace GoogleARCoreInternal
             int imageHeight = 0;
             int textureWidth = 0;
             int textureHeight = 0;
+            int minFps = 0;
+            int maxFps = 0;
+            CameraConfigDepthSensorUsages depthSensorUsage =
+                m_NativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
             m_NativeSession.CameraConfigApi.GetImageDimensions(
                 cameraConfigHandle, out imageWidth, out imageHeight);
             m_NativeSession.CameraConfigApi.GetTextureDimensions(
                 cameraConfigHandle, out textureWidth, out textureHeight);
+            m_NativeSession.CameraConfigApi.GetFpsRange(
+                cameraConfigHandle, out minFps, out maxFps);
 
             return new CameraConfig(new Vector2(imageWidth, imageHeight),
-                new Vector2(textureWidth, textureHeight));
+                new Vector2(textureWidth, textureHeight), minFps, maxFps, depthSensorUsage);
         }
 
         private struct ExternApi
@@ -220,8 +230,9 @@ namespace GoogleARCoreInternal
             public static extern int ArSession_configure(IntPtr sessionHandle, IntPtr config);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArSession_getSupportedCameraConfigs(
-                IntPtr sessionHandle, IntPtr cameraConfigListHandle);
+            public static extern void ArSession_getSupportedCameraConfigsWithFilter(
+                IntPtr sessionHandle, IntPtr cameraConfigFilterHandle,
+                IntPtr cameraConfigListHandle);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArSession_setCameraConfig(

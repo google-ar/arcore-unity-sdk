@@ -35,13 +35,20 @@ namespace GoogleARCoreInternal
 
     internal class LightEstimateApi
     {
+        private readonly float[] k_SHConstants =
+        {
+            0.886227f, 1.023328f, 1.023328f,
+            1.023328f, 0.858086f, 0.858086f,
+            0.247708f, 0.858086f, 0.429043f
+        };
+
         private NativeSession m_NativeSession;
 
         private float[] m_TempVector = new float[3];
         private float[] m_TempColor = new float[3];
         private Cubemap m_HDRCubemap = null;
         private long m_CubemapTimestamp = -1;
-        private int m_CubemaptextureId = 0;
+        private int m_CubemapTextureId = 0;
         private bool m_PluginInitialized = false;
 
         public LightEstimateApi(NativeSession nativeSession)
@@ -97,6 +104,10 @@ namespace GoogleARCoreInternal
             lightColor.g = m_TempColor[1];
             lightColor.b = m_TempColor[2];
 
+            // Apply the energy conservation term to the light color directly since Unity doesn't
+            // have that term in their PBR shader.
+            lightColor = lightColor / Mathf.PI;
+
             ExternApi.ArLightEstimate_getEnvironmentalHdrMainLightDirection(sessionHandle,
                 lightEstimateHandle, m_TempVector);
             Vector3 lightDirection = Vector3.one;
@@ -116,6 +127,15 @@ namespace GoogleARCoreInternal
             // We need to invert the coefficients that contains the z axis to map it to
             // Unity world coordinate.
             // See: https://en.wikipedia.org/wiki/Table_of_spherical_harmonics
+            // We also premultiply the constant that Unity applies to the SH to avoid
+            // calculation in the shader.
+            // Unity uses the following equation to calculate SH color in their shaders where the
+            // constants that are used to calculate the SH color are baked in the SH coefficients
+            // before passing to the shader.
+            //   Say normal direction is (x, y, z)
+            //   The color from SH given the normal direction is:
+            //   color = SH[0] - SH[6] + SH[3]x + SH[1]y + SH[2]z                      (L0 + L1)
+            //           + SH[4]xy + SH[5]yz + 3*SH[6]zz + SH[7]xz + SH[8](xx - yy)    (L2 + L3)
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -124,6 +144,11 @@ namespace GoogleARCoreInternal
                     {
                         outSHCoefficients[j, i] = outSHCoefficients[j, i] * -1.0f;
                     }
+
+                    outSHCoefficients[j, i] = outSHCoefficients[j, i] * k_SHConstants[j];
+
+                    // Apply the energy conservation to SH coefficients as well.
+                    outSHCoefficients[j, i] = outSHCoefficients[j, i] / Mathf.PI;
                 }
             }
         }
@@ -146,7 +171,7 @@ namespace GoogleARCoreInternal
             ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref textureId, ref size);
             if (textureId != 0)
             {
-                if (m_HDRCubemap == null || textureId != m_CubemaptextureId)
+                if (m_HDRCubemap == null || textureId != m_CubemapTextureId)
                 {
                     m_HDRCubemap = Cubemap.CreateExternalTexture(size, format, true,
                        new IntPtr(textureId));

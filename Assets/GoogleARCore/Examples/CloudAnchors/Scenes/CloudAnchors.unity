@@ -2105,6 +2105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DeviceCameraDirection: 0
   SessionConfig: {fileID: 11400000, guid: 2df5ff2f38acc4159832322e57364bfa, type: 2}
+  CameraConfigFilter: {fileID: 11400000, guid: 200b4cba649e3413088e285251ccf44e, type: 2}
 --- !u!4 &1613649651 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4497055787654456, guid: c10877f7cd5764de18d46d7b777d1faa,

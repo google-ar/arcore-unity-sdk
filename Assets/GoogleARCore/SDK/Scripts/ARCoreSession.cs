@@ -46,6 +46,13 @@ namespace GoogleARCore
         [Tooltip("A scriptable object specifying the ARCore session configuration.")]
         public ARCoreSessionConfig SessionConfig;
 
+        /// <summary>
+        /// The camera configuration filter object that defines the set of
+        /// properties desired or required by the app to run.
+        /// </summary>
+        [Tooltip("Configuration options to select the camera mode and features.")]
+        public ARCoreCameraConfigFilter CameraConfigFilter;
+
         private OnChooseCameraConfigurationDelegate m_OnChooseCameraConfiguration;
 
         /// <summary>
@@ -152,14 +159,30 @@ namespace GoogleARCore
                 Debug.LogErrorFormat("AugmentedFaceMode.{0} requires front-facing (selfie) camera.",
                     SessionConfig.AugmentedFaceMode);
             }
+
+            if (SessionConfig == null)
+            {
+                Debug.LogError("SessionConfig is required by ARCoreSession.");
+            }
+
+            if (CameraConfigFilter == null)
+            {
+                Debug.LogError("CameraConfigFilter is required by ARCoreSession. " +
+                    "To get all available configurations, set CameraConfigFilter to " +
+                    "a filter with all options selected.");
+            }
         }
 
         /// <summary>
         /// Registers a callback that allows a camera configuration to be selected from a list of
         /// valid configurations.
-        /// The callback will be invoked each time the ARCore session is resumed which can happen
-        /// when the ARCoreSession component becomes enabled or the Android application moves from
-        /// 'paused' to 'resumed' state.
+        /// The callback should be registered before the ARCore session is enabled
+        /// to ensure it is triggered on the first frame update.
+        /// The callback will then be invoked each time the ARCore session is resumed
+        /// which can happen when the ARCoreSession component becomes enabled or the Android
+        /// application moves from 'paused' to 'resumed' state.
+        /// Note: Starting in ARCore 1.12, changing the active camera config will make existing
+        /// anchors and trackables fail to regain tracking.
         /// </summary>
         /// <param name="onChooseCameraConfiguration">The callback to register for selecting a
         /// camera configuration.</param>

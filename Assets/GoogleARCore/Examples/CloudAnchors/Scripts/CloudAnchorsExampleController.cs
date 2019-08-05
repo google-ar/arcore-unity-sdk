@@ -124,6 +124,16 @@ namespace GoogleARCore.Examples.CloudAnchors
         }
 
         /// <summary>
+        /// The Unity Awake() method.
+        /// </summary>
+        public void Awake()
+        {
+            // Enable ARCore to target 60fps camera capture frame rate on supported devices.
+            // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
+            Application.targetFrameRate = 60;
+        }
+
+        /// <summary>
         /// The Unity Start() method.
         /// </summary>
         public void Start()
@@ -437,8 +447,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             // Only allow the screen to sleep when not tracking.
             if (Session.Status != SessionStatus.Tracking)
             {
-                const int lostTrackingSleepTimeout = 15;
-                sleepTimeout = lostTrackingSleepTimeout;
+                sleepTimeout = SleepTimeout.SystemSetting;
             }
 #endif
 

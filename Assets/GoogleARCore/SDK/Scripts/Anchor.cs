@@ -27,7 +27,7 @@ namespace GoogleARCore
     using UnityEngine;
 
     /// <summary>
-    /// Attaches a GameObject to an ARCore {@link Trackable}.  The transform of the GameObject will
+    /// Attaches a GameObject to an ARCore <see cref="Trackable"/>.  The transform of the GameObject will
     /// be updated to maintain the semantics of the attachment relationship, which varies between
     /// sub-types of Trackable.
     /// </summary>

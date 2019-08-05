@@ -30,6 +30,14 @@ namespace GoogleARCoreInternal
     {
         private List<ExampleScene> m_ExampleScenes = new List<ExampleScene>();
 
+        internal List<ExampleScene> m_AllExampleScenes
+        {
+            get
+            {
+                return m_ExampleScenes;
+            }
+        }
+
         public override void OnPreprocessBuild(BuildTarget target, string path)
         {
         }
@@ -122,7 +130,7 @@ namespace GoogleARCoreInternal
             }
         }
 
-        protected struct ExampleScene
+        internal struct ExampleScene
         {
             public string ProductName;
             public string PackageName;

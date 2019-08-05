@@ -140,9 +140,10 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
         /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
-        /// <param name="filter">A filter bitmask where each set bit in {@link TrackableHitFlags}
+        /// <param name="filter">A filter bitmask where each set bit in
+        /// <see cref="TrackableHitFlags"/>
         /// represents a category of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResult">A {@link TrackableHit} that will be set if the raycast is
+        /// <param name="hitResult">A <see cref="TrackableHit"/> that will be set if the raycast is
         /// successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         public bool Raycast(float x, float y, TrackableHitFlags filter, out TrackableHit hitResult)

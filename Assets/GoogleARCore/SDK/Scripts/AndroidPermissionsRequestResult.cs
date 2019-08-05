@@ -46,7 +46,7 @@ namespace GoogleARCore
         public string[] PermissionNames { get; private set; }
 
         /// <summary>
-        /// Gets a collection of results corresponding to {@link PermissionNames}.
+        /// Gets a collection of results corresponding to <see cref="PermissionNames"/>.
         /// </summary>
         public bool[] GrantResults { get; private set; }
 

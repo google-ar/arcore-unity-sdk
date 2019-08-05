@@ -123,16 +123,11 @@ namespace GoogleARCoreInternal
 
             Quaternion mainLightRotation = Quaternion.identity;
             Color mainLightColor = Color.black;
-
-            // TODO: remove if condition when b/132436697 is fixed.
-            if (state == LightEstimateState.Valid)
-            {
-                m_NativeSession.LightEstimateApi.GetMainDirectionalLight(
-                    m_NativeSession.SessionHandle, lightEstimateHandle,
-                    out mainLightRotation, out mainLightColor);
-                m_NativeSession.LightEstimateApi.GetAmbientSH(m_NativeSession.SessionHandle,
-                    lightEstimateHandle, m_AmbientSH);
-            }
+            m_NativeSession.LightEstimateApi.GetMainDirectionalLight(
+                m_NativeSession.SessionHandle, lightEstimateHandle,
+                out mainLightRotation, out mainLightColor);
+            m_NativeSession.LightEstimateApi.GetAmbientSH(m_NativeSession.SessionHandle,
+                lightEstimateHandle, m_AmbientSH);
 
             m_NativeSession.LightEstimateApi.Destroy(lightEstimateHandle);
             return new LightEstimate(state, colorCorrection.a,

@@ -34,7 +34,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     /// a large occupation of the screen. If the target is actively moving,
     /// we recommend to check <see cref="AugmentedImage.TrackingMethod"/> and
     /// render only when the tracking method equals to
-    /// <see cref="AugmentedImageTrackingMethod.FullTracking"/>.
+    /// <see cref="AugmentedImageTrackingMethod"/>.<c>FullTracking</c>.
     /// See details in <a href="https://developers.google.com/ar/develop/c/augmented-images/">
     /// Recognize and Augment Images</a>
     /// </remarks>
@@ -56,6 +56,16 @@ namespace GoogleARCore.Examples.AugmentedImage
         private List<AugmentedImage> m_TempAugmentedImages = new List<AugmentedImage>();
 
         /// <summary>
+        /// The Unity Awake() method.
+        /// </summary>
+        public void Awake()
+        {
+            // Enable ARCore to target 60fps camera capture frame rate on supported devices.
+            // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
+            Application.targetFrameRate = 60;
+        }
+
+        /// <summary>
         /// The Unity Update method.
         /// </summary>
         public void Update()
@@ -64,6 +74,16 @@ namespace GoogleARCore.Examples.AugmentedImage
             if (Input.GetKey(KeyCode.Escape))
             {
                 Application.Quit();
+            }
+
+            // Only allow the screen to sleep when not tracking.
+            if (Session.Status != SessionStatus.Tracking)
+            {
+                Screen.sleepTimeout = SleepTimeout.SystemSetting;
+            }
+            else
+            {
+                Screen.sleepTimeout = SleepTimeout.NeverSleep;
             }
 
             // Get updated augmented images for this frame.

@@ -35,8 +35,8 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The directional light used by
-        /// <see cref="LightEstimationMode.EnvironmentalHDRWithReflections"/> and
-        /// <see cref="LightEstimationMode.EnvironmentalHDRWithoutReflections"/>.
+        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithReflections</c> and
+        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithoutReflections</c>.
         /// The rotation and color will be updated automatically by this component.
         /// </summary>
         public Light DirectionalLight;
@@ -44,8 +44,9 @@ namespace GoogleARCore
         private long m_LightEstimateTimestamp = -1;
 
         /// <summary>
-        /// Unity update method that sets global light estimation shader constant to match
-        /// ARCore's calculated values.
+        /// Unity update method that sets global light estimation shader constant and
+        /// <a herf="https://docs.unity3d.com/ScriptReference/RenderSettings.html">
+        /// RenderSettings</a> to match ARCore's calculated values.
         /// </summary>
         [SuppressMemoryAllocationError(
             IsWarning = true, Reason = "Requires further investigation.")]

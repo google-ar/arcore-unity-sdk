@@ -42,8 +42,9 @@ namespace GoogleARCoreInternal
 #if UNITY_2018_1_OR_NEWER
             if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset != null)
             {
-                Debug.LogWarning("Custom Rendering Pipeline Asset is not supported by ARCore. " +
-                    "To ensure ACore work correctly, set Rendering Pipeline Asset to None in " +
+                Debug.LogWarning(
+                    "Custom Rendering Pipeline Asset is not supported by ARCore SDK for Unity. " +
+                    "To ensure ARCore works correctly, set Rendering Pipeline Asset to None in " +
                     "'Project Settings > Graphics > Scriptable Render Pipeline Settings'.");
             }
 #endif // UNITY_2018_1_OR_NEWER
@@ -63,7 +64,8 @@ namespace GoogleARCoreInternal
 #if UNITY_2018_2_OR_NEWER && !UNITY_2018_2_0
             if (!PlayerSettings.Android.ARCoreEnabled)
             {
-                Debug.LogWarning("ARCore support is disabled. To use ARCore on Android, 'XR Settings > ARCore Supported' must be enabled.");
+                Debug.LogWarning("ARCore SDK support is disabled. To use ARCore SDK for Unity on " +
+                    "Android, 'XR Settings > ARCore Supported' must be enabled.");
             }
 #endif  //UNITY_2018_2_OR_NEWER && !UNITY_2018_2_0
         }

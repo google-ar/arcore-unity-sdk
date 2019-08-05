@@ -28,14 +28,15 @@ namespace GoogleARCore
         /// <summary>
         /// The Augmented Image is not currently being tracked.
         /// This state indicates that the image's <see cref="TrackingState"/> is
-        /// <see cref="TrackingState.Paused"/> or <see cref="TrackingState.Stopped"/>.
+        /// <see cref="TrackingState"/>.<c>Paused</c> or
+        /// <see cref="TrackingState"/>.<c>Stopped</c>.
         /// </summary>
         NotTracking = 0,
 
         /// <summary>
         /// The Augmented Image is currently being tracked using the camera image.
         /// This state can only occur when the image's <see cref="TrackingState"/> is
-        /// <see cref="TrackingState.Tracking"/>.
+        /// <see cref="TrackingState"/>.<c>Tracking</c>.
         /// </summary>
         FullTracking = 1,
 
@@ -43,7 +44,7 @@ namespace GoogleARCore
         /// The Augmented Image is currently being tracked based on its last known pose,
         /// because it can no longer be tracked using the camera image.
         /// This state can only occur when the image's <see cref="TrackingState"/> is
-        /// <see cref="TrackingState.Tracking"/>.
+        /// <see cref="TrackingState"/>.<c>Tracking</c>.
         /// </summary>
         LastKnownPose = 2,
     }

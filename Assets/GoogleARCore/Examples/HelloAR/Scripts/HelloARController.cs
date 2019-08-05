@@ -74,6 +74,16 @@ namespace GoogleARCore.Examples.HelloAR
         private bool m_IsQuitting = false;
 
         /// <summary>
+        /// The Unity Awake() method.
+        /// </summary>
+        public void Awake()
+        {
+            // Enable ARCore to target 60fps camera capture frame rate on supported devices.
+            // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
+            Application.targetFrameRate = 60;
+        }
+
+        /// <summary>
         /// The Unity Update() method.
         /// </summary>
         public void Update()
@@ -164,8 +174,7 @@ namespace GoogleARCore.Examples.HelloAR
             // Only allow the screen to sleep when not tracking.
             if (Session.Status != SessionStatus.Tracking)
             {
-                const int lostTrackingSleepTimeout = 15;
-                Screen.sleepTimeout = lostTrackingSleepTimeout;
+                Screen.sleepTimeout = SleepTimeout.SystemSetting;
             }
             else
             {

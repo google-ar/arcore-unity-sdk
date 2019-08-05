@@ -97,7 +97,7 @@ namespace GoogleARCoreInternal
             {
                 if (verbose == true)
                 {
-                    Debug.Log("GoogleARCore analytics is disabled, not sending.");
+                    Debug.Log("Google ARCore SDK for Unity analytics is disabled, not sending.");
                 }
 
                 return;
@@ -108,7 +108,7 @@ namespace GoogleARCoreInternal
             {
                 if (verbose == true)
                 {
-                    Debug.Log("GoogleARCore analytics is already sending data.");
+                    Debug.Log("Google ARCore SDK for Unity analytics is already sending data.");
                 }
 
                 return;
@@ -126,7 +126,7 @@ namespace GoogleARCoreInternal
             m_Verbose = verbose;
             if (verbose == true)
             {
-                Debug.Log("Sending GoogleARCore Analytics.");
+                Debug.Log("Sending Google ARCore SDK for Unity analytics.");
             }
 
             // The editor callback will follow through with this request.
@@ -156,11 +156,13 @@ namespace GoogleARCoreInternal
                     {
                         if (m_WebRequest.isNetworkError == true)
                         {
-                            Debug.Log("Error sending analytics: " + m_WebRequest.error);
+                            Debug.Log("Error sending Google ARCore SDK for Unity analytics: " +
+                                      m_WebRequest.error);
                         }
                         else
                         {
-                            Debug.Log("Analytics sent: " + m_WebRequest.downloadHandler.text);
+                            Debug.Log("Google ARCore SDK for Unity analytics sent: " +
+                                      m_WebRequest.downloadHandler.text);
                         }
                     }
 

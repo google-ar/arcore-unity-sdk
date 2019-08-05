@@ -35,14 +35,8 @@ namespace GoogleARCoreInternal
             if (target == BuildTarget.iOS)
             {
                 bool arcoreiOSEnabled = ARCoreProjectSettings.Instance.IsIOSSupportEnabled;
-                if (arcoreiOSEnabled)
-                {
-                    Debug.Log("Building application with ARCore iOS support ENABLED.");
-                }
-                else
-                {
-                    Debug.Log("Building application with ARCore iOS support DISABLED.");
-                }
+                Debug.LogFormat("Building application with ARCore SDK for Unity iOS support {0}",
+                    arcoreiOSEnabled ? "ENABLED" : "DISABLED");
 
                 ARCoreIOSSupportHelper.SetARCoreIOSSupportEnabled(arcoreiOSEnabled);
             }

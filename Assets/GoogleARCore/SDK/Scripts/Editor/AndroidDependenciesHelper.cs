@@ -78,7 +78,8 @@ namespace GoogleARCoreInternal
             if (dependenciesTemplatePath == null)
             {
                 Debug.LogError(
-                    "Failed to enable ARCore Android dependencies xml. Template file is missing.");
+                    "Failed to enable ARCore SDK for Unity Android dependencies xml. " +
+                    "Template file is missing.");
                 return;
             }
 
@@ -145,12 +146,13 @@ namespace GoogleARCoreInternal
                             BindingFlags.Public | BindingFlags.Static);
                         if (menuResolveMethod == null)
                         {
-                            Debug.LogErrorFormat("ARCore: Error finding public static method " +
-                                "{0} on {1}.{2}.", methodName, namespaceName, className);
+                            Debug.LogErrorFormat("ARCore SDK for Unity: Error finding public " +
+                                                 "static method {0} on {1}.{2}.",
+                                                 methodName, namespaceName, className);
                             return;
                         }
 
-                        Debug.LogFormat("ARCore: Invoking {0}.{1}.{2}()",
+                        Debug.LogFormat("ARCore SDK for Unity: Invoking {0}.{1}.{2}()",
                             namespaceName, className, methodName);
                         menuResolveMethod.Invoke(null, null);
                         return;
@@ -158,7 +160,8 @@ namespace GoogleARCoreInternal
                 }
             }
 
-            Debug.LogFormat("ARCore: Could not find class {0}.{1} for dependency resolution.",
+            Debug.LogFormat("ARCore SDK for Unity: " +
+                            "Could not find class {0}.{1} for dependency resolution.",
                 namespaceName, className);
         }
     }

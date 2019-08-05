@@ -53,6 +53,8 @@ namespace GoogleARCoreInternal
 
         private bool? m_DesiredSessionState = null;
 
+        private bool m_DisabledSessionOnErrorState = false;
+
         // Only care about disable to enable transition here (ignore enable to disable transition)
         // because it will triggier _OnBeforeResumeSession which links to a public API
         // RegisterChooseCameraConfigurationCallback.
@@ -162,8 +164,7 @@ namespace GoogleARCoreInternal
 
         private void _OnBeforeResumeSession(IntPtr sessionHandle)
         {
-            if (SessionComponent == null || sessionHandle == IntPtr.Zero ||
-                SessionComponent.GetChooseCameraConfigurationCallback() == null)
+            if (SessionComponent == null || sessionHandle == IntPtr.Zero)
             {
                 return;
             }
@@ -171,7 +172,8 @@ namespace GoogleARCoreInternal
             NativeSession tempNativeSession = _GetNativeSession(sessionHandle);
 
             var listHandle = tempNativeSession.CameraConfigListApi.Create();
-            tempNativeSession.SessionApi.GetSupportedCameraConfigurations(
+            tempNativeSession.SessionApi.GetSupportedCameraConfigurationsWithFilter(
+                SessionComponent.CameraConfigFilter,
                 listHandle, m_TempCameraConfigHandles, m_TempCameraConfigs,
                 SessionComponent.DeviceCameraDirection);
 
@@ -182,8 +184,13 @@ namespace GoogleARCoreInternal
             }
             else
             {
-                var configIndex =
-                    SessionComponent.GetChooseCameraConfigurationCallback()(m_TempCameraConfigs);
+                var configIndex = 0;
+                if (SessionComponent.GetChooseCameraConfigurationCallback() != null)
+                {
+                    configIndex = SessionComponent.GetChooseCameraConfigurationCallback()(
+                        m_TempCameraConfigs);
+                }
+
                 if (configIndex >= 0 && configIndex < m_TempCameraConfigHandles.Count)
                 {
                     var status = tempNativeSession.SessionApi.SetCameraConfig(
@@ -214,16 +221,6 @@ namespace GoogleARCoreInternal
             if (m_HaveDisableToEnableTransition)
             {
                 _SetSessionEnabled(false);
-
-                // Refresh SessionStatus after first _SetSessionEnabled() to catch any changes to
-                // the SessionStatus that may affect the subsequent _SetSessionEnabled().
-                // This fixes an issue where the session does not get re-enabled properly when an
-                // unsupported configuration is fixed, and the ARCoreSession component's enabled
-                // state is toggled in the same frame;
-                ApiPrestoStatus refreshPrestoStatus = ApiPrestoStatus.Uninitialized;
-                ExternApi.ArPresto_getStatus(ref refreshPrestoStatus);
-                SessionStatus = refreshPrestoStatus.ToSessionStatus();
-
                 _SetSessionEnabled(true);
                 m_HaveDisableToEnableTransition = false;
 
@@ -293,6 +290,16 @@ namespace GoogleARCoreInternal
             {
                 // Disable internal session bits so we properly pause the session due to error.
                 _FireOnSessionSetEnabled(false);
+                m_DisabledSessionOnErrorState = true;
+            }
+            else if (SessionStatus.IsValid() && m_DisabledSessionOnErrorState)
+            {
+                if (SessionComponent.enabled)
+                {
+                    _FireOnSessionSetEnabled(true);
+                }
+
+                m_DisabledSessionOnErrorState = false;
             }
 
             // Get the current session from presto and note if it has changed.
@@ -484,14 +491,6 @@ namespace GoogleARCoreInternal
 
         private void _UpdateDisplayGeometry()
         {
-            IntPtr sessionHandle = IntPtr.Zero;
-            ExternApi.ArPresto_getSession(ref sessionHandle);
-
-            if (sessionHandle == IntPtr.Zero)
-            {
-                return;
-            }
-
             if (!m_CachedScreenOrientation.HasValue ||
                 Screen.orientation != m_CachedScreenOrientation)
             {
@@ -499,8 +498,8 @@ namespace GoogleARCoreInternal
                 m_CachedDisplayRotation = AndroidNativeHelper.GetDisplayRotation();
             }
 
-            ExternApi.ArSession_setDisplayGeometry(
-                sessionHandle, (int)m_CachedDisplayRotation, Screen.width, Screen.height);
+            ExternApi.ArPresto_setDisplayGeometry(
+                m_CachedDisplayRotation, Screen.width, Screen.height);
         }
 
         private NativeSession _GetNativeSession(IntPtr sessionHandle)
@@ -526,12 +525,12 @@ namespace GoogleARCoreInternal
         private struct ExternApi
         {
 #pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArSession_setDisplayGeometry(
-                IntPtr sessionHandle, int rotation, int width, int height);
-
             [AndroidImport(ApiConstants.ARCoreShimApi)]
             public static extern int ArCoreUnity_getBackgroundTextureId();
+
+            [AndroidImport(ApiConstants.ARPrestoApi)]
+            public static extern void ArPresto_setDisplayGeometry(
+                AndroidNativeHelper.AndroidSurfaceRotation rotation, int width, int height);
 
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_getSession(ref IntPtr sessionHandle);

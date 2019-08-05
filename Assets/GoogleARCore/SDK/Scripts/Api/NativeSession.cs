@@ -50,6 +50,7 @@ namespace GoogleARCoreInternal
             AugmentedImageDatabaseApi = new AugmentedImageDatabaseApi(this);
             CameraApi = new CameraApi(this);
             CameraConfigApi = new CameraConfigApi(this);
+            CameraConfigFilterApi = new CameraConfigFilterApi(this);
             CameraConfigListApi = new CameraConfigListApi(this);
             CameraMetadataApi = new CameraMetadataApi(this);
             FrameApi = new FrameApi(this);
@@ -107,6 +108,8 @@ namespace GoogleARCoreInternal
         public CameraApi CameraApi { get; private set; }
 
         public CameraConfigApi CameraConfigApi { get; private set; }
+
+        public CameraConfigFilterApi CameraConfigFilterApi { get; private set; }
 
         public CameraConfigListApi CameraConfigListApi { get; private set; }
 

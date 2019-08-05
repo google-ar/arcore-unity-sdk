@@ -48,7 +48,7 @@ PlayerSettings:
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
   m_MTRendering: 1
-  m_StackTraceTypes: 348449164496229658665919184493083749515201000000
+  m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   tizenShowActivityIndicatorOnLoading: -1
@@ -150,9 +150,10 @@ PlayerSettings:
     oculus:
       sharedDepthBuffer: 0
       dashSupport: 1
+      v2Signing: 0
   protectGraphicsMemory: 0
   useHDRDisplay: 0
-  m_ColorGamuts: 
+  m_ColorGamuts: 00000000
   targetPixelDensity: 30
   resolutionScalingMode: 0
   androidSupportedAspectRatio: 1
@@ -181,7 +182,7 @@ PlayerSettings:
   StripUnusedMeshComponents: 0
   VertexChannelCompressionMask:
     serializedVersion: 2
-    m_Bits: 4294901998
+    m_Bits: 238
   iPhoneSdkVersion: 988
   iOSTargetOSVersionString: 11.0
   tvOSSdkVersion: 0
@@ -456,7 +457,7 @@ PlayerSettings:
   switchSocketConcurrencyLimit: 14
   switchScreenResolutionBehavior: 2
   switchUseCPUProfiler: 0
-  switchApplicationID: 1407426691596289
+  switchApplicationID: 0x0005000C10000001
   switchNSODependencies: 
   switchTitleNames_0: 
   switchTitleNames_1: 
@@ -522,7 +523,7 @@ PlayerSettings:
   switchAccessibleURLs: 
   switchLegalInformation: 
   switchMainThreadStackSize: 1048576
-  switchPresenceGroupId: 1407426691596289
+  switchPresenceGroupId: 0x0005000C10000001
   switchLogoHandling: 0
   switchReleaseVersion: 0
   switchDisplayVersion: 1.0.0
@@ -549,7 +550,7 @@ PlayerSettings:
   switchRatingsInt_9: 0
   switchRatingsInt_10: 0
   switchRatingsInt_11: 0
-  switchLocalCommunicationIds_0: 1407426691596289
+  switchLocalCommunicationIds_0: 0x0005000C10000001
   switchLocalCommunicationIds_1: 
   switchLocalCommunicationIds_2: 
   switchLocalCommunicationIds_3: 
@@ -581,8 +582,8 @@ PlayerSettings:
   ps4ParentalLevel: 1
   ps4ContentID: ED1633-NPXX51362_00-0000000000000000
   ps4Category: 0
-  ps4MasterVersion: 1.0
-  ps4AppVersion: 1.0
+  ps4MasterVersion: 01.00
+  ps4AppVersion: 01.00
   ps4AppType: 0
   ps4ParamSfxPath: 
   ps4VideoOutPixelFormat: 0
@@ -659,7 +660,7 @@ PlayerSettings:
   psp2LiveAreaTrialPath: 
   psp2PatchChangeInfoPath: 
   psp2PatchOriginalPackage: 
-  psp2PackagePassword: 5PN2qmWqBlQ9wQj99nsQzldVI5ZuGXbE
+  psp2PackagePassword: WRK5RhRXdCdG5nG5azdNMK66MuCV6GXi
   psp2KeystoneFile: 
   psp2MemoryExpansionMode: 0
   psp2DRMType: 0
@@ -726,7 +727,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
-  metroCertificateNotAfter: d0d0d0d0d0d0d0d0
+  metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: TangoUnitySDK
   wsaImages: {}
   metroTileShortName: 
