@@ -121,8 +121,19 @@ namespace GoogleARCoreInternal
         public void GetAmbientSH(IntPtr sessionHandle, IntPtr lightEstimateHandle,
             float[,] outSHCoefficients)
         {
+#if ENABLE_IL2CPP
+            float[] outSHCoefficientsSingle = new float[outSHCoefficients.Length];
+            Buffer.BlockCopy(outSHCoefficients, 0, outSHCoefficientsSingle, 0, outSHCoefficients.Length);
+​
             ExternApi.ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(sessionHandle,
-                lightEstimateHandle, outSHCoefficients);
+               lightEstimateHandle, outSHCoefficientsSingle);
+​
+            Buffer.BlockCopy(outSHCoefficientsSingle, 0, outSHCoefficients, 0, outSHCoefficientsSingle.Length);
+​
+#else
+            ExternApi.ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(sessionHandle,
+               lightEstimateHandle, outSHCoefficients);
+#endif
 
             // We need to invert the coefficients that contains the z axis to map it to
             // Unity world coordinate.
@@ -237,7 +248,11 @@ namespace GoogleARCoreInternal
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(
-                IntPtr session, IntPtr light_estimate, float[,] out_coefficients_27);
+#if ENABLE_IL2CPP
+               IntPtr session, IntPtr light_estimate, float[] out_coefficients_27);
+#else
+               IntPtr session, IntPtr light_estimate, float[,] out_coefficients_27);
+#endif
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_acquireEnvironmentalHdrCubemap(IntPtr session,
