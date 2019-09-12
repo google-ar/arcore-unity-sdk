@@ -85,7 +85,7 @@ namespace GoogleARCoreInternal.CrossPlatform
             return task;
         }
 
-        public GoogleARCore.AsyncTask<CloudAnchorResult> ResolveCloudAnchor(String cloudAnchorId)
+        public GoogleARCore.AsyncTask<CloudAnchorResult> ResolveCloudAnchor(string cloudAnchorId)
         {
             Action<CloudAnchorResult> onComplete;
             GoogleARCore.AsyncTask<CloudAnchorResult> task;
@@ -111,6 +111,17 @@ namespace GoogleARCoreInternal.CrossPlatform
 
             _CreateAndTrackCloudAnchorRequest(cloudAnchorHandle, onComplete, cloudAnchorId);
             return task;
+        }
+
+        public void CancelCloudAnchorAsyncTask(string cloudAnchorId)
+        {
+            if (string.IsNullOrEmpty(cloudAnchorId))
+            {
+                Debug.LogWarning("Couldn't find pending operation for empty cloudAnchorId.");
+                return;
+            }
+
+            _CancelCloudAnchorRequest(cloudAnchorId);
         }
 
         /// <summary>
@@ -150,7 +161,7 @@ namespace GoogleARCoreInternal.CrossPlatform
         /// <param name="onComplete">The on complete Action that was created for the
         /// AsyncTask<CloudAnchorResult>.</param>
         protected internal void _CreateAndTrackCloudAnchorRequest(IntPtr cloudAnchorHandle,
-            Action<CloudAnchorResult> onComplete, String cloudAnchorId = null)
+            Action<CloudAnchorResult> onComplete, string cloudAnchorId = null)
         {
             if (LifecycleManager.Instance.NativeSession == null || cloudAnchorHandle == IntPtr.Zero)
             {
@@ -205,7 +216,7 @@ namespace GoogleARCoreInternal.CrossPlatform
             return;
         }
 
-        protected internal void _CancelCloudAnchorRequest(String cloudAnchorId)
+        protected internal void _CancelCloudAnchorRequest(string cloudAnchorId)
         {
             bool cancelledCloudAnchorRequest = false;
             foreach (var request in m_CloudAnchorRequests)
@@ -220,8 +231,7 @@ namespace GoogleARCoreInternal.CrossPlatform
 
                 var result = new CloudAnchorResult()
                 {
-                    // TODO (b/128930901): Change to "ErrorRequestCancelled" for API promotion.
-                    Response = CloudServiceResponse.ErrorCloudIdNotFound,
+                    Response = CloudServiceResponse.ErrorRequestCancelled,
                     Anchor = null,
                 };
 
@@ -314,7 +324,7 @@ namespace GoogleARCoreInternal.CrossPlatform
 
             public NativeSession NativeSession;
 
-            public String CloudAnchorId;
+            public string CloudAnchorId;
 
             public IntPtr AnchorHandle;
 

@@ -21,6 +21,7 @@
 namespace GoogleARCore
 {
     using System;
+    using System.IO;
     using UnityEngine;
 #if UNITY_EDITOR
     using UnityEditor;
@@ -53,6 +54,11 @@ namespace GoogleARCore
         public string TextureGUID;
 
         /// <summary>
+        /// The last modified time for this entry.
+        /// </summary>
+        public string LastModifiedTime;
+
+        /// <summary>
         /// Contructs a new Augmented Image database entry.
         /// </summary>
         /// <param name="name">The image name.</param>
@@ -62,8 +68,8 @@ namespace GoogleARCore
             Name = name;
             TextureGUID = string.Empty;
             Width = width;
+            LastModifiedTime = string.Empty;
             Quality = string.Empty;
-            TextureGUID = string.Empty;
         }
 
 #if UNITY_EDITOR
@@ -73,9 +79,9 @@ namespace GoogleARCore
             TextureGUID = string.Empty;
             Width = width;
             Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
-
 
         public AugmentedImageDatabaseEntry(string name, Texture2D texture)
         {
@@ -83,6 +89,7 @@ namespace GoogleARCore
             TextureGUID = string.Empty;
             Width = 0;
             Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
 
@@ -92,6 +99,7 @@ namespace GoogleARCore
             TextureGUID = string.Empty;
             Width = 0;
             Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
 
@@ -99,11 +107,31 @@ namespace GoogleARCore
         {
             get
             {
-                return AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(TextureGUID));
+                string assetPath = AssetDatabase.GUIDToAssetPath(TextureGUID);
+                CheckLastModifiedTime(assetPath);
+                return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
             }
+
             set
             {
-                TextureGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(value));
+                string assetPath = AssetDatabase.GetAssetPath(value);
+                CheckLastModifiedTime(assetPath);
+                TextureGUID = AssetDatabase.AssetPathToGUID(assetPath);
+            }
+        }
+
+        public void CheckLastModifiedTime(string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return;
+            }
+
+            string lastModifiedTime = File.GetLastWriteTime(assetPath).ToString();
+            if (!lastModifiedTime.Equals(LastModifiedTime))
+            {
+                Quality = string.Empty;
+                LastModifiedTime = lastModifiedTime;
             }
         }
 #endif

@@ -104,7 +104,7 @@ namespace GoogleARCore
             ///
             /// Increases power consumption and may increase app memory usage.
             ///
-            /// See the ARCore Supported Devices
+            /// See the ARCore supported devices
             /// (https://developers.google.com/ar/discover/supported-devices) page for a list of
             /// devices that currently support 60fps.
             /// </summary>
@@ -122,7 +122,7 @@ namespace GoogleARCore
             /// Filters for camera configs that require a depth sensor to be present on the device,
             /// and that will be used by ARCore.
             ///
-            /// See the ARCore Supported Devices
+            /// See the ARCore supported devices
             /// (https://developers.google.com/ar/discover/supported-devices) page for a list of
             /// devices that currently have supported depth sensors.
             /// </summary>

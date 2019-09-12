@@ -50,7 +50,15 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning restore 618
         {
             base.OnClientConnect(conn);
-            Debug.Log("Successfully connected to server: " + conn.lastError);
+            if (conn.lastError == NetworkError.Ok)
+            {
+                Debug.Log("Successfully connected to server.");
+            }
+            else
+            {
+                Debug.LogError("Connected to server with error: " + conn.lastError);
+            }
+
             if (OnClientConnected != null)
             {
                 OnClientConnected();
@@ -66,7 +74,15 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning restore 618
         {
             base.OnClientDisconnect(conn);
-            Debug.Log("Disconnected from the server: " + conn.lastError);
+            if (conn.lastError == NetworkError.Ok)
+            {
+                Debug.Log("Successfully disconnected from the server.");
+            }
+            else
+            {
+                Debug.LogError("Disconnected from the server with error: " + conn.lastError);
+            }
+
             if (OnClientDisconnected != null)
             {
                 OnClientDisconnected();

@@ -43,11 +43,16 @@ namespace GoogleARCore.CrossPlatform
         /// <summary>
         /// The Google AR Cloud Service could not be reached via the network connection.
         /// </summary>
+        /// @deprecated This enum value is deprecated.
+        [System.Obsolete(
+            "In the case of Cloud Anchor creation, this error has been replaced by " +
+            "CloudServiceResponse.ErrorHostingServiceUnavailable. See " +
+            "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.12.0 to learn more.")]
         ErrorServiceUnreachable,
 
         /// <summary>
-        /// The authorization provided by the application is not valid; The API key included in the application manifest
-        /// should be checked for accuracy.
+        /// The authorization provided by the application is not valid; The API key included in the
+        /// application manifest should be checked for accuracy.
         /// </summary>
         ErrorNotAuthorized,
 
@@ -57,8 +62,8 @@ namespace GoogleARCore.CrossPlatform
         ErrorApiQuotaExceeded,
 
         /// <summary>
-        /// The device needs to gather additional tracking data from the environment before the Google AR Cloud
-        /// Service can fulfill the request.
+        /// The device needs to gather additional tracking data from the environment before the
+        /// Google AR Cloud Service can fulfill the request.
         /// </summary>
         ErrorDatasetInadequate,
 
@@ -70,6 +75,10 @@ namespace GoogleARCore.CrossPlatform
         /// <summary>
         /// The Google AR Cloud Service failed to localize.
         /// </summary>
+        /// @deprecated This enum value is deprecated.
+        [System.Obsolete(
+            "This enum has been deprecated. See " +
+            "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.12.0")]
         ErrorLocalizationFailed,
 
         /// <summary>
@@ -86,5 +95,21 @@ namespace GoogleARCore.CrossPlatform
         /// The Google AR Cloud Service experienced an internal error when processing the request.
         /// </summary>
         ErrorInternal,
+
+        /// <summary>
+        /// The ARCore Cloud Anchor Service was unreachable. This can happen because
+        /// of a number of reasons. The device may is in airplane mode or does not
+        /// have a working internet connection. The request sent to the server could
+        /// have timed out with no response, there could be a bad network
+        /// connection, DNS unavailability, firewall issues, or anything that could
+        /// affect the device's ability to connect to the ARCore Cloud Anchor
+        /// service.
+        /// </summary>
+        ErrorHostingServiceUnavailable,
+
+        /// <summary>
+        /// The cloud service request has been cancelled.
+        /// </summary>
+        ErrorRequestCancelled,
     }
 }

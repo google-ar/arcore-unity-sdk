@@ -46,6 +46,7 @@ namespace GoogleARCoreInternal
 
         private float[] m_TempVector = new float[3];
         private float[] m_TempColor = new float[3];
+        private float[] m_TempSHCoefficients = new float[27];
         private Cubemap m_HDRCubemap = null;
         private long m_CubemapTimestamp = -1;
         private int m_CubemapTextureId = 0;
@@ -122,7 +123,7 @@ namespace GoogleARCoreInternal
             float[,] outSHCoefficients)
         {
             ExternApi.ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(sessionHandle,
-                lightEstimateHandle, outSHCoefficients);
+                lightEstimateHandle, m_TempSHCoefficients);
 
             // We need to invert the coefficients that contains the z axis to map it to
             // Unity world coordinate.
@@ -140,6 +141,7 @@ namespace GoogleARCoreInternal
             {
                 for (int j = 0; j < 9; j++)
                 {
+                    outSHCoefficients[j, i] = m_TempSHCoefficients[(j * 3) + i];
                     if (j == 2 || j == 5 || j == 7)
                     {
                         outSHCoefficients[j, i] = outSHCoefficients[j, i] * -1.0f;
@@ -237,7 +239,7 @@ namespace GoogleARCoreInternal
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(
-                IntPtr session, IntPtr light_estimate, float[,] out_coefficients_27);
+                IntPtr session, IntPtr light_estimate, float[] out_coefficients_27);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_acquireEnvironmentalHdrCubemap(IntPtr session,

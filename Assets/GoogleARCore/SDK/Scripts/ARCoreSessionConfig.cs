@@ -102,12 +102,17 @@ namespace GoogleARCore
         /// Chooses the desired focus mode to be used by the ARCore camera.
         /// </summary>
         /// <remarks>
-        /// Currently, the default focus mode is <see cref="CameraFocusMode"/>.<c>Fixed</c>, but this
-        /// default might change in the future. Note, on devices where ARCore does not support auto
-        /// focus due to the use of a fixed focus camera, focus mode will remain
-        /// <see cref="CameraFocusMode"/>.<c>Fixed</c>. See the
-        /// <a href="https://developers.google.com/ar/discover/supported-devices">
-        /// ARCore Supported Devices</a> page for a list of affected devices.
+        /// The default focus mode varies by device and camera, and is set to optimize AR tracking.
+        /// Currently the default on most ARCore devices and cameras is
+        /// <see cref="CameraFocusMode"/>.<c>Fixed</c>, although this default might change in the
+        /// future.
+        ///
+        /// Note, on devices where ARCore does not support auto focus due to the use of
+        /// a fixed focus camera, setting <see cref="CameraFocusMode"/>.<c>Auto</c> will be ignored.
+        /// Similarly, on devices where tracking requires auto focus, setting
+        /// <see cref="CameraFocusMode"/>.<c>Fixed</c> will be ignored. See the ARCore supported
+        /// devices (https://developers.google.com/ar/discover/supported-devices) page for a list of
+        /// affected devices.
         /// </remarks>
         [Tooltip("Chooses the desired focus mode to be used by the ARCore camera.")]
         public CameraFocusMode CameraFocusMode = CameraFocusMode.Fixed;

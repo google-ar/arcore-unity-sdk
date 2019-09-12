@@ -20,6 +20,7 @@
 
 namespace GoogleARCoreInternal
 {
+    using System.Reflection;
     using UnityEditor;
     using UnityEngine;
 
@@ -29,7 +30,6 @@ namespace GoogleARCoreInternal
     [CustomPropertyDrawer(typeof(HelpAttribute))]
     internal class HelpAttributeDrawer : PropertyDrawer
     {
-        private const float k_HelpBoxPadding = 5;
         private const float k_IconOffset = 40;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace GoogleARCoreInternal
             }
 
             return _GetOriginalPropertyHeight(property, label) + _GetHelpAttributeHeight() +
-                (2 * k_HelpBoxPadding);
+                EditorStyles.helpBox.padding.vertical;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace GoogleARCoreInternal
             if (!_IsHelpBoxEmpty())
             {
                 var helpBoxPosition = position;
-                helpBoxPosition.y += propertyHeight + k_HelpBoxPadding;
+                helpBoxPosition.y += propertyHeight + EditorStyles.helpBox.padding.top;
                 helpBoxPosition.height = _GetHelpAttributeHeight();
                 EditorGUI.HelpBox(helpBoxPosition, _GetHelpAttribute().HelpMessage,
                     (MessageType)_GetHelpAttribute().MessageType);
@@ -167,9 +167,9 @@ namespace GoogleARCoreInternal
                 var textAreaContent = new GUIContent(property.stringValue);
                 var textAreaStyle = new GUIStyle(EditorStyles.textArea);
                 var minHeight = (textAreaAttribute.minLines * textAreaStyle.lineHeight) +
-                    textAreaStyle.margin.top + textAreaStyle.margin.bottom;
+                    textAreaStyle.margin.vertical;
                 var maxHeight = (textAreaAttribute.maxLines * textAreaStyle.lineHeight) +
-                    textAreaStyle.margin.top + textAreaStyle.margin.bottom;
+                    textAreaStyle.margin.vertical;
                 var textAreaHeight = textAreaStyle.CalcHeight(
                     textAreaContent, EditorGUIUtility.currentViewWidth);
                 textAreaHeight = Mathf.Max(textAreaHeight, minHeight);
@@ -185,12 +185,37 @@ namespace GoogleARCoreInternal
             {
                 var textFieldStyle = new GUIStyle(EditorStyles.textField);
                 var multilineHeight = (textFieldStyle.lineHeight * multilineAttribute.lines) +
-                    textFieldStyle.margin.top + textFieldStyle.margin.bottom;
+                    textFieldStyle.margin.vertical;
 
                 return Mathf.Max(labelHeight, multilineHeight);
             }
 
             return labelHeight;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "UnityRules.UnityStyleRules",
+            "US1300:LinesMustBe100CharactersOrShorter",
+            Justification = "Unity issue URL length > 100")]
+        private float _GetTextAreaWidth()
+        {
+            // Use reflection to determine contextWidth, to workaround the following Unity issue:
+            // https://issuetracker.unity3d.com/issues/decoratordrawers-ongui-rect-has-a-different-width-compared-to-editorguiutility-dot-currentviewwidth
+            float contextWidth = (float)typeof(EditorGUIUtility)
+                .GetProperty("contextWidth", BindingFlags.NonPublic | BindingFlags.Static)
+                .GetValue(null, null);
+
+            float textAreaWidth = contextWidth -
+                EditorStyles.inspectorDefaultMargins.padding.horizontal;
+
+// In Unity 2019.1 and later context width must be further reduced by up to 4px when the inspector
+// window is docked inside the main editor:
+// - 2px border when docked inside the editor with an adjacent window to the left
+// - 2px border when docked inside the editor with an adjacent window to the right
+#if UNITY_2019_1_OR_NEWER
+            textAreaWidth -= 4;
+#endif
+            return textAreaWidth;
         }
 
         private float _GetHelpAttributeHeight()
@@ -203,10 +228,10 @@ namespace GoogleARCoreInternal
 
             var content = new GUIContent(_GetHelpAttribute().HelpMessage);
             var iconOffset = _IsIconVisible() ? k_IconOffset : 0;
+            float textAreaWidth = _GetTextAreaWidth();
 
             // When HelpBox icon is visble, part of the width is occupied by the icon.
-            attributeHeight = EditorStyles.helpBox.CalcHeight(content,
-                EditorGUIUtility.currentViewWidth - iconOffset);
+            attributeHeight = EditorStyles.helpBox.CalcHeight(content, textAreaWidth - iconOffset);
 
             // When HelpBox icon is visble, HelpAttributeHeight should as least
             // be the icon offset to prevent icon shrinking.

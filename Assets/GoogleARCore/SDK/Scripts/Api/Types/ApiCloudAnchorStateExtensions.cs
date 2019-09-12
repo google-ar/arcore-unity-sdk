@@ -31,8 +31,6 @@ namespace GoogleARCoreInternal.CrossPlatform
             {
                 case ApiCloudAnchorState.Success:
                     return CloudServiceResponse.Success;
-                case ApiCloudAnchorState.ErrorServiceUnavailable:
-                    return CloudServiceResponse.ErrorServiceUnreachable;
                 case ApiCloudAnchorState.ErrorNotAuthorized:
                     return CloudServiceResponse.ErrorNotAuthorized;
                 case ApiCloudAnchorState.ErrorResourceExhausted:
@@ -41,12 +39,12 @@ namespace GoogleARCoreInternal.CrossPlatform
                     return CloudServiceResponse.ErrorDatasetInadequate;
                 case ApiCloudAnchorState.ErrorResolveingCloudIdNotFound:
                     return CloudServiceResponse.ErrorCloudIdNotFound;
-                case ApiCloudAnchorState.ErrorResolvingLocalizationNoMatch:
-                    return CloudServiceResponse.ErrorLocalizationFailed;
                 case ApiCloudAnchorState.ErrorResolvingSDKTooOld:
                     return CloudServiceResponse.ErrorSDKTooOld;
                 case ApiCloudAnchorState.ErrorResolvingSDKTooNew:
                     return CloudServiceResponse.ErrorSDKTooNew;
+                case ApiCloudAnchorState.ErrorHostingServiceUnavailable:
+                    return CloudServiceResponse.ErrorHostingServiceUnavailable;
                 case ApiCloudAnchorState.None:
                 case ApiCloudAnchorState.TaskInProgress:
                 case ApiCloudAnchorState.ErrorInternal:

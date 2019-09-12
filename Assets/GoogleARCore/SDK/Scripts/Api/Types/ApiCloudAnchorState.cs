@@ -27,12 +27,11 @@ namespace GoogleARCoreInternal.CrossPlatform
         Success = 2,
         ErrorInternal = -1,
         ErrorNotAuthorized = -2,
-        ErrorServiceUnavailable = -3,
         ErrorResourceExhausted = -4,
         ErrorHostingDatasetProcessingFailed = -5,
         ErrorResolveingCloudIdNotFound = -6,
-        ErrorResolvingLocalizationNoMatch = -7,
         ErrorResolvingSDKTooOld = -8,
         ErrorResolvingSDKTooNew = -9,
+        ErrorHostingServiceUnavailable = -10,
     }
 }

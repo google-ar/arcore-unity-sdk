@@ -62,6 +62,9 @@ namespace GoogleARCoreInternal
             _DrawContainer();
             _DrawColumnNames();
 
+            // Draw the rows for AugmentedImageDatabaseEntry in the database,
+            // update the database if the entry's image is replaced and
+            // check whether the entry is deleted.
             int displayedImageCount = 0;
             int removeAt = -1;
             int pageStartIndex = m_PageIndex * k_PageSize;
@@ -86,6 +89,34 @@ namespace GoogleARCoreInternal
             if (removeAt > -1)
             {
                 database.RemoveAt(removeAt);
+            }
+
+            // Add picked image to the database and ignore the image if duplicate.
+            // It MUST operates after updating the database which also triggers
+            // "ObjectSelectorClosed" and modifies the ObjectPicker object.
+            if (Event.current.commandName == "ObjectSelectorClosed")
+            {
+                Texture2D textureToAdd = EditorGUIUtility.GetObjectPickerObject() as Texture2D;
+                if (textureToAdd != null)
+                {
+                    string textureToAddGUID =
+                        AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(textureToAdd));
+                    bool isDuplicate = false;
+                    for (int i = 0; i < database.Count; i++)
+                    {
+                        if (database[i].TextureGUID.Equals(textureToAddGUID))
+                        {
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+
+                    if (!isDuplicate)
+                    {
+                        database.Add(
+                            new AugmentedImageDatabaseEntry(textureToAdd.name, textureToAdd));
+                    }
+                }
             }
 
             _DrawImageSpacers(displayedImageCount);
@@ -223,7 +254,14 @@ namespace GoogleARCoreInternal
             EditorGUILayout.BeginVertical();
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(45);
+            GUILayout.Space(14);
+
+            var buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.margin = new RectOffset(10, 10, 3, 0);
+            if (GUILayout.Button("+", buttonStyle))
+            {
+                EditorGUIUtility.ShowObjectPicker<Texture2D>(null, false, string.Empty, 0);
+            }
 
             var style = new GUIStyle(GUI.skin.label);
             style.alignment = TextAnchor.MiddleLeft;

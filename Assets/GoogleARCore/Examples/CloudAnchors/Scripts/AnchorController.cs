@@ -33,6 +33,12 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning restore 618
     {
         /// <summary>
+        /// The customized timeout duration for resolving request to prevent retrying to resolve
+        /// indefinitely.
+        /// </summary>
+        private const float k_ResolvingTimeout = 10.0f;
+
+        /// <summary>
         /// The Cloud Anchor ID that will be used to host and resolve the Cloud Anchor. This
         /// variable will be syncrhonized over all clients.
         /// </summary>
@@ -52,18 +58,39 @@ namespace GoogleARCore.Examples.CloudAnchors
         private bool m_ShouldResolve = false;
 
         /// <summary>
+        /// Record the time since started resolving.
+        /// If it passed the resolving timeout, additional instruction displays.
+        /// </summary>
+        private float m_TimeSinceStartResolving = 0.0f;
+
+        /// <summary>
+        /// Indicates whether passes the resolving timeout duration or the anchor has been
+        /// successfully resolved.
+        /// </summary>
+        private bool m_PassedResolvingTimeout = false;
+
+        /// <summary>
+        /// The anchor mesh object.
+        /// In order to avoid placing the Anchor on identity pose, the mesh object should
+        /// be disabled by default and enabled after hosted or resolved.
+        /// </summary>
+        private GameObject m_AnchorMesh;
+
+        /// <summary>
         /// The Cloud Anchors example controller.
         /// </summary>
         private CloudAnchorsExampleController m_CloudAnchorsExampleController;
 
         /// <summary>
-        /// The Unity Start() method.
+        /// The Unity Awake() method.
         /// </summary>
-        public void Start()
+        public void Awake()
         {
             m_CloudAnchorsExampleController =
                 GameObject.Find("CloudAnchorsExampleController")
                     .GetComponent<CloudAnchorsExampleController>();
+            m_AnchorMesh = transform.Find("AnchorMesh").gameObject;
+            m_AnchorMesh.SetActive(false);
         }
 
         /// <summary>
@@ -82,10 +109,28 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public void Update()
         {
-            if (m_ShouldResolve)
+            if (!m_ShouldResolve)
             {
-                _ResolveAnchorFromId(m_CloudAnchorId);
+                return;
             }
+
+            if (!m_CloudAnchorsExampleController.IsResolvingPrepareTimePassed())
+            {
+                return;
+            }
+
+            if (!m_PassedResolvingTimeout)
+            {
+                m_TimeSinceStartResolving += Time.deltaTime;
+
+                if (m_TimeSinceStartResolving > k_ResolvingTimeout)
+                {
+                    m_PassedResolvingTimeout = true;
+                    m_CloudAnchorsExampleController.OnResolvingTimeoutPassed();
+                }
+            }
+
+            _ResolveAnchorFromId(m_CloudAnchorId);
         }
 
         /// <summary>
@@ -116,6 +161,7 @@ namespace GoogleARCore.Examples.CloudAnchors
         public void HostLastPlacedAnchor(Component lastPlacedAnchor)
         {
             m_IsHost = true;
+            m_AnchorMesh.SetActive(true);
 
 #if !UNITY_IOS
             var anchor = (Anchor)lastPlacedAnchor;
@@ -182,6 +228,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                         m_CloudAnchorsExampleController.OnAnchorResolved(
                             true, result.Response.ToString());
                         _OnResolved(result.Anchor.transform);
+                        m_AnchorMesh.SetActive(true);
                     }));
         }
 
@@ -194,6 +241,9 @@ namespace GoogleARCore.Examples.CloudAnchors
             var cloudAnchorController = GameObject.Find("CloudAnchorsExampleController")
                                                   .GetComponent<CloudAnchorsExampleController>();
             cloudAnchorController.SetWorldOrigin(anchorTransform);
+
+            // Mark resolving timeout passed so it won't fire OnResolvingTimeoutPassed event.
+            m_PassedResolvingTimeout = true;
         }
 
         /// <summary>
