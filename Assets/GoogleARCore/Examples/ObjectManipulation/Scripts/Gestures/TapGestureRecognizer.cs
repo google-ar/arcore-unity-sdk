@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="TapGestureRecognizer.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -34,7 +34,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <summary>
         /// Gets the edge slop distance to filter tap gestures.
         /// </summary>
-        internal float m_SlopInches
+        internal float SlopInches
         {
             get
             {
@@ -45,7 +45,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <summary>
         /// Gets the max time to be considered a Tap gesture.
         /// </summary>
-        internal float m_TimeSeconds
+        internal float TimeSeconds
         {
             get
             {

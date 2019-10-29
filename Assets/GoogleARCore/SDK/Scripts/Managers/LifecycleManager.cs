@@ -47,5 +47,10 @@ namespace GoogleARCoreInternal
                 return s_Instance;
             }
         }
+
+        internal static void ResetInstance()
+        {
+            s_Instance = null;
+        }
     }
 }

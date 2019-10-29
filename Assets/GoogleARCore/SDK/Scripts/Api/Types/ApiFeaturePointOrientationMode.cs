@@ -23,7 +23,10 @@ namespace GoogleARCoreInternal
     using System.Diagnostics.CodeAnalysis;
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
+     Justification = "Internal")]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+     Justification = "Internal.")]
     public enum ApiFeaturePointOrientationMode
     {
         Identity = 0,

@@ -45,7 +45,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// Unity update method that sets global light estimation shader constant and
-        /// <a herf="https://docs.unity3d.com/ScriptReference/RenderSettings.html">
+        /// <a href="https://docs.unity3d.com/ScriptReference/RenderSettings.html">
         /// RenderSettings</a> to match ARCore's calculated values.
         /// </summary>
         [SuppressMemoryAllocationError(

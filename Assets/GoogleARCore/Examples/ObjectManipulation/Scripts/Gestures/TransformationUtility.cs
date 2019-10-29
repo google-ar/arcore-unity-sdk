@@ -52,8 +52,19 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// </summary>
         public enum TranslationMode
         {
+            /// <summary>
+            /// Horizontal translation mode.
+            /// </summary>
             Horizontal,
+
+            /// <summary>
+            /// Vertical translation mode.
+            /// </summary>
             Vertical,
+
+            /// <summary>
+            /// Horizontal or vertical translation mode.
+            /// </summary>
             Any,
         }
 

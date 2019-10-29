@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/GoogleARCore/Examples/HelloAR/Scenes/HelloAR.unity
     guid: e6a6fa04348cb45c9b0221eb19c946da
   - enabled: 0
@@ -20,6 +20,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/GoogleARCore/Examples/AugmentedFaces/Scenes/AugmentedFaces.unity
     guid: 7d2be221c0e8f4e259a08279fab0da42
-  - enabled: 0
+  - enabled: 1
     path: Assets/GoogleARCore/Examples/ObjectManipulation/Scenes/ObjectManipulation.unity
     guid: 9dba7e74f4d2b410f90b920f80528d44

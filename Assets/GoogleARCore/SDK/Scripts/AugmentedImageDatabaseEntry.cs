@@ -59,7 +59,7 @@ namespace GoogleARCore
         public string LastModifiedTime;
 
         /// <summary>
-        /// Contructs a new Augmented Image database entry.
+        /// Constructs a new Augmented Image database entry.
         /// </summary>
         /// <param name="name">The image name.</param>
         /// <param name="width">The image width in meters or 0 if the width is unknown.</param>

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LightEstimateApi.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -44,6 +44,9 @@ namespace GoogleARCoreInternal
 
         private NativeSession m_NativeSession;
 
+#if !UNITY_2017_2_OR_NEWER
+        private Color[] m_TempCubemapFacePixels = new Color[0];
+#endif
         private float[] m_TempVector = new float[3];
         private float[] m_TempColor = new float[3];
         private float[] m_TempSHCoefficients = new float[27];
@@ -157,27 +160,31 @@ namespace GoogleARCoreInternal
 
         public Cubemap GetReflectionCubemap(IntPtr sessionHandle, IntPtr lightEstimateHandle)
         {
-            // Cubemap.CreateExternalTexture only exists in Unity 2017 above.
-#if UNITY_2017_2_OR_NEWER
-            int textureId = 0;
             int size = 0;
-            bool usingGLES3 = SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
-            TextureFormat format = usingGLES3 ? TextureFormat.RGBAHalf : TextureFormat.RGBA32;
+            bool usingGammaWorkflow = QualitySettings.activeColorSpace == ColorSpace.Gamma;
+
+#if UNITY_2017_2_OR_NEWER
+            // Cubemap.CreateExternalTexture only exists in Unity 2017 above.
+            int textureId = 0;
+            ApiTextureDataType dataType =
+                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3 ?
+                ApiTextureDataType.Half : ApiTextureDataType.Byte;
+            TextureFormat format = dataType == ApiTextureDataType.Half ?
+                TextureFormat.RGBAHalf : TextureFormat.RGBA32;
 
             if (!m_PluginInitialized)
             {
-                ExternApi.ARCoreRenderingUtils_SetGLESContext(usingGLES3);
+                ExternApi.ARCoreRenderingUtils_SetTextureDataType(dataType, true);
+                ExternApi.ARCoreRenderingUtils_SetActiveColorSpace(usingGammaWorkflow);
                 m_PluginInitialized = true;
             }
 
             ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref textureId, ref size);
-            if (textureId != 0)
+            if (textureId != 0 && (m_HDRCubemap == null || textureId != m_CubemapTextureId))
             {
-                if (m_HDRCubemap == null || textureId != m_CubemapTextureId)
-                {
-                    m_HDRCubemap = Cubemap.CreateExternalTexture(size, format, true,
-                       new IntPtr(textureId));
-                }
+                m_HDRCubemap = Cubemap.CreateExternalTexture(size, format, true,
+                    new IntPtr(textureId));
+                m_CubemapTextureId = textureId;
             }
 
             long timestamp = GetTimestamp(sessionHandle, lightEstimateHandle);
@@ -191,10 +198,56 @@ namespace GoogleARCoreInternal
             // Issue plugin event to update cubemap texture.
             GL.IssuePluginEvent(ExternApi.ARCoreRenderingUtils_GetRenderEventFunc(), 1);
 
-            return m_HDRCubemap;
 #else
-            return null;
+            // Gets raw color data from native plugin then update cubemap textures by
+            // Cubemap.SetPixel().
+            // Note, no GL texture will be created in this scenario.
+            if (!m_PluginInitialized)
+            {
+                ExternApi.ARCoreRenderingUtils_SetTextureDataType(
+                    ApiTextureDataType.Float, false);
+                ExternApi.ARCoreRenderingUtils_SetActiveColorSpace(usingGammaWorkflow);
+                m_PluginInitialized = true;
+            }
+
+            ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref m_CubemapTextureId, ref size);
+            if (size > 0)
+            {
+                if (m_HDRCubemap == null)
+                {
+                    m_HDRCubemap = new Cubemap(size, TextureFormat.RGBAHalf, true);
+                }
+
+                if (m_TempCubemapFacePixels.Length != size)
+                {
+                    Array.Resize(ref m_TempCubemapFacePixels, size * size);
+                }
+            }
+
+            long timestamp = GetTimestamp(sessionHandle, lightEstimateHandle);
+            if (m_CubemapTimestamp != timestamp)
+            {
+                ExternApi.ARCoreRenderingUtils_SetARCoreLightEstimation(sessionHandle,
+                    lightEstimateHandle);
+                m_CubemapTimestamp = timestamp;
+
+                if (m_HDRCubemap != null)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        ExternApi.ARCoreRenderingUtils_GetCubemapRawColors(i,
+                            m_TempCubemapFacePixels);
+                        m_HDRCubemap.SetPixels(m_TempCubemapFacePixels, CubemapFace.PositiveX + i);
+                    }
+
+                    // This operation is very expensive, only update cubemap texture when
+                    // the light estimate is updated in this frame.
+                    m_HDRCubemap.Apply();
+                }
+            }
 #endif
+
+            return m_HDRCubemap;
         }
 
         public long GetTimestamp(IntPtr sessionHandle, IntPtr lightEstimateHandle)
@@ -250,7 +303,11 @@ namespace GoogleARCoreInternal
                 IntPtr light_estimate, ref long timestamp);
 
             [AndroidImport("arcore_rendering_utils_api")]
-            public static extern void ARCoreRenderingUtils_SetGLESContext(bool is_gles_3);
+            public static extern void ARCoreRenderingUtils_SetTextureDataType(
+                ApiTextureDataType texture_data_type, bool create_gl_texture);
+
+            [AndroidImport("arcore_rendering_utils_api")]
+            public static extern void ARCoreRenderingUtils_SetActiveColorSpace(bool is_gamma_space);
 
             [AndroidImport("arcore_rendering_utils_api")]
             public static extern void ARCoreRenderingUtils_SetARCoreLightEstimation(
@@ -259,6 +316,10 @@ namespace GoogleARCoreInternal
             [AndroidImport("arcore_rendering_utils_api")]
             public static extern void ARCoreRenderingUtils_GetCubemapTexture(ref int out_texture_id,
                 ref int out_width_height);
+
+            [AndroidImport("arcore_rendering_utils_api")]
+            public static extern void ARCoreRenderingUtils_GetCubemapRawColors(
+                int face_index, Color[] out_pixel_colors);
 
             [AndroidImport("arcore_rendering_utils_api")]
             public static extern IntPtr ARCoreRenderingUtils_GetRenderEventFunc();

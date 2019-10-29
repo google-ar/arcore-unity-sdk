@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="TapGesture.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -91,9 +91,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
             Touch touch;
             if (GestureTouchesUtility.TryFindTouch(FingerId, out touch))
             {
-                TapGestureRecognizer tapRecognizer = m_Recognizer as TapGestureRecognizer;
+                TapGestureRecognizer tapRecognizer = Recognizer as TapGestureRecognizer;
                 m_ElapsedTime += touch.deltaTime;
-                if (m_ElapsedTime > tapRecognizer.m_TimeSeconds)
+                if (m_ElapsedTime > tapRecognizer.TimeSeconds)
                 {
                     Cancel();
                 }
@@ -101,7 +101,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 {
                     float diff = (touch.position - StartPosition).magnitude;
                     float diffInches = GestureTouchesUtility.PixelsToInches(diff);
-                    if (diffInches > tapRecognizer.m_SlopInches)
+                    if (diffInches > tapRecognizer.SlopInches)
                     {
                         Cancel();
                     }

@@ -455,7 +455,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 655793353707240a195aee929b80d41a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ImageCenterPoseAnchor: {fileID: 0}
   FrameLowerLeft: {fileID: 1701912229405494}
   FrameLowerRight: {fileID: 1182182374406134}
   FrameUpperLeft: {fileID: 1308591232281908}

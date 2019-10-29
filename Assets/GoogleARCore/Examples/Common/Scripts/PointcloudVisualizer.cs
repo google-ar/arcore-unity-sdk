@@ -1,4 +1,4 @@
-﻿// <copyright file="PointcloudVisualizer.cs" company="Google">
+// <copyright file="PointcloudVisualizer.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
 //

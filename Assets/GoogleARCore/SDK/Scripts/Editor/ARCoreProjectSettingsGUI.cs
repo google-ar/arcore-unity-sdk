@@ -42,8 +42,10 @@ namespace GoogleARCoreInternal
         public static readonly GUIContent Android = new GUIContent("Android");
         public static readonly GUIContent IOS = new GUIContent("iOS");
 
-        private static float s_GroupLabelIndent = 15;
-        private static float s_GroupFieldIndent = EditorGUIUtility.labelWidth - s_GroupLabelIndent;
+        private static readonly float k_GroupLabelIndent = 15;
+        private static readonly float k_GroupFieldIndent =
+            EditorGUIUtility.labelWidth - k_GroupLabelIndent;
+
         private static bool s_FoldoutCloudAnchorAPIKeys = true;
 
         // Render ARCore Project Settings for ARCoreProjectSettingsWindow and
@@ -70,21 +72,21 @@ namespace GoogleARCoreInternal
             if (s_FoldoutCloudAnchorAPIKeys)
             {
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.Space(s_GroupLabelIndent);
-                EditorGUILayout.LabelField(Android, GUILayout.Width(s_GroupFieldIndent));
+                GUILayout.Space(k_GroupLabelIndent);
+                EditorGUILayout.LabelField(Android, GUILayout.Width(k_GroupFieldIndent));
                 ARCoreProjectSettings.Instance.CloudServicesApiKey =
                     EditorGUILayout.TextField(ARCoreProjectSettings.Instance.CloudServicesApiKey);
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
 
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.Space(s_GroupLabelIndent);
-                EditorGUILayout.LabelField(IOS, GUILayout.Width(s_GroupFieldIndent));
+                GUILayout.Space(k_GroupLabelIndent);
+                EditorGUILayout.LabelField(IOS, GUILayout.Width(k_GroupFieldIndent));
                 ARCoreProjectSettings.Instance.IosCloudServicesApiKey =
                     EditorGUILayout.TextField(
                         ARCoreProjectSettings.Instance.IosCloudServicesApiKey);
                 EditorGUILayout.EndHorizontal();
-                GUILayout.Space(10);
+                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             }
 
             if (GUI.changed)

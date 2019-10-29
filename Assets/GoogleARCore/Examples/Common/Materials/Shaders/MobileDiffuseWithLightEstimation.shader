@@ -1,4 +1,4 @@
-﻿Shader "ARCore/DiffuseWithLightEstimation"
+Shader "ARCore/DiffuseWithLightEstimation"
 {
     Properties
     {

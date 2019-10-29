@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ScaleManipulator.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -49,7 +49,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         private float m_CurrentScaleRatio;
         private bool m_IsScaling;
 
-        private float m_ScaleDelta
+        private float ScaleDelta
         {
             get
             {
@@ -63,7 +63,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             }
         }
 
-        private float m_ClampedScaleRatio
+        private float ClampedScaleRatio
         {
             get
             {
@@ -71,12 +71,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
             }
         }
 
-        private float m_CurrentScale
+        private float CurrentScale
         {
             get
             {
-                float elasticScaleRatio = m_ClampedScaleRatio + ElasticDelta();
-                float elasticScale = MinScale + (elasticScaleRatio * m_ScaleDelta);
+                float elasticScaleRatio = ClampedScaleRatio + ElasticDelta();
+                float elasticScale = MinScale + (elasticScaleRatio * ScaleDelta);
                 return elasticScale;
             }
         }
@@ -87,7 +87,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / m_ScaleDelta;
+            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / ScaleDelta;
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         protected override void OnStartManipulation(PinchGesture gesture)
         {
             m_IsScaling = true;
-            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / m_ScaleDelta;
+            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / ScaleDelta;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             m_CurrentScaleRatio +=
                 k_Sensitivity * GestureTouchesUtility.PixelsToInches(gesture.GapDelta);
 
-            float currentScale = m_CurrentScale;
+            float currentScale = CurrentScale;
             transform.localScale = new Vector3(currentScale, currentScale, currentScale);
 
             // If we've tried to scale too far beyond the limit, then cancel the gesture
@@ -175,8 +175,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             if (!m_IsScaling)
             {
                 m_CurrentScaleRatio =
-                    Mathf.Lerp(m_CurrentScaleRatio, m_ClampedScaleRatio, Time.deltaTime * 8.0f);
-                float currentScale = m_CurrentScale;
+                    Mathf.Lerp(m_CurrentScaleRatio, ClampedScaleRatio, Time.deltaTime * 8.0f);
+                float currentScale = CurrentScale;
                 transform.localScale = new Vector3(currentScale, currentScale, currentScale);
             }
         }

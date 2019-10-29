@@ -59,12 +59,14 @@ namespace GoogleARCore
         /// Selects a camera configuration for the ARCore session being resumed.
         /// </summary>
         /// <param name="supportedConfigurations">
-        /// A list of supported camera configurations. Currently it contains 3 camera configs.
-        /// The GPU texture resolutions are the same in all three configs.
+        /// A list of supported camera configurations. The size is dependent on
+        /// <see cref="ARCoreSession.CameraConfigFilter"/> settings.
+        /// The GPU texture resolutions are the same in all configs.
         /// Currently, most devices provide GPU texture resolution of 1920 x 1080,
         /// but devices might provide higher or lower resolution textures, depending
-        /// on device capabilities. The CPU image resolutions returned are VGA, 720p,
-        /// and a resolution matching the GPU texture.</param>
+        /// on device capabilities.
+        /// The CPU image resolutions returned are VGA, 720p, and a resolution matching the GPU
+        /// texture, typically the native resolution of the device.</param>
         /// <returns>The index of the camera configuration in <c>supportedConfigurations</c> to be
         /// used for the ARCore session.  If the return value is not a valid index (e.g. the value
         /// -1), then no camera configuration will be set and the ARCore session will use the
@@ -178,9 +180,10 @@ namespace GoogleARCore
         /// valid configurations.
         /// The callback should be registered before the ARCore session is enabled
         /// to ensure it is triggered on the first frame update.
-        /// The callback will then be invoked each time the ARCore session is resumed
-        /// which can happen when the ARCoreSession component becomes enabled or the Android
-        /// application moves from 'paused' to 'resumed' state.
+        /// The callback will then be invoked each time the ARCore session is resumed,
+        /// which can happen when the <see cref="ARCoreSession"/> component is enabled or the
+        /// Android app moves from a state of 'paused' to 'resumed' state.
+        ///
         /// Note: Starting in ARCore 1.12, changing the active camera config will make existing
         /// anchors and trackables fail to regain tracking.
         /// </summary>

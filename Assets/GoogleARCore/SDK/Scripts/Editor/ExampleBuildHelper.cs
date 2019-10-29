@@ -30,7 +30,7 @@ namespace GoogleARCoreInternal
     {
         private List<ExampleScene> m_ExampleScenes = new List<ExampleScene>();
 
-        internal List<ExampleScene> m_AllExampleScenes
+        internal List<ExampleScene> AllExampleScenes
         {
             get
             {

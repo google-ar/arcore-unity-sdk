@@ -31,7 +31,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         private const float k_SlopInches = 0.1f;
         private const float k_AngleThresholdRadians = Mathf.PI / 6;
 
-        internal float m_SlopInches
+        internal float SlopInches
         {
             get
             {
@@ -39,7 +39,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             }
         }
 
-        internal float m_AngleThresholdRadians
+        internal float AngleThresholdRadians
         {
             get
             {

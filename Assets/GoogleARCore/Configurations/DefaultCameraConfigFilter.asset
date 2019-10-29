@@ -11,7 +11,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83ecd5d5b839470785ea023279af3c5, type: 3}
   m_Name: DefaultCameraConfigFilter
   m_EditorClassIdentifier: 
-  Framerate30FPS: 1
-  Framerate60FPS: 1
-  RequireAndUseDepthSensor: 1
-  DoNotUseDepthSensor: 1
+  TargetCameraFramerate:
+    Target30FPS: 1
+    Target60FPS: 1
+  DepthSensorUsage:
+    RequireAndUse: 1
+    DoNotUse: 1

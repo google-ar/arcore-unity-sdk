@@ -1,4 +1,4 @@
-﻿Shader "ARCore/TransparentShadow"
+Shader "ARCore/TransparentShadow"
 {
     SubShader
     {

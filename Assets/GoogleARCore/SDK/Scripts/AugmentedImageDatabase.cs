@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="AugmentedImageDatabase.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -65,7 +65,7 @@ namespace GoogleARCore
         /// </summary>
         public AugmentedImageDatabase()
         {
-            m_IsDirty = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace GoogleARCore
         /// Gets a value indicating whether the AugmentedImageDatabase is dirty and has to be reset
         /// in ArCore.
         /// </summary>
-        internal bool m_IsDirty { get; private set; }
+        internal bool IsDirty { get; private set; }
 
         /// <summary>
         /// Gets or sets the native handle for an associated ArPrestoAugmentedImageDatabase.
         /// <summary>
-        internal IntPtr m_ArPrestoDatabaseHandle
+        internal IntPtr ArPrestoDatabaseHandle
         {
             get
             {
@@ -108,7 +108,7 @@ namespace GoogleARCore
                             .CreateArPrestoAugmentedImageDatabase(m_RawData);
                 }
 
-                m_IsDirty = false;
+                IsDirty = false;
                 return m_ArPrestoDatabase;
             }
 
@@ -175,14 +175,14 @@ namespace GoogleARCore
             }
 
             Int32 imageIndex = nativeSession.AugmentedImageDatabaseApi.AddImageAtRuntime(
-                m_ArPrestoDatabaseHandle, name, image, width);
+                ArPrestoDatabaseHandle, name, image, width);
 
             if (imageIndex != -1)
             {
                 lock (m_Images)
                 {
                     m_Images.Add(new AugmentedImageDatabaseEntry(name, width));
-                    m_IsDirty = true;
+                    IsDirty = true;
                 }
             }
 

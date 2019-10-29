@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ElevationManipulator.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.

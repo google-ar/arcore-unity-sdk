@@ -162,6 +162,11 @@ namespace GoogleARCoreInternal
             ExternApi.ArPresto_reset();
         }
 
+        internal static void ResetInstance()
+        {
+            s_Instance = null;
+        }
+
         private void _OnBeforeResumeSession(IntPtr sessionHandle)
         {
             if (SessionComponent == null || sessionHandle == IntPtr.Zero)
@@ -259,6 +264,19 @@ namespace GoogleARCoreInternal
                 {
                     _FireOnSessionSetEnabled(false);
                     _FireOnSessionSetEnabled(true);
+                }
+
+                // Validate and convert the SessionConfig to a Instant Preview supported config by
+                // logging and disabling limited supported features.
+                if (InstantPreviewManager.IsProvidingPlatform &&
+                    SessionComponent.SessionConfig != null &&
+                    !InstantPreviewManager.ValidateSessionConfig(SessionComponent.SessionConfig))
+                {
+                    // A new SessionConfig object will be created based on the original
+                    // SessionConfig with all limited support features disabled.
+                    SessionComponent.SessionConfig =
+                        InstantPreviewManager.GenerateInstantPreviewSupportedConfig(
+                            SessionComponent.SessionConfig);
                 }
 
                 _SetConfiguration(SessionComponent.SessionConfig);
@@ -456,31 +474,10 @@ namespace GoogleARCoreInternal
             // The configuration has not been updated.
             if (m_CachedConfig != null && config.Equals(m_CachedConfig) &&
                 (config.AugmentedImageDatabase == null ||
-                 !config.AugmentedImageDatabase.m_IsDirty) &&
+                 !config.AugmentedImageDatabase.IsDirty) &&
                 !ExperimentManager.Instance.IsConfigurationDirty)
             {
                 return;
-            }
-
-            if (InstantPreviewManager.IsProvidingPlatform)
-            {
-                if (config.LightEstimationMode != LightEstimationMode.Disabled)
-                {
-                    InstantPreviewManager.LogLimitedSupportMessage("enable 'Light Estimation'");
-                    config.LightEstimationMode = LightEstimationMode.Disabled;
-                }
-
-                if (config.AugmentedImageDatabase != null)
-                {
-                    InstantPreviewManager.LogLimitedSupportMessage("enable 'Augmented Images'");
-                    config.AugmentedImageDatabase = null;
-                }
-
-                if (config.AugmentedFaceMode == AugmentedFaceMode.Mesh)
-                {
-                    InstantPreviewManager.LogLimitedSupportMessage("enable 'Augmented Faces'");
-                    config.AugmentedFaceMode = AugmentedFaceMode.Disabled;
-                }
             }
 
             var prestoConfig = new ApiPrestoConfig(config);

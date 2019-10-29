@@ -137,6 +137,11 @@ namespace GoogleARCoreInternal
             return task;
         }
 
+        internal static void ResetInstance()
+        {
+            s_Instance = null;
+        }
+
         [AOT.MonoPInvokeCallback(typeof(CheckApkAvailabilityResultCallback))]
         private static void _OnCheckApkAvailabilityResultTrampoline(
             ApiAvailability status, IntPtr context)

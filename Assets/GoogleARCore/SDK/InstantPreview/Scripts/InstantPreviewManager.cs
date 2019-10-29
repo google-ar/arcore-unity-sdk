@@ -82,6 +82,8 @@ namespace GoogleARCoreInternal
         private static Dictionary<string, DateTime> s_SentWarnings =
             new Dictionary<string, DateTime>();
 
+        private static HashSet<string> s_OneTimeWarnings = new HashSet<string>();
+
         /// <summary>
         /// Gets a value indicating whether Instant Preview is providing the ARCore platform for the
         /// current environment.
@@ -92,23 +94,97 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return Application.isEditor;
+                return Application.isEditor &&
+                    ARCoreProjectSettings.Instance.IsInstantPreviewEnabled;
             }
+        }
+
+        /// <summary>
+        /// Validates whether the SessionConfig enables limited supported features and also logs
+        /// those features.
+        /// </summary>
+        /// <param name="config">The SessionConfig needs to be validated.</param>
+        /// <returns><c>true</c>, if the SessionConfig isn't enable any limited support features.
+        /// Otherwise, returns <c>false</c>.</returns>
+        public static bool ValidateSessionConfig(ARCoreSessionConfig config)
+        {
+            bool isValid = true;
+            if (config == null)
+            {
+                Debug.LogWarning("Attempted to check empty configuration.");
+                return false;
+            }
+
+            if (config.LightEstimationMode != LightEstimationMode.Disabled)
+            {
+                LogLimitedSupportMessage("enable 'Light Estimation'", true);
+                isValid = false;
+            }
+
+            if (config.AugmentedImageDatabase != null)
+            {
+                LogLimitedSupportMessage("enable 'Augmented Images'", true);
+                isValid = false;
+            }
+
+            if (config.AugmentedFaceMode == AugmentedFaceMode.Mesh)
+            {
+                LogLimitedSupportMessage("enable 'Augmented Faces'", true);
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Generates a config supported by Instant Preview based on the given SessionConfig object.
+        /// </summary>
+        /// <param name="config">The base SessionConfig object.</param>
+        /// <returns>A SessionConfig object copied from given SessionConfig object but
+        /// all limited supported features are disabled.</returns>
+        public static ARCoreSessionConfig GenerateInstantPreviewSupportedConfig(
+            ARCoreSessionConfig config)
+        {
+            ARCoreSessionConfig newConfig = ScriptableObject.CreateInstance<ARCoreSessionConfig>();
+
+            if (config == null)
+            {
+                Debug.LogWarning("Attempted to generate Instant Preview Supported Config from" +
+                    "an empty SessionConfig object.");
+            }
+            else
+            {
+                newConfig.CopyFrom(config);
+            }
+
+            newConfig.LightEstimationMode = LightEstimationMode.Disabled;
+            newConfig.AugmentedImageDatabase = null;
+            newConfig.AugmentedFaceMode = AugmentedFaceMode.Disabled;
+            return newConfig;
         }
 
         /// <summary>
         /// Logs a limited support message to the console for an instant preview feature.
         /// </summary>
         /// <param name="featureName">The name of the feature that has limited support.</param>
-        public static void LogLimitedSupportMessage(string featureName)
+        /// <param name="logOnce">True, only logs the warning once.
+        /// Otherwise, repeats logging after waring throttle time.</param>
+        public static void LogLimitedSupportMessage(string featureName, bool logOnce = false)
         {
             Debug.LogErrorFormat(
                 "Attempted to {0} which is not yet supported by Instant Preview.\n" +
                 "Please build and run on device to use this feature.", featureName);
 
-            if (!s_SentWarnings.ContainsKey(featureName) ||
+            if (logOnce && !s_OneTimeWarnings.Contains(featureName))
+            {
+                string warning = string.Format(k_WarningToastFormat, featureName);
+                NativeApi.SendToast(warning);
+                s_OneTimeWarnings.Add(featureName);
+            }
+
+            if (!logOnce && (!s_SentWarnings.ContainsKey(featureName) ||
                 (DateTime.UtcNow - s_SentWarnings[featureName]).TotalSeconds >=
-                k_WarningThrottleTimeSeconds)
+                k_WarningThrottleTimeSeconds))
             {
                 string warning = string.Format(k_WarningToastFormat, featureName);
                 NativeApi.SendToast(warning);
@@ -120,14 +196,14 @@ namespace GoogleARCoreInternal
         /// Coroutine method that communicates to the Instant Preview plugin
         /// every frame.
         ///
-        /// If not running in the editor, this does nothing.
+        /// If Instant Preview is not the providing platform, this does nothing.
         /// </summary>
         /// <returns>Enumerator for a coroutine that updates Instant Preview
         /// every frame.</returns>
         public static IEnumerator InitializeIfNeeded()
         {
-            // Terminates if not running in editor.
-            if (!Application.isEditor)
+            // Terminates if instant preview is not providing the platform.
+            if (!IsProvidingPlatform)
             {
                 yield break;
             }
@@ -208,6 +284,13 @@ namespace GoogleARCoreInternal
                 yield break;
             }
 
+            if (Environment.GetEnvironmentVariable("ADB_TRACE") != null)
+            {
+                Debug.LogWarning("Instant Preview: ADB_TRACE was defined. Unsetting environment " +
+                                 "variable for compatibility with Instant Preview.");
+                Environment.SetEnvironmentVariable("ADB_TRACE", null);
+            }
+
             string localVersion;
             if (!StartServer(adbPath, out localVersion))
             {
@@ -230,7 +313,7 @@ namespace GoogleARCoreInternal
         /// false if it did not and the texture still needs updating.</returns>
         public static bool UpdateBackgroundTextureIfNeeded(ref Texture2D backgroundTexture)
         {
-            if (!Application.isEditor)
+            if (!IsProvidingPlatform)
             {
                 return false;
             }

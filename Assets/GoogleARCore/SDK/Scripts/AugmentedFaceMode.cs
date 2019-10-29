@@ -34,6 +34,6 @@ namespace GoogleARCore
         /// A mode where AugmentedFace detection performs face pose, region pose, and face mesh
         /// estimation.
         /// </summary>
-        Mesh = 2
+        Mesh = 2,
     }
 }

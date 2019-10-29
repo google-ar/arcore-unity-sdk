@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="Gesture.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -34,13 +34,15 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
     /// <typeparam name="T">The actual gesture.</typeparam>
     public abstract class Gesture<T> where T : Gesture<T>
     {
+        private bool m_HasStarted;
+
         /// <summary>
         /// Constructs a Gesture with a given recognizer.
         /// </summary>
         /// <param name="recognizer">The gesture recognizer.</param>
         internal Gesture(GestureRecognizer<T> recognizer)
         {
-            m_Recognizer = recognizer;
+            Recognizer = recognizer;
         }
 
         /// <summary>
@@ -71,9 +73,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// Gets the gesture recognizer.
         /// </summary>
-        protected internal GestureRecognizer<T> m_Recognizer { get; private set; }
-
-        private bool m_HasStarted { get; set; }
+        protected internal GestureRecognizer<T> Recognizer { get; private set; }
 
         /// <summary>
         /// Updates this gesture.

@@ -1,4 +1,4 @@
-﻿// <copyright file="SafeAreaScaler.cs" company="Google">
+// <copyright file="SafeAreaScaler.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
 //

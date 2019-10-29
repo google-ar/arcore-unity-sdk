@@ -54,13 +54,13 @@ namespace GoogleARCore
                     return TrackingState.Stopped;
                 }
 
-                return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle);
+                return NativeSession.AnchorApi.GetTrackingState(NativeHandle);
             }
         }
 
-        internal NativeSession m_NativeSession { get; private set; }
+        internal NativeSession NativeSession { get; private set; }
 
-        internal IntPtr m_NativeHandle { get; private set; }
+        internal IntPtr NativeHandle { get; private set; }
 
         internal static Anchor Factory(NativeSession nativeApi, IntPtr anchorNativeHandle,
             bool isCreate = true)
@@ -74,7 +74,7 @@ namespace GoogleARCore
             if (s_AnchorDict.TryGetValue(anchorNativeHandle, out result))
             {
                 // Release acquired handle and return cached result
-                result.m_NativeSession.AnchorApi.Release(anchorNativeHandle);
+                AnchorApi.Release(anchorNativeHandle);
                 return result;
             }
 
@@ -82,8 +82,8 @@ namespace GoogleARCore
             {
                Anchor anchor = (new GameObject()).AddComponent<Anchor>();
                anchor.gameObject.name = "Anchor";
-               anchor.m_NativeHandle = anchorNativeHandle;
-               anchor.m_NativeSession = nativeApi;
+               anchor.NativeHandle = anchorNativeHandle;
+               anchor.NativeSession = nativeApi;
                anchor.Update();
 
                s_AnchorDict.Add(anchorNativeHandle, anchor);
@@ -98,7 +98,7 @@ namespace GoogleARCore
         /// </summary>
         private void Update()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (NativeHandle == IntPtr.Zero)
             {
                 Debug.LogError(
                     "Anchor components instantiated outside of ARCore are not supported. " +
@@ -111,7 +111,7 @@ namespace GoogleARCore
                 return;
             }
 
-            var pose = m_NativeSession.AnchorApi.GetPose(m_NativeHandle);
+            var pose = NativeSession.AnchorApi.GetPose(NativeHandle);
             transform.position = pose.position;
             transform.rotation = pose.rotation;
 
@@ -130,14 +130,18 @@ namespace GoogleARCore
 
         private void OnDestroy()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (NativeHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            s_AnchorDict.Remove(m_NativeHandle);
-            m_NativeSession.AnchorApi.Detach(m_NativeHandle);
-            m_NativeSession.AnchorApi.Release(m_NativeHandle);
+            if (NativeSession != null && !NativeSession.IsDestroyed)
+            {
+                NativeSession.AnchorApi.Detach(NativeHandle);
+            }
+
+            s_AnchorDict.Remove(NativeHandle);
+            AnchorApi.Release(NativeHandle);
         }
 
         private bool _IsSessionDestroyed()
@@ -145,7 +149,7 @@ namespace GoogleARCore
             if (!m_IsSessionDestroyed)
             {
                 var nativeSession = LifecycleManager.Instance.NativeSession;
-                if (nativeSession != m_NativeSession)
+                if (nativeSession != NativeSession)
                 {
                     Debug.LogErrorFormat(
                         "The session which created this anchor has been destroyed. " +

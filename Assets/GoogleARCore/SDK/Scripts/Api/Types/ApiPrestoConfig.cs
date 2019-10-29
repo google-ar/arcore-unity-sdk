@@ -50,17 +50,17 @@ namespace GoogleARCoreInternal
             var planeFindingMode = ApiPlaneFindingMode.Disabled;
             switch (config.PlaneFindingMode)
             {
-            case DetectedPlaneFindingMode.Horizontal:
-                planeFindingMode = ApiPlaneFindingMode.Horizontal;
-                break;
-            case DetectedPlaneFindingMode.Vertical:
-                planeFindingMode = ApiPlaneFindingMode.Vertical;
-                break;
-            case DetectedPlaneFindingMode.HorizontalAndVertical:
-                planeFindingMode = ApiPlaneFindingMode.HorizontalAndVertical;
-                break;
-            default:
-                break;
+                case DetectedPlaneFindingMode.Horizontal:
+                    planeFindingMode = ApiPlaneFindingMode.Horizontal;
+                    break;
+                case DetectedPlaneFindingMode.Vertical:
+                    planeFindingMode = ApiPlaneFindingMode.Vertical;
+                    break;
+                case DetectedPlaneFindingMode.HorizontalAndVertical:
+                    planeFindingMode = ApiPlaneFindingMode.HorizontalAndVertical;
+                    break;
+                default:
+                    break;
             }
 
             PlaneFindingMode = planeFindingMode;
@@ -71,7 +71,7 @@ namespace GoogleARCoreInternal
             if (config.AugmentedImageDatabase != null)
             {
                 ArPrestoAugmentedImageDatabase =
-                    config.AugmentedImageDatabase.m_ArPrestoDatabaseHandle;
+                    config.AugmentedImageDatabase.ArPrestoDatabaseHandle;
             }
             else
             {

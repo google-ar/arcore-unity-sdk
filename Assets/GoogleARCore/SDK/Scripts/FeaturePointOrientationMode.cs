@@ -21,11 +21,22 @@
 namespace GoogleARCore
 {
     /// <summary>
-    /// The orientation mode for a FeaturePoint.
+    /// The orientation mode of the feature point.
     /// </summary>
     public enum FeaturePointOrientationMode
     {
+        /// <summary>
+        /// The orientation of the feature point is initialized to identity but may
+        /// adjust slightly over time.
+        /// </summary>
         Identity = 0,
+
+        /// <summary>
+        /// The orientation of the feature point will follow the behavior that X+ is perpendicular
+        /// to the cast ray and parallel to the physical surface centered around the hit test,
+        /// Y+ points along the estimated surface normal, and Z+ points roughly toward
+        /// the user's device.
+        /// </summary>
         SurfaceNormal = 1,
     }
 }

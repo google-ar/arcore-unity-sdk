@@ -35,6 +35,11 @@ namespace GoogleARCoreInternal
             m_NativeSession = nativeSession;
         }
 
+        public static void Release(IntPtr anchorHandle)
+        {
+            ExternApi.ArAnchor_release(anchorHandle);
+        }
+
         public Pose GetPose(IntPtr anchorHandle)
         {
             var poseHandle = m_NativeSession.PoseApi.Create();
@@ -77,11 +82,6 @@ namespace GoogleARCoreInternal
             {
                 ExternApi.ArAnchor_detach(m_NativeSession.SessionHandle, anchorHandle);
             }
-        }
-
-        public void Release(IntPtr anchorHandle)
-        {
-            ExternApi.ArAnchor_release(anchorHandle);
         }
 
         public IntPtr CreateList()

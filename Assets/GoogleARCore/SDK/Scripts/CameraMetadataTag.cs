@@ -20,6 +20,8 @@
 
 namespace GoogleARCore
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// This enum follows the layout of NdkCameraMetadataTags.
     /// The values in the file are used for requesting / marshaling camera image's metadata.
@@ -27,6 +29,9 @@ namespace GoogleARCore
     /// NdkCameraMetadataTags.h for documentation:
     /// https://developer.android.com/ndk/reference/ndk_camera_metadata_tags_8h.html .
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+     Justification = "NdkCameraMetadataTags.")]
     public enum CameraMetadataTag
     {
         SectionColorCorrection = 0,

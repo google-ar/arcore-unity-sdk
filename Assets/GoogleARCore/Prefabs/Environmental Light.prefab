@@ -118,4 +118,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DirectionalLight: {fileID: 108886784190946772}
-  ReflectionCubemapEnabled: 1

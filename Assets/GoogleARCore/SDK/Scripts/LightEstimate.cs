@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LightEstimate.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -252,11 +252,11 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets the reflection cubemap from the light estimation. The pixel values are
-        /// in linear color space. For performance reasons, the cubemap will only be
-        /// created when this function is called on the LightEstimate object. It will return null
-        /// when the LightEstimateState is invalid or LightEstimationMode is not one of
-        /// the Environmental HDR modes.
+        /// Gets the reflection cubemap from the light estimation.
+        /// For performance reasons, the cubemap will only be created when this function
+        /// is called on the LightEstimate object. It will return null
+        /// when the LightEstimateState is invalid or LightEstimationMode is not
+        /// EnvironmentalHDRWithReflections.
         /// </summary>
         public Cubemap ReflectionProbe
         {

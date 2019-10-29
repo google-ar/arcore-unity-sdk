@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PinchGestureRecognizer.cs" company="Google">
 //
 // Copyright 2018 Google Inc. All Rights Reserved.
@@ -31,7 +31,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         private const float k_SlopInches = 0.05f;
         private const float k_SlopMotionDirectionDegrees = 30.0f;
 
-        internal float m_SlopInches
+        internal float SlopInches
         {
             get
             {
@@ -39,7 +39,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             }
         }
 
-        internal float m_SlopMotionDirectionDegrees
+        internal float SlopMotionDirectionDegrees
         {
             get
             {

@@ -149,6 +149,11 @@ namespace GoogleARCoreInternal
                 m_SessionHandle = IntPtr.Zero;
             }
 
+            if (NativeSession != null)
+            {
+                NativeSession.MarkDestroyed();
+            }
+
             _Initialize();
         }
 

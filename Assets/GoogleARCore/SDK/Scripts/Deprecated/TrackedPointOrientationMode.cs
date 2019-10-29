@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="TrackedPointOrientationMode.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -20,12 +20,17 @@
 
 namespace GoogleARCore
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Deprecated version of FeaturePointOrientationMode.
     /// </summary>
     [System.Obsolete(
         "This enum has been renamed to FeaturePointOrientationMode. See " +
         "https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.2.0")]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+     Justification = "Deprecated.")]
     public enum TrackedPointOrientationMode
     {
         Identity = 0,

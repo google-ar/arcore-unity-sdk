@@ -1,4 +1,4 @@
-﻿Shader "ARCore/SpecularWithLightEstimation" 
+Shader "ARCore/SpecularWithLightEstimation" 
 {
     Properties 
     {

@@ -1,4 +1,4 @@
-﻿Shader "ARCore/ARBackground"
+Shader "ARCore/ARBackground"
 {
     Properties {
         _MainTex ("Main Texture", 2D) = "white" {}

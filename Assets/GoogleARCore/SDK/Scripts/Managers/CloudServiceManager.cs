@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal.CrossPlatform
                 return task;
             }
 
-            _CreateCloudAnchor(onComplete, anchor.m_NativeHandle);
+            _CreateCloudAnchor(onComplete, anchor.NativeHandle);
 
             return task;
         }
@@ -226,8 +226,12 @@ namespace GoogleARCoreInternal.CrossPlatform
                     continue;
                 }
 
-                request.NativeSession.AnchorApi.Detach(request.AnchorHandle);
-                request.NativeSession.AnchorApi.Release(request.AnchorHandle);
+                if (request.NativeSession != null && !request.NativeSession.IsDestroyed)
+                {
+                    request.NativeSession.AnchorApi.Detach(request.AnchorHandle);
+                }
+
+                AnchorApi.Release(request.AnchorHandle);
 
                 var result = new CloudAnchorResult()
                 {
@@ -290,8 +294,12 @@ namespace GoogleARCoreInternal.CrossPlatform
             }
             else if (cloudState != ApiCloudAnchorState.TaskInProgress)
             {
-                request.NativeSession.AnchorApi.Detach(request.AnchorHandle);
-                request.NativeSession.AnchorApi.Release(request.AnchorHandle);
+                if (request.NativeSession != null && !request.NativeSession.IsDestroyed)
+                {
+                    request.NativeSession.AnchorApi.Detach(request.AnchorHandle);
+                }
+
+                AnchorApi.Release(request.AnchorHandle);
 
                 var result = new CloudAnchorResult()
                 {

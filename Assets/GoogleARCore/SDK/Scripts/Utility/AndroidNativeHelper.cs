@@ -20,6 +20,7 @@
 
 namespace GoogleARCoreInternal
 {
+    using System.Diagnostics.CodeAnalysis;
     using UnityEngine;
 
     /// <summary>
@@ -30,6 +31,9 @@ namespace GoogleARCoreInternal
         /// <summary>
         /// Mirrors Android <c>Surface</c> constants for display rotation.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+         Justification = "Internal.")]
         public enum AndroidSurfaceRotation
         {
             Rotation0 = 0,

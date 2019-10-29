@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="InstantPreviewInput.cs" company="Google">
 //
 // Copyright 2017 Google Inc. All Rights Reserved.
@@ -160,7 +160,7 @@ namespace GoogleARCore
         /// </summary>
         public static void Update()
         {
-            if (!Application.isEditor)
+            if (!InstantPreviewManager.IsProvidingPlatform)
             {
                 return;
             }

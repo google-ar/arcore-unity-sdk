@@ -166,8 +166,19 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public enum ApplicationMode
         {
+            /// <summary>
+            /// Enume mode that indicate the example application is ready to host or resolve.
+            /// </summary>
             Ready,
+
+            /// <summary>
+            /// Enume mode that indicate the example application is hosting cloud anchors.
+            /// </summary>
             Hosting,
+
+            /// <summary>
+            /// Enume mode that indicate the example application is resolving cloud anchors.
+            /// </summary>
             Resolving,
         }
 
@@ -176,8 +187,19 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public enum ActiveScreen
         {
+            /// <summary>
+            /// Enume mode that indicate the example application is on lobby screen.
+            /// </summary>
             LobbyScreen,
+
+            /// <summary>
+            /// Enume mode that indicate the example application is on start screen.
+            /// </summary>
             StartScreen,
+
+            /// <summary>
+            /// Enume mode that indicate the example application is on AR screen.
+            /// </summary>
             ARScreen,
         }
 

@@ -57,7 +57,7 @@ namespace GoogleARCore
             IsWarning = true, Reason = "Allocates new objects the first time is called")]
         public static bool IsPermissionGranted(string permissionName)
         {
-            if (Application.isEditor)
+            if (Application.platform != RuntimePlatform.Android)
             {
                 return true;
             }

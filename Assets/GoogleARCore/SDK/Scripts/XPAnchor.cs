@@ -60,14 +60,14 @@ namespace GoogleARCore.CrossPlatform
                     return XPTrackingState.Stopped;
                 }
 
-                return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle)
+                return NativeSession.AnchorApi.GetTrackingState(NativeHandle)
                     .ToXPTrackingState();
             }
         }
 
-        internal NativeSession m_NativeSession { get; private set; }
+        internal NativeSession NativeSession { get; private set; }
 
-        internal IntPtr m_NativeHandle { get; private set; }
+        internal IntPtr NativeHandle { get; private set; }
 
         internal static XPAnchor Factory(NativeSession nativeSession, IntPtr anchorHandle,
             bool isCreate = true)
@@ -81,7 +81,7 @@ namespace GoogleARCore.CrossPlatform
             if (s_AnchorDict.TryGetValue(anchorHandle, out result))
             {
                 // Release acquired handle and return cached result
-                result.m_NativeSession.AnchorApi.Release(anchorHandle);
+                AnchorApi.Release(anchorHandle);
                 return result;
             }
 
@@ -90,8 +90,8 @@ namespace GoogleARCore.CrossPlatform
                XPAnchor anchor = (new GameObject()).AddComponent<XPAnchor>();
                anchor.gameObject.name = "XPAnchor";
                anchor.CloudId = nativeSession.AnchorApi.GetCloudAnchorId(anchorHandle);
-               anchor.m_NativeHandle = anchorHandle;
-               anchor.m_NativeSession = nativeSession;
+               anchor.NativeHandle = anchorHandle;
+               anchor.NativeSession = nativeSession;
                anchor.Update();
 
                s_AnchorDict.Add(anchorHandle, anchor);
@@ -106,7 +106,7 @@ namespace GoogleARCore.CrossPlatform
         /// </summary>
         private void Update()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (NativeHandle == IntPtr.Zero)
             {
                 Debug.LogError(
                     "Anchor components instantiated outside of ARCore are not supported. " +
@@ -119,7 +119,7 @@ namespace GoogleARCore.CrossPlatform
                 return;
             }
 
-            var pose = m_NativeSession.AnchorApi.GetPose(m_NativeHandle);
+            var pose = NativeSession.AnchorApi.GetPose(NativeHandle);
             transform.position = pose.position;
             transform.rotation = pose.rotation;
 
@@ -138,14 +138,18 @@ namespace GoogleARCore.CrossPlatform
 
         private void OnDestroy()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (NativeHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            s_AnchorDict.Remove(m_NativeHandle);
-            m_NativeSession.AnchorApi.Detach(m_NativeHandle);
-            m_NativeSession.AnchorApi.Release(m_NativeHandle);
+            if (NativeSession != null && !NativeSession.IsDestroyed)
+            {
+                NativeSession.AnchorApi.Detach(NativeHandle);
+            }
+
+            s_AnchorDict.Remove(NativeHandle);
+            AnchorApi.Release(NativeHandle);
         }
 
         private bool _IsSessionDestroyed()
@@ -153,7 +157,7 @@ namespace GoogleARCore.CrossPlatform
             if (!m_IsSessionDestroyed)
             {
                 var nativeSession = LifecycleManager.Instance.NativeSession;
-                if (nativeSession != m_NativeSession)
+                if (nativeSession != NativeSession)
                 {
                     Debug.LogErrorFormat(
                         "The session which created this anchor has been destroyed. " +

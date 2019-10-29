@@ -84,7 +84,7 @@ namespace GoogleARCoreInternal
                 }
 
                 // Replace the project's cloud anchor AAR with the newly generated AAR.
-                Debug.Log("Enabling Cloud Anchors in this build.");
+                Debug.Log("Enabling Cloud Anchors with API Key Authentication in this build.");
 
                 var tempDirectoryPath =
                     Path.Combine(cachedCurrentDirectory, FileUtil.GetUniqueTempPathInProject());
@@ -155,8 +155,7 @@ namespace GoogleARCoreInternal
             else
             {
                 Debug.Log(
-                    "Cloud Anchor API key has not been set. Cloud Anchors will be disabled in " +
-                    "this build.");
+                    "Cloud Anchor API key has not been set in this build.");
                 File.Delete(cloudAnchorsManifestAarPath);
                 AssetDatabase.Refresh();
             }

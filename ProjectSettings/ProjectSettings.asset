@@ -582,8 +582,8 @@ PlayerSettings:
   ps4ParentalLevel: 1
   ps4ContentID: ED1633-NPXX51362_00-0000000000000000
   ps4Category: 0
-  ps4MasterVersion: 01.00
-  ps4AppVersion: 01.00
+  ps4MasterVersion: 1.0
+  ps4AppVersion: 1.0
   ps4AppType: 0
   ps4ParamSfxPath: 
   ps4VideoOutPixelFormat: 0
@@ -678,8 +678,8 @@ PlayerSettings:
   psp2ShortTitle: Not Set
   psp2ContentID: IV0000-ABCD12345_00-0123456789ABCDEF
   psp2Category: 0
-  psp2MasterVersion: 01.00
-  psp2AppVersion: 01.00
+  psp2MasterVersion: 1.0
+  psp2AppVersion: 1.0
   psp2TVBootMode: 0
   psp2EnterButtonAssignment: 2
   psp2TVDisableEmu: 0
@@ -706,7 +706,10 @@ PlayerSettings:
   webGLUseEmbeddedResources: 0
   webGLUseWasm: 0
   webGLCompressionFormat: 1
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: 
+    4: 
+    7: 
   platformArchitecture:
     iOS: 1
   scriptingBackend:
