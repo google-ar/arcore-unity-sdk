@@ -240,7 +240,7 @@ namespace GoogleARCore.Examples.ComputerVision
             if (config != null)
             {
                 config.CameraFocusMode =
-                    autoFocusEnabled ? CameraFocusMode.Auto : CameraFocusMode.Fixed;
+                    autoFocusEnabled ? CameraFocusMode.AutoFocus : CameraFocusMode.FixedFocus;
             }
         }
 

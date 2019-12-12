@@ -62,6 +62,7 @@ namespace GoogleARCoreInternal
                 SdkInstanceId = _UniqueId(),
                 OsVersion = SystemInfo.operatingSystem,
                 ArcoreSdkVersion = GoogleARCore.VersionInfo.Version,
+                SdkType = ArCoreSdkLog.Types.SDKType.ArcoreSdk,
                 Unity = engine,     // Unity engine version.
                 SdkSessionId = _SessionId(),
             };

@@ -51,5 +51,13 @@ namespace GoogleARCore
         /// is causing motion tracking to fail.
         /// </summary>
         InsufficientFeatures = 4,
+
+        /// <summary>
+        /// Motion tracking paused because the camera is in use by another application.
+        /// Tracking will resume once this app regains priority, or once all apps with
+        /// higher priority have stopped using the camera. Prior to ARCore SDK 1.13,
+        /// <see cref="LostTrackingReason"/>.<c>None</c> is returned in this case instead.
+        /// </summary>
+        CameraUnavailable = 5,
     }
 }

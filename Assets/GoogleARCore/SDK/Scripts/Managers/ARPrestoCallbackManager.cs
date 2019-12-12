@@ -81,6 +81,8 @@ namespace GoogleARCoreInternal
 
         public event Action<IntPtr> BeforeResumeSession;
 
+        public event Action<IntPtr, IntPtr> OnSetConfiguration;
+
         public static ARPrestoCallbackManager Instance
         {
             get
@@ -176,7 +178,10 @@ namespace GoogleARCoreInternal
         private static void _BeforeSetConfigurationTrampoline(
             IntPtr sessionHandle, IntPtr configHandle)
         {
-            ExperimentManager.Instance.OnBeforeSetConfiguration(sessionHandle, configHandle);
+            if (Instance.OnSetConfiguration != null)
+            {
+                Instance.OnSetConfiguration(sessionHandle, configHandle);
+            }
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeResumeSessionCallback))]

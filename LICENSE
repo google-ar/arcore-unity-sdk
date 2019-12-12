@@ -1,19 +1,27 @@
-===============================================================================
-
 All files in the following folders:
-- Assets/GoogleARCore/SDK/Plugins/
-- Assets/GoogleARCore/SDK/InstantPreview/Plugins/
-- Assets/PlayServicesResolver/
+Files: Assets/GoogleARCore/SDK/Plugins
+Files: Assets/GoogleARCore/SDK/InstantPreview/Plugins
+Files: Assets/PlayServicesResolver
 
 are licensed as follows:
 
 Covered by the **Google APIs Terms of Service** at
 [https://developers.google.com/terms/](https://developers.google.com/terms/)
 
-===============================================================================
+------------------
 
-Except as indicated previously in this LICENSE file
-files in this SDK are licensed as follows:
+All files in the following folders:
+Files: Assets/GoogleARCore/CLI
+Files: Assets/GoogleARCore/Configurations
+Files: Assets/GoogleARCore/Editor
+Files: Assets/GoogleARCore/Examples
+Files: Assets/GoogleARCore/Prefabs
+Files: Assets/GoogleARCore/SDK/BuildResources
+Files: Assets/GoogleARCore/SDK/Materials
+Files: Assets/GoogleARCore/SDK/Resources
+Files: Assets/GoogleARCore/SDK/Scripts
+
+are licensed as follows:
 
 Copyright (c) 2017, Google Inc.
 Licensed under the Apache License, Version 2.0 (the "License");

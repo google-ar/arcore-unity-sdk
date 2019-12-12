@@ -22,6 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using GoogleARCore;
+    using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -41,6 +42,41 @@ namespace GoogleARCoreInternal
             m_NativeSession = nativeSession;
         }
 
+        public static void UpdateApiConfigWithARCoreSessionConfig(IntPtr sessionHandle,
+            IntPtr configHandle, ARCoreSessionConfig sessionConfig)
+        {
+            ApiLightEstimationMode lightingMode =
+                sessionConfig.LightEstimationMode.ToApiLightEstimationMode();
+            ExternApi.ArConfig_setLightEstimationMode(sessionHandle, configHandle, lightingMode);
+
+            ApiPlaneFindingMode planeFindingMode =
+                sessionConfig.PlaneFindingMode.ToApiPlaneFindingMode();
+            ExternApi.ArConfig_setPlaneFindingMode(sessionHandle, configHandle, planeFindingMode);
+
+            ApiUpdateMode updateMode = sessionConfig.MatchCameraFramerate ?
+                ApiUpdateMode.Blocking : ApiUpdateMode.LatestCameraImage;
+            ExternApi.ArConfig_setUpdateMode(sessionHandle, configHandle, updateMode);
+
+            ApiCloudAnchorMode cloudAnchorMode = sessionConfig.EnableCloudAnchor ?
+                ApiCloudAnchorMode.Enabled : ApiCloudAnchorMode.Disabled;
+            ExternApi.ArConfig_setCloudAnchorMode(sessionHandle, configHandle, cloudAnchorMode);
+
+            IntPtr augmentedImageDatabaseHandle = IntPtr.Zero;
+            if (sessionConfig.AugmentedImageDatabase != null)
+            {
+                augmentedImageDatabaseHandle = sessionConfig.AugmentedImageDatabase.NativeHandle;
+                ExternApi.ArConfig_setAugmentedImageDatabase(sessionHandle, configHandle,
+                    augmentedImageDatabaseHandle);
+            }
+
+            ApiAugmentedFaceMode augmentedFaceMode =
+                sessionConfig.AugmentedFaceMode.ToApiAugmentedFaceMode();
+            ExternApi.ArConfig_setAugmentedFaceMode(sessionHandle, configHandle, augmentedFaceMode);
+
+            ApiCameraFocusMode focusMode = sessionConfig.CameraFocusMode.ToApiCameraFocusMode();
+            ExternApi.ArConfig_setFocusMode(sessionHandle, configHandle, focusMode);
+        }
+
         public IntPtr Create()
         {
             IntPtr configHandle = IntPtr.Zero;
@@ -51,46 +87,6 @@ namespace GoogleARCoreInternal
         public void Destroy(IntPtr configHandle)
         {
             ExternApi.ArConfig_destroy(configHandle);
-        }
-
-        public void UpdateApiConfigWithArCoreSessionConfig(
-            IntPtr configHandle, ARCoreSessionConfig arCoreSessionConfig)
-        {
-            var lightingMode = arCoreSessionConfig.LightEstimationMode.ToApiLightEstimationMode();
-            ExternApi.ArConfig_setLightEstimationMode(
-                m_NativeSession.SessionHandle, configHandle, lightingMode);
-
-            var planeFindingMode = ApiPlaneFindingMode.Disabled;
-            switch (arCoreSessionConfig.PlaneFindingMode)
-            {
-            case DetectedPlaneFindingMode.Horizontal:
-                planeFindingMode = ApiPlaneFindingMode.Horizontal;
-                break;
-            case DetectedPlaneFindingMode.Vertical:
-                planeFindingMode = ApiPlaneFindingMode.Vertical;
-                break;
-            case DetectedPlaneFindingMode.HorizontalAndVertical:
-                planeFindingMode = ApiPlaneFindingMode.HorizontalAndVertical;
-                break;
-            default:
-                break;
-            }
-
-            ExternApi.ArConfig_setPlaneFindingMode(
-                m_NativeSession.SessionHandle, configHandle, planeFindingMode);
-
-            var updateMode = ApiUpdateMode.LatestCameraImage;
-            if (arCoreSessionConfig.MatchCameraFramerate)
-            {
-               updateMode = ApiUpdateMode.Blocking;
-
-               // Set vSyncCount to 0 so frame in rendered only when we have a new background
-               // texture.
-               QualitySettings.vSyncCount = 0;
-            }
-
-            ExternApi.ArConfig_setUpdateMode(
-                m_NativeSession.SessionHandle, configHandle, updateMode);
         }
 
         private struct ExternApi
@@ -113,6 +109,22 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setUpdateMode(
                 IntPtr session, IntPtr config, ApiUpdateMode update_mode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setCloudAnchorMode(
+                IntPtr session, IntPtr config, ApiCloudAnchorMode cloud_anchor_mode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setAugmentedImageDatabase(
+                IntPtr session, IntPtr config, IntPtr augmented_image_database);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setAugmentedFaceMode(
+                IntPtr session, IntPtr config, ApiAugmentedFaceMode augmented_face_mode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setFocusMode(
+                IntPtr session, IntPtr config, ApiCameraFocusMode focus_mode);
 #pragma warning restore 626
         }
     }

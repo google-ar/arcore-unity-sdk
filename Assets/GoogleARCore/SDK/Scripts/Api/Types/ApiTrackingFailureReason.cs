@@ -27,5 +27,6 @@ namespace GoogleARCore
         InsufficientLight = 2,
         ExcessiveMotion = 3,
         InsufficientFeatures = 4,
+        CameraUnavailable = 5,
     }
 }

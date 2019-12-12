@@ -230,6 +230,10 @@ namespace GoogleARCore.Examples.Common
                     case LostTrackingReason.ExcessiveMotion:
                         m_SnackBarText.text = "Moving too fast. Slow down.";
                         break;
+                    case LostTrackingReason.CameraUnavailable:
+                        m_SnackBarText.text = "Another app is using the camera. Tap on this app " +
+                            "or try closing the other one.";
+                        break;
                     default:
                         m_SnackBarText.text = "Motion tracking is lost.";
                         break;

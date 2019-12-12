@@ -81,7 +81,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Performs a raycast against objects being tracked by ARCore.
         /// Output the closest hit from the camera.
         /// Note that the Unity's screen coordinate (0, 0)
         /// starts from bottom left.
@@ -118,7 +118,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Performs a raycast against objects being tracked by ARCore.
         /// Output the closest hit from the origin.
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>
@@ -157,7 +157,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Performs a raycast against objects being tracked by ARCore.
         /// Output all hits from the camera.
         /// Note that the Unity's screen coordinate (0, 0)
         /// starts from bottom left.
@@ -186,7 +186,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Performs a raycast against physical objects being tracked by ARCore.
+        /// Performs a raycast against objects being tracked by ARCore.
         /// Output all hits from the origin.
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>

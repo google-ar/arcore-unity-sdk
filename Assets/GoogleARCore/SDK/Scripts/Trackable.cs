@@ -77,7 +77,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// Creates an Anchor at the given <c>Pose</c> that is attached to the Trackable where
-        /// semantics of the attachment relationship are defined by the subcass of Trackable (e.g.
+        /// semantics of the attachment relationship are defined by the subcass of Trackable (e.g.,
         /// DetectedPlane).   Note that the relative offset between the Pose of multiple Anchors
         /// attached to the same Trackable may change over time as ARCore refines its understanding
         /// of the world.

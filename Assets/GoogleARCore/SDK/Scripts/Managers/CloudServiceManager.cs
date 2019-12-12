@@ -41,6 +41,7 @@ namespace GoogleARCoreInternal.CrossPlatform
                 {
                     s_Instance = new CloudServiceManager();
                     LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
+                    LifecycleManager.Instance.OnResetInstance += _ResetInstance;
                 }
 
                 return s_Instance;
@@ -251,6 +252,11 @@ namespace GoogleARCoreInternal.CrossPlatform
                 Debug.LogWarning("Didn't find pending operation for cloudAnchorId: " +
                     cloudAnchorId);
             }
+        }
+
+        private static void _ResetInstance()
+        {
+            s_Instance = null;
         }
 
         private void _OnEarlyUpdate()

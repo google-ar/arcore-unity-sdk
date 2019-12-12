@@ -67,9 +67,6 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private delegate void OnBeforeSetConfigurationCallback(
-            IntPtr sessionHandhle, IntPtr configHandle);
-
         public static ExperimentManager Instance
         {
             get
@@ -105,14 +102,8 @@ namespace GoogleARCoreInternal
             LifecycleManager.Instance.EarlyUpdate += s_Instance._OnEarlyUpdate;
             LifecycleManager.Instance.UpdateSessionFeatures +=
                 s_Instance.OnUpdateSessionFeatures;
-        }
-
-        public void OnBeforeSetConfiguration(IntPtr sessionHandle, IntPtr configHandle)
-        {
-            foreach (var experiment in m_Experiments)
-            {
-                experiment.OnBeforeSetConfiguration(sessionHandle, configHandle);
-            }
+            LifecycleManager.Instance.OnSetConfiguration +=
+                        s_Instance._SetConfiguration;
         }
 
         public bool IsManagingTrackableType(int trackableType)
@@ -155,6 +146,14 @@ namespace GoogleARCoreInternal
             foreach (var experiment in m_Experiments)
             {
                 experiment.OnEarlyUpdate();
+            }
+        }
+
+        private void _SetConfiguration(IntPtr sessionHandle, IntPtr configHandle)
+        {
+            foreach (var experiment in m_Experiments)
+            {
+                experiment.OnSetConfiguration(sessionHandle, configHandle);
             }
         }
 

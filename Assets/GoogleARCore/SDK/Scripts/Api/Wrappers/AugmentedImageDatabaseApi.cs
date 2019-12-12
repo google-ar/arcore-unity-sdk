@@ -38,50 +38,64 @@ namespace GoogleARCoreInternal
 
     internal class AugmentedImageDatabaseApi
     {
+        private NativeSession m_NativeSession;
+
         public AugmentedImageDatabaseApi(NativeSession nativeSession)
         {
+            m_NativeSession = nativeSession;
         }
 
-        public IntPtr CreateArPrestoAugmentedImageDatabase(byte[] rawData)
+        public static void Release(IntPtr augmentedImageDatabaseHandle)
+        {
+            ExternApi.ArAugmentedImageDatabase_destroy(augmentedImageDatabaseHandle);
+        }
+
+        public IntPtr Create(byte[] rawData)
         {
             if (Application.isEditor)
             {
-                // ArPrestoAugmentedImageDatabase_create() not supported in editor.
+                // ArAugmentedImageDatabase_create() is not supported in editor.
                 return IntPtr.Zero;
             }
 
             IntPtr outDatabaseHandle = IntPtr.Zero;
-            GCHandle handle = new GCHandle();
-            IntPtr rawDataHandle = IntPtr.Zero;
-            Int32 length = 0;
-
             if (rawData != null)
             {
-                handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
-                rawDataHandle = handle.AddrOfPinnedObject();
-                length = rawData.Length;
+                GCHandle handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
+
+                ApiArStatus status = ExternApi.ArAugmentedImageDatabase_deserialize(
+                    m_NativeSession.SessionHandle, handle.AddrOfPinnedObject(), rawData.Length,
+                    ref outDatabaseHandle);
+                if (status != ApiArStatus.Success)
+                {
+                    Debug.LogWarningFormat(
+                        "Failed to deserialize AugmentedImageDatabase raw data with status: {0}",
+                        status);
+                    outDatabaseHandle = IntPtr.Zero;
+                }
+
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
             }
-
-            ExternApi.ArPrestoAugmentedImageDatabase_create(
-                rawDataHandle, length, ref outDatabaseHandle);
-
-            if (handle.IsAllocated)
+            else
             {
-                handle.Free();
+                ExternApi.ArAugmentedImageDatabase_create(
+                    m_NativeSession.SessionHandle, ref outDatabaseHandle);
             }
 
             return outDatabaseHandle;
         }
 
-        public Int32 AddImageAtRuntime(
-            IntPtr databaseHandle, string name, Texture2D image, float width)
+        public int AddAugmentedImageAtRuntime(IntPtr augmentedImageDatabaseHandle, string name,
+            Texture2D image, float width)
         {
-            Int32 outIndex = -1;
-
+            int outIndex = -1;
             if (InstantPreviewManager.IsProvidingPlatform)
             {
-                InstantPreviewManager.LogLimitedSupportMessage("add images to Augmented Image " +
-                    "database");
+                InstantPreviewManager.LogLimitedSupportMessage(
+                    "add images to Augmented Image database");
                 return outIndex;
             }
 
@@ -91,9 +105,21 @@ namespace GoogleARCoreInternal
                 return -1;
             }
 
-            ApiArStatus status = ExternApi.ArPrestoAugmentedImageDatabase_addImageAtRuntime(
-                databaseHandle, name, grayscaleBytesHandle.AddrOfPinnedObject(), image.width,
-                image.height, image.width, width, ref outIndex);
+            ApiArStatus status;
+            if (width > 0)
+            {
+                status = ExternApi.ArAugmentedImageDatabase_addImageWithPhysicalSize(
+                    m_NativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
+                    grayscaleBytesHandle.AddrOfPinnedObject(), image.width, image.height,
+                    image.width, width, ref outIndex);
+            }
+            else
+            {
+                status = ExternApi.ArAugmentedImageDatabase_addImage(
+                    m_NativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
+                    grayscaleBytesHandle.AddrOfPinnedObject(), image.width, image.height,
+                    image.width, ref outIndex);
+            }
 
             if (grayscaleBytesHandle.IsAllocated)
             {
@@ -141,24 +167,44 @@ namespace GoogleARCoreInternal
         private struct ExternApi
         {
 #pragma warning disable 626
-            [AndroidImport(ApiConstants.ARPrestoApi)]
-            public static extern void ArPrestoAugmentedImageDatabase_create(IntPtr rawBytes,
-                Int64 rawBytesSize, ref IntPtr outAugmentedImageDatabaseHandle);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedImageDatabase_create(
+                IntPtr session,
+                ref IntPtr out_augmented_image_database);
 
-            [AndroidImport(ApiConstants.ARPrestoApi)]
-            public static extern void ArPrestoAugmentedImageDatabase_destroy(
-                IntPtr augmentedImageDatabaseHandle);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArAugmentedImageDatabase_destroy(
+                IntPtr augmented_image_database);
 
-            [AndroidImport(ApiConstants.ARPrestoApi)]
-            public static extern ApiArStatus ArPrestoAugmentedImageDatabase_addImageAtRuntime(
-                IntPtr augmentedImageDatabaseHandle,
-                string imageName,
-                IntPtr imageBytes,
-                Int32 imageWidth,
-                Int32 imageHeight,
-                Int32 imageStride,
-                float imageWidthInMeters,
-                ref Int32 outIndex);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArAugmentedImageDatabase_deserialize(
+                IntPtr session,
+                IntPtr database_raw_bytes,
+                long database_raw_bytes_size,
+                ref IntPtr out_augmented_image_database);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArAugmentedImageDatabase_addImageWithPhysicalSize(
+                IntPtr session,
+                IntPtr augmented_image_database,
+                string image_name,
+                IntPtr image_grayscale_pixels,
+                int image_width_in_pixels,
+                int image_height_in_pixels,
+                int image_stride_in_pixels,
+                float image_width_in_meters,
+                ref int out_index);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArAugmentedImageDatabase_addImage(
+                IntPtr session,
+                IntPtr augmented_image_database,
+                string image_name,
+                IntPtr image_grayscale_pixels,
+                int image_width_in_pixels,
+                int image_height_in_pixels,
+                int image_stride_in_pixels,
+                ref int out_index);
 #pragma warning restore 626
         }
     }

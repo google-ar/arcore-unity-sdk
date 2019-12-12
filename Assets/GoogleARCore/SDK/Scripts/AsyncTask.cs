@@ -32,8 +32,6 @@ namespace GoogleARCore
     /// <typeparam name="T">The resultant type of the task.</typeparam>
     public class AsyncTask<T>
     {
-        private static bool s_IsInitialized = false;
-
         /// <summary>
         /// A collection of actons to perform on the main Unity thread after the task is complete.
         /// </summary>
@@ -47,10 +45,9 @@ namespace GoogleARCore
         internal AsyncTask(out Action<T> asyncOperationComplete)
         {
             // Register for early update event.
-            if (!s_IsInitialized)
+            if (!AsyncTask.IsInitialized)
             {
-                LifecycleManager.Instance.EarlyUpdate += AsyncTask.OnUpdate;
-                s_IsInitialized = true;
+                AsyncTask.InitAsyncTask();
             }
 
             IsComplete = false;
@@ -138,6 +135,8 @@ namespace GoogleARCore
         private static Queue<Action> s_UpdateActionQueue = new Queue<Action>();
         private static object s_LockObject = new object();
 
+        public static bool IsInitialized { get; private set; }
+
         /// <summary>
         /// Queues an action to be performed on Unity thread in Update().  This method can be called by any thread.
         /// </summary>
@@ -163,6 +162,29 @@ namespace GoogleARCore
                     action();
                 }
             }
+        }
+
+        public static void InitAsyncTask()
+        {
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            LifecycleManager.Instance.EarlyUpdate += OnUpdate;
+            LifecycleManager.Instance.OnResetInstance += ResetAsyncTask;
+            IsInitialized = true;
+        }
+
+        public static void ResetAsyncTask()
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            LifecycleManager.Instance.EarlyUpdate -= OnUpdate;
+            IsInitialized = false;
         }
     }
 }

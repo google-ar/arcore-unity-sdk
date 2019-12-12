@@ -34,6 +34,10 @@ namespace GoogleARCoreInternal
 
         event Action<bool> OnSessionSetEnabled;
 
+        event Action<IntPtr, IntPtr> OnSetConfiguration;
+
+        event Action OnResetInstance;
+
         SessionStatus SessionStatus { get; }
 
         LostTrackingReason LostTrackingReason { get; }

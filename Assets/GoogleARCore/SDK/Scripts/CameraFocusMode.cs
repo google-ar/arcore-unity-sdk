@@ -21,18 +21,18 @@
 namespace GoogleARCore
 {
     /// <summary>
-    /// Selects the auto focus behavior of the camera.
+    /// Selects the desired focus mode of the camera.
     /// </summary>
     public enum CameraFocusMode
     {
         /// <summary>
-        /// Fixed camera focus mode.
+        /// Fixed focus camera focus mode.
         /// </summary>
-        Fixed = 0,
+        FixedFocus = 0,
 
         /// <summary>
-        /// Auto camera focus mode.
+        /// Auto focus camera focus mode.
         /// </summary>
-        Auto = 1,
+        AutoFocus = 1,
     }
 }

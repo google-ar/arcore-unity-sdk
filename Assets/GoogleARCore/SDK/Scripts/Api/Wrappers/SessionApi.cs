@@ -52,8 +52,8 @@ namespace GoogleARCoreInternal
         public bool SetConfiguration(ARCoreSessionConfig sessionConfig)
         {
             IntPtr configHandle = m_NativeSession.SessionConfigApi.Create();
-            m_NativeSession.SessionConfigApi.UpdateApiConfigWithArCoreSessionConfig(
-                configHandle, sessionConfig);
+            SessionConfigApi.UpdateApiConfigWithARCoreSessionConfig(
+                m_NativeSession.SessionHandle, configHandle, sessionConfig);
 
             bool ret =
                 ExternApi.ArSession_configure(m_NativeSession.SessionHandle, configHandle) == 0;
@@ -254,6 +254,7 @@ namespace GoogleARCoreInternal
             public static extern int ArSession_acquireNewAnchor(
                 IntPtr sessionHandle, IntPtr poseHandle, ref IntPtr anchorHandle);
 #pragma warning restore 626
+
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_reportEngineType(
                 IntPtr sessionHandle, string engineType, string engineVersion);
