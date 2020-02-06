@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="InstantPreviewManager.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,8 +94,11 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return Application.isEditor &&
-                    ARCoreProjectSettings.Instance.IsInstantPreviewEnabled;
+#if UNITY_EDITOR
+                return ARCoreProjectSettings.Instance.IsInstantPreviewEnabled;
+#else
+                return false;
+#endif
             }
         }
 

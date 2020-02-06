@@ -1,6 +1,6 @@
 <dependencies>
     <iosPods>
-        <iosPod minTargetSdk="11.0" name="ARCore/CloudAnchors" version="~&gt; 1.12.0">
+        <iosPod minTargetSdk="11.0" name="ARCore/CloudAnchors" version="~&gt; 1.15.0">
             </iosPod>
     </iosPods>
 </dependencies>

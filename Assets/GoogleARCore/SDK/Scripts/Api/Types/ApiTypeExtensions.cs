@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ApiTypeExtensions.cs" company="Google">
 //
-// Copyright 2019 Google Inc. All Rights Reserved.
+// Copyright 2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -241,6 +241,20 @@ namespace GoogleARCoreInternal
                 default:
                     Debug.LogErrorFormat("Unexpected CameraFocusMode {0}", mode);
                     return ApiCameraFocusMode.Fixed;
+            }
+        }
+
+        public static ApiCloudAnchorMode ToApiCloudAnchorMode(this CloudAnchorMode mode)
+        {
+            switch (mode)
+            {
+                case CloudAnchorMode.Disabled:
+                    return ApiCloudAnchorMode.Disabled;
+                case CloudAnchorMode.Enabled:
+                    return ApiCloudAnchorMode.Enabled;
+                default:
+                    Debug.LogErrorFormat("Unexpected CloudAnchorMode {0}", mode);
+                    return ApiCloudAnchorMode.Disabled;
             }
         }
 

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="TrackableManager.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ namespace GoogleARCoreInternal
         public TrackableManager(NativeSession nativeSession)
         {
             m_NativeSession = nativeSession;
+            LifecycleManager.Instance.OnResetInstance += _ClearCachedTrackables;
         }
 
         /// <summary>
@@ -166,6 +167,15 @@ namespace GoogleARCoreInternal
             {
                 trackables.Add(trackable as T);
             }
+        }
+
+        private void _ClearCachedTrackables()
+        {
+            m_TrackableDict.Clear();
+            m_NewTrackables.Clear();
+            m_AllTrackables.Clear();
+            m_UpdatedTrackables.Clear();
+            m_OldTrackables.Clear();
         }
     }
 }

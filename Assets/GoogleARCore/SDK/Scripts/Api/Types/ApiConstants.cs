@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ApiConstants.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,14 +28,7 @@ namespace GoogleARCoreInternal
 
     internal static class ApiConstants
     {
-#if ARCORE_TESTING
-        public const string ARCoreNativeApi = "arcore_sdk_c_springboard";
-        public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
-        public const string ARCoreShimApi = "arcore_unity";
-        public const string ARPrestoApi = "arcore_unity";
-        public const string MediaNdk =  "NOT_AVAILABLE";
-        public const string NdkCameraApi = "NOT_AVAILABLE";
-#elif UNITY_EDITOR
+#if UNITY_EDITOR
         public const string ARCoreNativeApi = InstantPreviewManager.InstantPreviewNativeApi;
         public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
         public const string ARCoreShimApi = InstantPreviewManager.InstantPreviewNativeApi;
@@ -56,7 +49,7 @@ namespace GoogleARCoreInternal
 #else
         public const string ARCoreNativeApi = "NOT_AVAILABLE";
         public const string ARCoreARKitIntegrationApi = "NOT_AVAILABLE";
-#endif
+#endif // ARCORE_IOS_SUPPORT
         public const string ARCoreShimApi = "NOT_AVAILABLE";
         public const string ARPrestoApi = "NOT_AVAILABLE";
         public const string MediaNdk = "NOT_AVAILABLE";

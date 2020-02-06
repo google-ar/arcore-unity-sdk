@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="SuppressMemoryAllocationErrorAttribute.cs" company="Google">
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

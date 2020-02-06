@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="SessionApi.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,19 +47,6 @@ namespace GoogleARCoreInternal
         {
             ExternApi.ArSession_reportEngineType(
                 m_NativeSession.SessionHandle, "Unity", Application.unityVersion);
-        }
-
-        public bool SetConfiguration(ARCoreSessionConfig sessionConfig)
-        {
-            IntPtr configHandle = m_NativeSession.SessionConfigApi.Create();
-            SessionConfigApi.UpdateApiConfigWithARCoreSessionConfig(
-                m_NativeSession.SessionHandle, configHandle, sessionConfig);
-
-            bool ret =
-                ExternApi.ArSession_configure(m_NativeSession.SessionHandle, configHandle) == 0;
-            m_NativeSession.SessionConfigApi.Destroy(configHandle);
-
-            return ret;
         }
 
         public void GetSupportedCameraConfigurationsWithFilter(

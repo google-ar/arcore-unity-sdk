@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="PointCloudManager.cs" company="Google">
 //
-// Copyright 2019 Google Inc. All Rights Reserved.
+// Copyright 2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ namespace GoogleARCoreInternal
             // After first frame, release previous frame's point cloud.
             if (PointCloudHandle != IntPtr.Zero)
             {
-                m_LastReleasedPointcloudTimestamp = m_NativeSession.PointCloudApi.GetTimestamp(PointCloudHandle);
+                m_LastReleasedPointcloudTimestamp =
+                    m_NativeSession.PointCloudApi.GetTimestamp(PointCloudHandle);
                 m_NativeSession.PointCloudApi.Release(PointCloudHandle);
                 PointCloudHandle = IntPtr.Zero;
             }

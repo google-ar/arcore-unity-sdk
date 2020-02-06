@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="SessionConfigApi.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,8 +57,8 @@ namespace GoogleARCoreInternal
                 ApiUpdateMode.Blocking : ApiUpdateMode.LatestCameraImage;
             ExternApi.ArConfig_setUpdateMode(sessionHandle, configHandle, updateMode);
 
-            ApiCloudAnchorMode cloudAnchorMode = sessionConfig.EnableCloudAnchor ?
-                ApiCloudAnchorMode.Enabled : ApiCloudAnchorMode.Disabled;
+            ApiCloudAnchorMode cloudAnchorMode =
+                sessionConfig.CloudAnchorMode.ToApiCloudAnchorMode();
             ExternApi.ArConfig_setCloudAnchorMode(sessionHandle, configHandle, cloudAnchorMode);
 
             IntPtr augmentedImageDatabaseHandle = IntPtr.Zero;
@@ -67,6 +67,11 @@ namespace GoogleARCoreInternal
                 augmentedImageDatabaseHandle = sessionConfig.AugmentedImageDatabase.NativeHandle;
                 ExternApi.ArConfig_setAugmentedImageDatabase(sessionHandle, configHandle,
                     augmentedImageDatabaseHandle);
+            }
+            else
+            {
+                ExternApi.ArConfig_setAugmentedImageDatabase(sessionHandle, configHandle,
+                    IntPtr.Zero);
             }
 
             ApiAugmentedFaceMode augmentedFaceMode =

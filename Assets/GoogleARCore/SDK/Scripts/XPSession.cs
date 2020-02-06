@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="XPSession.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ namespace GoogleARCore.CrossPlatform
     public static class XPSession
     {
         /// <summary>
-        /// Attempts to asynchronously host a new cloud anchor.
+        /// Attempts to asynchronously host a new Cloud Anchor.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
         /// <returns>
-        /// A task that will complete when the attempt to host a new cloud anchor has finished.
+        /// A task that will complete when the attempt to host a new Cloud Anchor has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(Anchor anchor)
@@ -47,11 +47,11 @@ namespace GoogleARCore.CrossPlatform
 
 #if ARCORE_IOS_SUPPORT
         /// <summary>
-        /// Attempts to asynchronously host a new cloud anchor.
+        /// Attempts to asynchronously host a new Cloud Anchor.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
         /// <returns>
-        /// A task that will complete when the attempt to host a new cloud anchor has finished.
+        /// A task that will complete when the attempt to host a new Cloud Anchor has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(
@@ -63,13 +63,15 @@ namespace GoogleARCore.CrossPlatform
 #endif
 
         /// <summary>
-        /// Attempts to asynchronous resolve a cloud anchor.
+        /// Attempts to asynchronously resolve a Cloud Anchor. 1 wait for a call to
+        /// resolve a Cloud Anchor to complete before initiating another call. A session can have
+        /// up to 20 Cloud Anchors and pending AsyncTasks at a given time.
         /// The task will continue to retry in the background indefinitely,
         /// until it is successfully resolved, cancelled, or reaches a terminal error state.
         /// </summary>
-        /// <param name="cloudAnchorId">The id of the cloud anchor to resolve.</param>
+        /// <param name="cloudAnchorId">The id of the Cloud Anchor to resolve.</param>
         /// <returns>
-        /// A task that will complete when the attempt to resolve a cloud anchor has finished.
+        /// A task that will complete when the attempt to resolve a Cloud Anchor has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> ResolveCloudAnchor(string cloudAnchorId)

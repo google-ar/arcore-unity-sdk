@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AndroidPermissionsManager.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace GoogleARCore
     /// <summary>
     /// Manages Android permissions for the Unity application.
     /// </summary>
-    public class AndroidPermissionsManager : AndroidJavaProxy
+    public class AndroidPermissionsManager : AndroidJavaProxy, IAndroidPermissionsCheck
     {
         private static AndroidPermissionsManager s_Instance;
         private static AndroidJavaObject s_Activity;
@@ -101,6 +101,21 @@ namespace GoogleARCore
             return s_CurrentRequest;
         }
 
+         /// <summary>
+        /// Requests an Android permission from the user.
+        /// </summary>
+        /// <param name="permissionName">The permission to be requested (e.g.
+        /// android.permission.CAMERA).</param>
+        /// <returns>An asynchronous task that completes when the user has accepted or rejected the
+        /// requested permission and yields a <see cref="AndroidPermissionsRequestResult"/> that
+        /// summarizes the result. If this method is called when another permissions request is
+        /// pending, <c>null</c> will be returned instead.</returns>
+        public AsyncTask<AndroidPermissionsRequestResult> RequestAndroidPermission(
+            string permissionName)
+        {
+            return RequestPermission(permissionName);
+        }
+
         /// @cond EXCLUDE_FROM_DOXYGEN
         /// <summary>
         /// Callback fired when a permission is granted.
@@ -140,7 +155,7 @@ namespace GoogleARCore
         {
         }
 
-        private static AndroidPermissionsManager GetInstance()
+        internal static AndroidPermissionsManager GetInstance()
         {
             if (s_Instance == null)
             {

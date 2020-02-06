@@ -14,7 +14,7 @@ MonoBehaviour:
   MatchCameraFramerate: 1
   PlaneFindingMode: 1
   LightEstimationMode: 3
-  EnableCloudAnchor: 1
+  CloudAnchorMode: 1
   AugmentedImageDatabase: {fileID: 0}
   CameraFocusMode: 0
   AugmentedFaceMode: 0

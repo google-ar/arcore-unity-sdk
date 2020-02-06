@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreSession.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ namespace GoogleARCore
                         "front-facing (selfie) camera.", SessionConfig.LightEstimationMode);
                 }
 
-                if (SessionConfig.EnableCloudAnchor)
+                if (SessionConfig.CloudAnchorMode != CloudAnchorMode.Disabled)
                 {
                     Debug.LogErrorFormat("Cloud Anchors require back-facing camera.");
                 }
@@ -155,8 +155,8 @@ namespace GoogleARCore
             }
 
             if (DeviceCameraDirection == DeviceCameraDirection.BackFacing &&
-                SessionConfig != null && SessionConfig.AugmentedFaceMode !=
-                    AugmentedFaceMode.Disabled)
+                SessionConfig != null && SessionConfig.AugmentedFaceMode ==
+                    AugmentedFaceMode.Mesh)
             {
                 Debug.LogErrorFormat("AugmentedFaceMode.{0} requires front-facing (selfie) camera.",
                     SessionConfig.AugmentedFaceMode);

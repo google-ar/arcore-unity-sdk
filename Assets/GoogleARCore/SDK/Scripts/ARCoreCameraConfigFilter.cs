@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreCameraConfigFilter.cs" company="Google">
 //
-// Copyright 2019 Google Inc. All Rights Reserved.
+// Copyright 2019 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,9 +34,14 @@ namespace GoogleARCore
     /// NOTE: It is possible to select options in such a way that some devices will
     /// have no available configurations at runtime. In this case, your app will not run.
     ///
+    /// Beginning with ARCore SDK 1.15.0, some devices support additional camera configs with lower
+    /// GPU texture resolutions than the device's default GPU texture resolution. See the
+    /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
+    /// devices</a> page for details.
+    ///
     /// An app may adjust its capabilities at runtime by selecting a wider range of config filters
-    /// and using <see cref="ARCoreSession.RegisterChooseCameraConfigurationCallback(
-    /// ARCoreSession.OnChooseCameraConfigurationDelegate)"/> to specify a selection function.
+    /// and using ARCoreSession.RegisterChooseCameraConfigurationCallback(
+    /// ARCoreSession.OnChooseCameraConfigurationDelegate) to specify a selection function.
     /// In that function the app may then adjust its runtime settings and select an appropriate
     /// camera configuration. If no callback is registered, ARCore will use the first
     /// <see cref="CameraConfig"/> in the list of available configurations.
@@ -48,17 +53,17 @@ namespace GoogleARCore
     public class ARCoreCameraConfigFilter : ScriptableObject
     {
         /// <summary>
-        /// Target Camera Frame Rates Filter.
+        /// This is the camera frame rates filter for the currently selected camera.
         /// </summary>
         public TargetCameraFramerateFilter TargetCameraFramerate;
 
         /// <summary>
-        /// Depth Sensor Usage Filter.
+        /// This allows an app to use or disable a hardware depth sensor if present on the device.
         /// </summary>
         public DepthSensorUsageFilter DepthSensorUsage;
 
         /// <summary>
-        /// Unity OnValidate().
+        /// Unity OnValidate.
         /// </summary>
         public void OnValidate()
         {
@@ -88,7 +93,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Target Camera Frame Rates.
+        /// This is the camera frame rates filter for the currently selected camera.
         /// </summary>
         [Serializable]
         public class TargetCameraFramerateFilter
@@ -116,7 +121,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Depth Sensor Usage.
+        /// This allows an app to use or disable a hardware depth sensor if present on the device.
         /// </summary>
         [Serializable]
         public class DepthSensorUsageFilter

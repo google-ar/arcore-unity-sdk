@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="Frame.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -216,7 +216,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Container for state related to the ARCore camera image metadata for the Frame.
+        /// Container for state related to the ARCore camera image metadata for the frame.
         /// </summary>
         public static class CameraMetadata
         {
@@ -280,7 +280,7 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Container for state related to the ARCore point cloud for the Frame.
+        /// Container for state related to the ARCore point cloud for the frame.
         /// </summary>
         public static class PointCloud
         {
