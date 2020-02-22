@@ -12,6 +12,10 @@ with AR features.
 
 See the [Getting Started with Unity](//developers.google.com/ar/develop/unity/getting-started) developer guide.
 
+## Bonus Video
+
+See the [Introduction to Augmented Faces](//https://www.youtube.com/watch?v=8ih7eHwPoxM0)
+
 
 ## API Reference
 
