@@ -158,18 +158,15 @@ namespace GoogleARCore.Examples.AugmentedFaces
                 // Update the root transform;
                 transform.position = m_AugmentedFace.CenterPose.position;
                 transform.rotation = m_AugmentedFace.CenterPose.rotation;
-            }
-
-            foreach (AugmentedFaceRegion region in m_RegionGameObjects.Keys)
-            {
-                Transform regionTransform = m_RegionGameObjects[region];
-                regionTransform.gameObject.SetActive(isTracking);
-                if (isTracking)
+                foreach (AugmentedFaceRegion region in m_RegionGameObjects.Keys)
                 {
+                    Transform regionTransform = m_RegionGameObjects[region];
+                    regionTransform.gameObject.SetActive(isTracking);
                     Pose regionPose = m_AugmentedFace.GetRegionPose(region);
                     regionTransform.position = regionPose.position;
                     regionTransform.rotation = regionPose.rotation;
                 }
+
             }
         }
     }
