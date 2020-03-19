@@ -20,8 +20,10 @@
 
 namespace GoogleARCore
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using GoogleARCoreInternal;
     using UnityEngine;
     using UnityEngine.Rendering;
@@ -263,5 +265,6 @@ namespace GoogleARCore
             m_Camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, m_CommandBuffer);
             m_Camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, m_CommandBuffer);
         }
+
     }
 }

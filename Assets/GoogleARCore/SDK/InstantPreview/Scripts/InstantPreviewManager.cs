@@ -447,7 +447,7 @@ namespace GoogleARCoreInternal
                 }
 
                 NativeApi.SendFrame(targetTexture.GetNativeTexturePtr());
-                GL.IssuePluginEvent(renderEventFunc, 1);
+                GL.IssuePluginEvent(renderEventFunc, (int)ApiRenderEvent.UpdateCubemapTexture);
             }
         }
 

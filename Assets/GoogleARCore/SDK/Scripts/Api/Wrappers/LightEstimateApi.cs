@@ -196,7 +196,8 @@ namespace GoogleARCoreInternal
             }
 
             // Issue plugin event to update cubemap texture.
-            GL.IssuePluginEvent(ExternApi.ARCoreRenderingUtils_GetRenderEventFunc(), 1);
+            GL.IssuePluginEvent(ExternApi.ARCoreRenderingUtils_GetRenderEventFunc(),
+                                (int)ApiRenderEvent.UpdateCubemapTexture);
 
 #else
             // Gets raw color data from native plugin then update cubemap textures by
@@ -302,26 +303,26 @@ namespace GoogleARCoreInternal
             public static extern void ArLightEstimate_getTimestamp(IntPtr session,
                 IntPtr light_estimate, ref long timestamp);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern void ARCoreRenderingUtils_SetTextureDataType(
                 ApiTextureDataType texture_data_type, bool create_gl_texture);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern void ARCoreRenderingUtils_SetActiveColorSpace(bool is_gamma_space);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern void ARCoreRenderingUtils_SetARCoreLightEstimation(
                 IntPtr session, IntPtr cubemap_image);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern void ARCoreRenderingUtils_GetCubemapTexture(ref int out_texture_id,
                 ref int out_width_height);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern void ARCoreRenderingUtils_GetCubemapRawColors(
                 int face_index, Color[] out_pixel_colors);
 
-            [AndroidImport("arcore_rendering_utils_api")]
+            [AndroidImport(ApiConstants.ARRenderingUtilsApi)]
             public static extern IntPtr ARCoreRenderingUtils_GetRenderEventFunc();
 #pragma warning restore 626
         }

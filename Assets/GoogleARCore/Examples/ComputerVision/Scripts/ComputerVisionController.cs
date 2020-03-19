@@ -231,7 +231,7 @@ namespace GoogleARCore.Examples.ComputerVision
         }
 
         /// <summary>
-        /// Hanldes the auto focus checkbox value changed.
+        /// Handles the auto focus checkbox value changed.
         /// </summary>
         /// <param name="autoFocusEnabled">If set to <c>true</c> auto focus will be enabled.</param>
         public void OnAutoFocusCheckboxValueChanged(bool autoFocusEnabled)

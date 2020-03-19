@@ -73,7 +73,7 @@ namespace GoogleARCoreInternal
                 // Skip camera config that has a different camera facing direction.
                 DeviceCameraDirection configDirection =
                     m_NativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle)
-                        .ToDeviceCameraDirection();
+                    .ToDeviceCameraDirection();
                 if (configDirection != cameraFacingDirection)
                 {
                     continue;

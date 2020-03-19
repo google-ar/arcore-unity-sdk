@@ -213,6 +213,7 @@ namespace GoogleARCoreInternal
             m_NativeSession.TrackableListApi.Destroy(listHandle);
         }
 
+
         private struct ExternApi
         {
             [DllImport(ApiConstants.ARCoreNativeApi)]

@@ -23,6 +23,7 @@ namespace GoogleARCoreInternal
     using System;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using GoogleARCore.CrossPlatform;
     using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
 

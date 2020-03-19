@@ -33,11 +33,11 @@ namespace GoogleARCore.CrossPlatform
     public static class XPSession
     {
         /// <summary>
-        /// Attempts to asynchronously host a new Cloud Anchor.
+        /// Attempts to asynchronously host a new <see cref="Cloud Anchor"/>.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
         /// <returns>
-        /// A task that will complete when the attempt to host a new Cloud Anchor has finished.
+        /// A task that will complete when the attempt to host a new <see cref="Cloud Anchor"/> has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(Anchor anchor)
@@ -47,11 +47,11 @@ namespace GoogleARCore.CrossPlatform
 
 #if ARCORE_IOS_SUPPORT
         /// <summary>
-        /// Attempts to asynchronously host a new Cloud Anchor.
+        /// Attempts to asynchronously host a new <see cref="Cloud Anchor"/>.
         /// </summary>
         /// <param name="anchor">The anchor to host.</param>
         /// <returns>
-        /// A task that will complete when the attempt to host a new Cloud Anchor has finished.
+        /// A task that will complete when the attempt to host a new <see cref="Cloud Anchor"/> has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> CreateCloudAnchor(
@@ -63,15 +63,15 @@ namespace GoogleARCore.CrossPlatform
 #endif
 
         /// <summary>
-        /// Attempts to asynchronously resolve a Cloud Anchor. 1 wait for a call to
-        /// resolve a Cloud Anchor to complete before initiating another call. A session can have
+        /// Attempts to asynchronously resolve a <see cref="Cloud Anchor"/>. You don’t need to wait for a call to
+        /// resolve a <see cref="Cloud Anchor"/> to complete before initiating another call. A session can have
         /// up to 20 Cloud Anchors and pending AsyncTasks at a given time.
         /// The task will continue to retry in the background indefinitely,
         /// until it is successfully resolved, cancelled, or reaches a terminal error state.
         /// </summary>
-        /// <param name="cloudAnchorId">The id of the Cloud Anchor to resolve.</param>
+        /// <param name="cloudAnchorId">The id of the <see cref="Cloud Anchor"/> to resolve.</param>
         /// <returns>
-        /// A task that will complete when the attempt to resolve a Cloud Anchor has finished.
+        /// A task that will complete when the attempt to resolve a <see cref="Cloud Anchor"/> has finished.
         /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> ResolveCloudAnchor(string cloudAnchorId)
@@ -89,7 +89,7 @@ namespace GoogleARCore.CrossPlatform
         /// If no operation is pending for the given <paramref name="cloudAnchorId"/>,
         /// this call does not take effect and a warning message will be logged.
         /// </summary>
-        /// <param name="cloudAnchorId">The id of the Cloud Anchor that is being watched or
+        /// <param name="cloudAnchorId">The id of the <see cref="Cloud Anchor"/> that is being watched or
         /// resolved.</param>
         public static void CancelCloudAnchorAsyncTask(string cloudAnchorId)
         {

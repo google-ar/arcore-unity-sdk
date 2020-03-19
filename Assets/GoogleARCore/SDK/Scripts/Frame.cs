@@ -640,5 +640,6 @@ namespace GoogleARCore
                 return result;
             }
         }
+
     }
 }

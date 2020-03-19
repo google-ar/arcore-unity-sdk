@@ -32,7 +32,7 @@ namespace GoogleARCore
 
         /// <summary>
         /// Cloud Anchors are enabled, HostCloudAnchor() and ResolveCloudAnchor() functions are
-        /// available. The app is expected to have the INTERNET permission.
+        /// available. The app is expected to have the INTERNET permission (Android only).
         /// </summary>
         Enabled = 1,
 
