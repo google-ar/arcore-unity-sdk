@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="NativeSession.cs" company="Google">
+// <copyright file="NativeSession.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

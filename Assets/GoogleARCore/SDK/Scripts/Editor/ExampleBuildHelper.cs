@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ExampleBuildHelper.cs" company="Google">
+// <copyright file="ExampleBuildHelper.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

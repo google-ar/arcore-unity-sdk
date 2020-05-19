@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiTypeExtensions.cs" company="Google">
+// <copyright file="ApiTypeExtensions.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //
@@ -97,6 +97,10 @@ namespace GoogleARCoreInternal
                     return SessionStatus.ErrorPermissionNotGranted;
                 case ApiPrestoStatus.ErrorSessionConfigurationNotSupported:
                     return SessionStatus.ErrorSessionConfigurationNotSupported;
+                case ApiPrestoStatus.ErrorCameraNotAvailable:
+                    return SessionStatus.ErrorCameraNotAvailable;
+                case ApiPrestoStatus.ErrorIllegalState:
+                    return SessionStatus.ErrorIllegalState;
                 default:
                     Debug.LogErrorFormat("Unexpected presto status {0}", prestoStatus);
                     return SessionStatus.FatalError;

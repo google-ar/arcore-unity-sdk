@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AugmentedImageDatabase.cs" company="Google">
+// <copyright file="AugmentedImageDatabase.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

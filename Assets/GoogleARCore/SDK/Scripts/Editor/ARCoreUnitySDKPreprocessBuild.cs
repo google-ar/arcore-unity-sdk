@@ -20,6 +20,7 @@
 
 #if UNITY_2020_1_OR_NEWER
 using System;
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.PackageManager.Requests;

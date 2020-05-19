@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="LightEstimateApi.cs" company="Google">
+// <copyright file="LightEstimateApi.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //
@@ -35,7 +35,7 @@ namespace GoogleARCoreInternal
 
     internal class LightEstimateApi
     {
-        private readonly float[] k_SHConstants =
+        internal static readonly float[] k_SHConstants =
         {
             0.886227f, 1.023328f, 1.023328f,
             1.023328f, 0.858086f, 0.858086f,

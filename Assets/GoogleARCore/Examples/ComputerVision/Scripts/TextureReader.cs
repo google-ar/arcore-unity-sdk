@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="TextureReader.cs" company="Google">
+// <copyright file="TextureReader.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

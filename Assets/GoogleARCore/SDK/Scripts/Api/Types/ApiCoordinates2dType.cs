@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiCoordinates2dType.cs" company="Google">
+// <copyright file="ApiCoordinates2dType.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

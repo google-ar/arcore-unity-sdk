@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="RotationManipulator.cs" company="Google">
+// <copyright file="RotationManipulator.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ExperimentBase.cs" company="Google">
+// <copyright file="ExperimentBase.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

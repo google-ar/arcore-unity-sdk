@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiTrackingFailureReason.cs" company="Google">
+// <copyright file="ApiTrackingFailureReason.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

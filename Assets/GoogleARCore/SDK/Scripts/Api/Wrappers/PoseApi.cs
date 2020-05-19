@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="PoseApi.cs" company="Google">
+// <copyright file="PoseApi.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

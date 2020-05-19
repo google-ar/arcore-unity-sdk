@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AugmentedImageApi.cs" company="Google">
+// <copyright file="AugmentedImageApi.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

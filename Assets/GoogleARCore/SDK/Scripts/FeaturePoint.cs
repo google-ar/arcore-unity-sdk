@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="FeaturePoint.cs" company="Google">
+// <copyright file="FeaturePoint.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

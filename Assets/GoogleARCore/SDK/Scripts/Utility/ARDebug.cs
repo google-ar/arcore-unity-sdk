@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ARDebug.cs" company="Google">
+// <copyright file="ARDebug.cs" company="Google LLC">
 //
 // Copyright 2016 Google LLC. All Rights Reserved.
 //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="DisplayUvCoordinateTypeExtension.cs" company="Google">
+// <copyright file="DisplayUvCoordinateTypeExtension.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AugmentedImageTrackingMethod.cs" company="Google">
+// <copyright file="AugmentedImageTrackingMethod.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

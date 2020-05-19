@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="PointCloudApi.cs" company="Google">
+// <copyright file="PointCloudApi.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="MarshalingHelper.cs" company="Google">
+// <copyright file="MarshalingHelper.cs" company="Google LLC">
 //
 // Copyright 2016 Google LLC. All Rights Reserved.
 //

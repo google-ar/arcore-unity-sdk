@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="WaitForTaskCompletionYieldInstruction.cs" company="Google">
+// <copyright file="WaitForTaskCompletionYieldInstruction.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

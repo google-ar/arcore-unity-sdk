@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApkAvailabilityStatus.cs" company="Google">
+// <copyright file="ApkAvailabilityStatus.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

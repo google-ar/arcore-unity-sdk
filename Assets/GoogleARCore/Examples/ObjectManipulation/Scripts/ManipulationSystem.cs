@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ManipulationSystem.cs" company="Google">
+// <copyright file="ManipulationSystem.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

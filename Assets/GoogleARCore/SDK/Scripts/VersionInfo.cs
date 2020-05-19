@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="VersionInfo.cs" company="Google">
+// <copyright file="VersionInfo.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //
@@ -28,6 +28,6 @@ namespace GoogleARCore
         /// <summary>
         /// The current ARCore SDK version.
         /// </summary>
-        public static readonly string Version = "1.16.0";
+        public static readonly string Version = "1.17.0";
     }
 }

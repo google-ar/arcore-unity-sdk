@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiArStatus.cs" company="Google">
+// <copyright file="ApiArStatus.cs" company="Google LLC">
 //
 // Copyright 2016 Google LLC. All Rights Reserved.
 //
@@ -99,6 +99,12 @@ namespace GoogleARCoreInternal
 
         // The data passed in for this operation is not supported by this version of the SDK.
         ErrorDatatUnsupportedVersion = -19,
+
+        // A function has been invoked at an illegal or inappropriate time. A message will be
+        // printed to logcat with additional details for the developer. For example,
+        // ArSession_resume() will return this status if the camera configuration was changed
+        // and there are any unreleased images.
+        ErrorIllegalState = -20,
 
         // The ARCore APK is not installed on this device.
         UnavailableArCoreNotInstalled = -100,

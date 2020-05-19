@@ -1296,11 +1296,11 @@ namespace GoogleARCoreInternal.Proto {
         /// </summary>
         [pbr::OriginalName("CRONET_SOCIAL")] CronetSocial = 68,
         /// <summary>
-        /// The client side of experiment framework (go/ph, peiling@, phenotype-eng@).
+        /// The client side of experiment framework (go/ph, peiling@, ph-eng@).
         /// </summary>
         [pbr::OriginalName("PHENOTYPE")] Phenotype = 69,
         /// <summary>
-        /// The counters for Phenotype (go/ph, peiling@, phenotype-eng@).
+        /// The counters for Phenotype (go/ph, peiling@, ph-eng@).
         /// </summary>
         [pbr::OriginalName("PHENOTYPE_COUNTERS")] PhenotypeCounters = 70,
         /// <summary>

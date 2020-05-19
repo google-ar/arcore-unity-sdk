@@ -715,6 +715,7 @@ PlayerSettings:
     iOS: 1
   scriptingBackend:
     Android: 0
+    Standalone: 0
     WebPlayer: 0
     iOS: 1
   incrementalIl2cppBuild:

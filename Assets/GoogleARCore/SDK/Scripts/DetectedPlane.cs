@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="DetectedPlane.cs" company="Google">
+// <copyright file="DetectedPlane.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

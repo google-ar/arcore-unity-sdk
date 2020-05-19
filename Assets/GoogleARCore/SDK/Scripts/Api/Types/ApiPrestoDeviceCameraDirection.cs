@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiPrestoDeviceCameraDirection.cs" company="Google">
+// <copyright file="ApiPrestoDeviceCameraDirection.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

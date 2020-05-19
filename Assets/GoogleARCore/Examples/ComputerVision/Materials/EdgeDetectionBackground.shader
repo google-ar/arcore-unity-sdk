@@ -1,3 +1,23 @@
+//-----------------------------------------------------------------------
+// <copyright file="EdgeDetectionBackground.shader" company="Google LLC">
+//
+// Copyright 2019 Google LLC. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// </copyright>
+//-----------------------------------------------------------------------
+
 Shader "EdgeDetectionBackground"
 {
     Properties
@@ -61,63 +81,64 @@ Shader "EdgeDetectionBackground"
         }
     }
 
-    // For running the computer vision sample in the Unity Editor on a desktop using
-    // ARCore Instant Preview.
+    // For running the computer vision sample in the Unity Editor on a desktop
+    // using ARCore Instant Preview.
     Subshader
     {
-      Pass
-      {
-        ZWrite Off
-
-        CGPROGRAM
-
-        #pragma exclude_renderers gles3
-        #pragma vertex vert
-        #pragma fragment frag
-
-        #include "UnityCG.cginc"
-
-        uniform float4 _UvTopLeftRight;
-        uniform float4 _UvBottomLeftRight;
-        uniform float4 _ImageTex_ST;
-
-        struct appdata
+        Pass
         {
-          float4 vertex : POSITION;
-          float2 uv : TEXCOORD0;
-        };
+            ZWrite Off
 
-        struct v2f
-        {
-          float2 uv : TEXCOORD0;
-          float4 vertex : SV_POSITION;
-        };
+            CGPROGRAM
 
-        v2f vert(appdata v)
-        {
-          float2 transformedUV = v.uv * _ImageTex_ST.xy + _ImageTex_ST.zw;
-          float2 uvTop = lerp(_UvTopLeftRight.xy, _UvTopLeftRight.zw, transformedUV.x);
-          float2 uvBottom = lerp(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, transformedUV.x);
+            #pragma exclude_renderers gles3
+            #pragma vertex vert
+            #pragma fragment frag
 
-          v2f o;
-          o.vertex = UnityObjectToClipPos(v.vertex);
-          o.uv = lerp(uvTop, uvBottom, transformedUV.y);
+            #include "UnityCG.cginc"
 
-          // Instant preview's texture is transformed differently.
-          o.uv.x = 1.0 - o.uv.x;
+            uniform float4 _UvTopLeftRight;
+            uniform float4 _UvBottomLeftRight;
+            uniform float4 _ImageTex_ST;
 
-          return o;
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+            };
+
+            v2f vert(appdata v)
+            {
+                float2 transformedUV = v.uv * _ImageTex_ST.xy + _ImageTex_ST.zw;
+                float2 uvTop = lerp(_UvTopLeftRight.xy, _UvTopLeftRight.zw, transformedUV.x);
+                float2 uvBottom = lerp(_UvBottomLeftRight.xy, _UvBottomLeftRight.zw, transformedUV.x);
+
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = lerp(uvTop, uvBottom, transformedUV.y);
+
+                // Instant preview's texture is transformed differently.
+                o.uv.x = 1.0 - o.uv.x;
+
+                return o;
+            }
+
+            sampler2D _ImageTex;
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed4 color = tex2D(_ImageTex, i.uv);
+                return fixed4(color.r, color.r, color.r, 1.0);
+            }
+
+            ENDCG
         }
-
-        sampler2D _ImageTex;
-
-        fixed4 frag(v2f i) : SV_Target
-        {
-          fixed4 color = tex2D(_ImageTex, i.uv);
-          return fixed4(color.r, color.r, color.r, 1.0);
-        }
-        ENDCG
-      }
     }
     FallBack Off
 }

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ApiRenderEvent.cs" company="Google">
+// <copyright file="ApiRenderEvent.cs" company="Google LLC">
 //
 // Copyright 2020 Google LLC. All Rights Reserved.
 //

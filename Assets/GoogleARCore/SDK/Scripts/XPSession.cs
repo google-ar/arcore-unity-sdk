@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="XPSession.cs" company="Google">
+// <copyright file="XPSession.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //
@@ -63,7 +63,7 @@ namespace GoogleARCore.CrossPlatform
 #endif
 
         /// <summary>
-        /// Attempts to asynchronously resolve a <see cref="Cloud Anchor"/>. You don’t need to wait for a call to
+        /// Attempts to asynchronously resolve a <see cref="Cloud Anchor"/>. You don't need to wait for a call to
         /// resolve a <see cref="Cloud Anchor"/> to complete before initiating another call. A session can have
         /// up to 20 Cloud Anchors and pending AsyncTasks at a given time.
         /// The task will continue to retry in the background indefinitely,

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ExperimentManager.cs" company="Google">
+// <copyright file="ExperimentManager.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

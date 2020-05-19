@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AndroidDependenciesHelper.cs" company="Google">
+// <copyright file="AndroidDependenciesHelper.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AsyncTask.cs" company="Google">
+// <copyright file="AsyncTask.cs" company="Google LLC">
 //
 // Copyright 2017 Google LLC. All Rights Reserved.
 //

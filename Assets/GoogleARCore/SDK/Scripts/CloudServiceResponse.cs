@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="CloudServiceResponse.cs" company="Google">
+// <copyright file="CloudServiceResponse.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

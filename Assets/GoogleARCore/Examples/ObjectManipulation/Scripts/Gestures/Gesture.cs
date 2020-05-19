@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="Gesture.cs" company="Google">
+// <copyright file="Gesture.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

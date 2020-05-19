@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="XPTrackingState.cs" company="Google">
+// <copyright file="XPTrackingState.cs" company="Google LLC">
 //
 // Copyright 2018 Google LLC. All Rights Reserved.
 //

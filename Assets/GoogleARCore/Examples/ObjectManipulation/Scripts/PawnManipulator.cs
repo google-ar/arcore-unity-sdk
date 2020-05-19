@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="PawnManipulator.cs" company="Google">
+// <copyright file="PawnManipulator.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //

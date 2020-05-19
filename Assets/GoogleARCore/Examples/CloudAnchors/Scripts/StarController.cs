@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="StarController.cs" company="Google">
+// <copyright file="StarController.cs" company="Google LLC">
 //
 // Copyright 2019 Google LLC. All Rights Reserved.
 //
