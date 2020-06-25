@@ -639,6 +639,28 @@ namespace GoogleARCore
                 nativeSession.CameraApi.Release(cameraHandle);
                 return result;
             }
+
+            /// <summary>
+            /// Updates the input texture with the latest depth data from ARCore.
+            /// If there is no new data, or an error occurs, the contents of the
+            /// texture will remain unchanged. See <see cref="DepthStatus"/> for a
+            /// complete list of reasons.
+            /// </summary>
+            /// <param name="depthTexture">The texture to hold the depth data.</param>
+            /// <returns><see cref="DepthStatus"/>.<c>Success</c> if
+            /// successful.</returns>
+            public static DepthStatus UpdateDepthTexture(ref Texture2D depthTexture)
+            {
+                var nativeSession = LifecycleManager.Instance.NativeSession;
+                var sessionComponent = LifecycleManager.Instance.SessionComponent;
+                if (nativeSession == null || sessionComponent == null ||
+                    sessionComponent.SessionConfig.DepthMode == DepthMode.Disabled)
+                {
+                    return DepthStatus.InternalError;
+                }
+
+                return nativeSession.FrameApi.UpdateDepthTexture(ref depthTexture);
+            }
         }
 
     }

@@ -81,5 +81,6 @@ Material:
     - _Color: {r: 0, g: 0.3254902, b: 0.34509805, a: 0.716}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
+    - _PlaneNormal: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _TintColor: {r: 0.9264706, g: 0, b: 0, a: 0.5}

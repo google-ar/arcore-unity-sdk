@@ -80,6 +80,12 @@ namespace GoogleARCoreInternal
 
             ApiCameraFocusMode focusMode = sessionConfig.CameraFocusMode.ToApiCameraFocusMode();
             ExternApi.ArConfig_setFocusMode(sessionHandle, configHandle, focusMode);
+
+            if (!InstantPreviewManager.IsProvidingPlatform)
+            {
+                ApiDepthMode depthMode = sessionConfig.DepthMode.ToApiDepthMode();
+                ExternApi.ArConfig_setDepthMode(sessionHandle, configHandle, depthMode);
+            }
         }
 
         public IntPtr Create()
@@ -130,6 +136,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setFocusMode(
                 IntPtr session, IntPtr config, ApiCameraFocusMode focus_mode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setDepthMode(
+                IntPtr session, IntPtr config, ApiDepthMode mode);
 #pragma warning restore 626
         }
     }

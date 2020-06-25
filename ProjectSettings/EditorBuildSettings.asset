@@ -7,9 +7,6 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: Assets/GoogleARCore/Examples/HelloAR/Scenes/HelloAR.unity
-    guid: e6a6fa04348cb45c9b0221eb19c946da
-  - enabled: 0
-    path: 
     guid: 8b5735a2d242c4dbface50f022a1c96b
   - enabled: 0
     path: Assets/GoogleARCore/Examples/AugmentedImage/Scenes/AugmentedImage.unity
@@ -26,3 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/GoogleARCore/Examples/ObjectManipulation/Scenes/ObjectManipulation.unity
     guid: 9dba7e74f4d2b410f90b920f80528d44
+  - enabled: 0
+    path: 
+    guid: a1cbde3cab63248f4bbf8d8ad6586754

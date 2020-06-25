@@ -524,6 +524,17 @@ namespace GoogleARCoreInternal
                 return;
             }
 
+            // Disable depth if the device doesn't support it.
+            if (m_CachedConfig.DepthMode != DepthMode.Disabled)
+            {
+                NativeSession tempNativeSession = _GetNativeSession(sessionHandle);
+                if (!tempNativeSession.SessionApi.IsDepthModeSupported(
+                    m_CachedConfig.DepthMode.ToApiDepthMode()))
+                {
+                    m_CachedConfig.DepthMode = DepthMode.Disabled;
+                }
+            }
+
             SessionConfigApi.UpdateApiConfigWithARCoreSessionConfig(
                 sessionHandle, configHandle, m_CachedConfig);
 

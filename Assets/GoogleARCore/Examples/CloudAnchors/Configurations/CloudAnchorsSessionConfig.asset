@@ -18,3 +18,4 @@ MonoBehaviour:
   AugmentedImageDatabase: {fileID: 0}
   CameraFocusMode: 0
   AugmentedFaceMode: 0
+  DepthMode: 0

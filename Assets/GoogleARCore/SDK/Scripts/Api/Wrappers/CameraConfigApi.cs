@@ -157,10 +157,6 @@ namespace GoogleARCoreInternal
                 IntPtr cameraConfigHandle, ref int width, ref int height);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArCameraConfig_getTextureHeight(IntPtr sessionHandle,
-                IntPtr cameraConfigHandle, ref int height);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfig_getFacingDirection(
                 IntPtr sessionHandle, IntPtr cameraConfigHandle,
                 ref ApiCameraConfigFacingDirection facingDirection);

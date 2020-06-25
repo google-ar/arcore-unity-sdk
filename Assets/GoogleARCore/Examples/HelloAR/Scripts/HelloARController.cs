@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="HelloARController.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2020 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,11 @@ namespace GoogleARCore.Examples.HelloAR
     /// </summary>
     public class HelloARController : MonoBehaviour
     {
+        /// <summary>
+        /// The Depth Setting Menu.
+        /// </summary>
+        public DepthMenu DepthMenu;
+
         /// <summary>
         /// The first-person camera being used to render the passthrough camera image (i.e. AR
         /// background).
@@ -85,6 +90,11 @@ namespace GoogleARCore.Examples.HelloAR
         {
             _UpdateApplicationLifecycle();
 
+            if (DepthMenu != null && !DepthMenu.CanPlaceAsset())
+            {
+                return;
+            }
+
             // If the player has not touched the screen, we are done with this update.
             Touch touch;
             if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
@@ -115,6 +125,12 @@ namespace GoogleARCore.Examples.HelloAR
                 }
                 else
                 {
+                    if (DepthMenu != null)
+                    {
+                        // Show depth card window if necessary.
+                        DepthMenu.ConfigureDepthBeforePlacingFirstAsset();
+                    }
+
                     // Choose the prefab based on the Trackable that got hit.
                     GameObject prefab;
                     if (hit.Trackable is FeaturePoint)

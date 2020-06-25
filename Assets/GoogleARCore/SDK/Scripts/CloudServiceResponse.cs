@@ -30,7 +30,6 @@ namespace GoogleARCore.CrossPlatform
         /// </summary>
         Success,
 
-
         /// <summary>
         /// The request is not supported by the current configuration.
         /// </summary>
@@ -111,5 +110,11 @@ namespace GoogleARCore.CrossPlatform
         /// The ARCore <see cref="Cloud Anchor"/> service request has been cancelled.
         /// </summary>
         ErrorRequestCancelled,
+
+        /// <summary>
+        /// Too many Cloud Anchors are being hosted and/or resolved. To create more, destroy some
+        /// XPAnchor objects or cancel some AsyncTasks to free up resources.
+        /// </summary>
+        ErrorTooManyCloudAnchors,
     }
 }

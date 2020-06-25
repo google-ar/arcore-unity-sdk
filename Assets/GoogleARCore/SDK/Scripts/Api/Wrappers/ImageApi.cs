@@ -33,6 +33,13 @@ namespace GoogleARCoreInternal
 
     internal class ImageApi
     {
+        private NativeSession m_NativeSession;
+
+        public ImageApi(NativeSession nativeSession)
+        {
+            m_NativeSession = nativeSession;
+        }
+
         public void GetImageBuffer(
             IntPtr imageHandle, out int width, out int height, out IntPtr yPlane, out IntPtr uPlane,
             out IntPtr vPlane, out int yRowStride, out int uvPixelStride, out int uvRowStride)
@@ -70,6 +77,27 @@ namespace GoogleARCoreInternal
             ExternApi.AImage_getPlaneRowStride(ndkImageHandle, U_PLANE, ref uvRowStride);
         }
 
+        public void GetPlaneData(IntPtr imageHandle, int planeIndex, ref IntPtr surfaceData,
+            ref int dataLength)
+        {
+            ExternApi.ArImage_getPlaneData(m_NativeSession.SessionHandle, imageHandle, planeIndex,
+                ref surfaceData, ref dataLength);
+        }
+
+        public int GetWidth(IntPtr imageHandle)
+        {
+            int width = 0;
+            ExternApi.ArImage_getWidth(m_NativeSession.SessionHandle, imageHandle, out width);
+            return width;
+        }
+
+        public int GetHeight(IntPtr imageHandle)
+        {
+            int height = 0;
+            ExternApi.ArImage_getHeight(m_NativeSession.SessionHandle, imageHandle, out height);
+            return height;
+        }
+
         public void Release(IntPtr imageHandle)
         {
             ExternApi.ArImage_release(imageHandle);
@@ -101,6 +129,19 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.MediaNdk)]
             public static extern int AImage_getPlaneRowStride(
                 IntPtr imageHandle, int planeIdx, ref int rowStride);
+
+           [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getWidth(
+                IntPtr sessionHandle, IntPtr imageHandle, out int width);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getHeight(
+                IntPtr sessionHandle, IntPtr imageHandle, out int height);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getPlaneData(
+                IntPtr sessionHandle, IntPtr imageHandle, int planeIndex, ref IntPtr surfaceData,
+                ref int dataLength);
 #pragma warning restore 626
         }
     }

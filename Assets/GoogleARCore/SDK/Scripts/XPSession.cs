@@ -20,6 +20,7 @@
 
 namespace GoogleARCore.CrossPlatform
 {
+    using GoogleARCoreInternal;
     using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace GoogleARCore.CrossPlatform
     /// </summary>
     public static class XPSession
     {
+
         /// <summary>
         /// Attempts to asynchronously host a new <see cref="Cloud Anchor"/>.
         /// </summary>

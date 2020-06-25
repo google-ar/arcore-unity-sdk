@@ -19,3 +19,4 @@ MonoBehaviour:
     type: 2}
   CameraFocusMode: 1
   AugmentedFaceMode: 0
+  DepthMode: 0
