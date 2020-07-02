@@ -193,8 +193,11 @@ namespace GoogleARCore
                 new Vector4(uvQuad.BottomLeft.x, uvQuad.BottomLeft.y, uvQuad.BottomRight.x,
                     uvQuad.BottomRight.y));
 
-            m_Camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(
+            var prjMat = Frame.CameraImage.GetCameraProjectionMatrix(
                 m_Camera.nearClipPlane, m_Camera.farClipPlane);
+
+            //Set camera FOV instead of setting camera projection matrix so other visual effects such as Post-Processing stack won't break 
+            m_Camera.fieldOfView = Mathf.Atan(1 / prjMat[5]) * 2f * Mathf.Rad2Deg;
         }
 
         private void _OnSessionSetEnabled(bool sessionEnabled)
