@@ -24,18 +24,18 @@ namespace GoogleARCoreInternal
 
     internal class ConversionHelper
     {
-        private static readonly Matrix4x4 k_UnityWorldToGLWorld
+        private static readonly Matrix4x4 _unityWorldToGLWorld
             = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
-        private static readonly Matrix4x4 k_UnityWorldToGLWorldInverse
-            = k_UnityWorldToGLWorld.inverse;
+        private static readonly Matrix4x4 _unityWorldToGLWorldInverse
+            = _unityWorldToGLWorld.inverse;
 
         public static void UnityPoseToApiPose(Pose unityPose, out ApiPoseData apiPose)
         {
             Matrix4x4 glWorld_T_glLocal =
                 Matrix4x4.TRS(unityPose.position, unityPose.rotation, Vector3.one);
             Matrix4x4 unityWorld_T_unityLocal =
-                k_UnityWorldToGLWorld * glWorld_T_glLocal * k_UnityWorldToGLWorldInverse;
+                _unityWorldToGLWorld * glWorld_T_glLocal * _unityWorldToGLWorldInverse;
 
             Vector3 position = unityWorld_T_unityLocal.GetColumn(3);
             Quaternion rotation = Quaternion.LookRotation(unityWorld_T_unityLocal.GetColumn(2),
@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal
                     new Vector3(apiPose.X, apiPose.Y, apiPose.Z),
                     new Quaternion(apiPose.Qx, apiPose.Qy, apiPose.Qz, apiPose.Qw), Vector3.one);
             Matrix4x4 unityWorld_T_unityLocal =
-                k_UnityWorldToGLWorld * glWorld_T_glLocal * k_UnityWorldToGLWorldInverse;
+                _unityWorldToGLWorld * glWorld_T_glLocal * _unityWorldToGLWorldInverse;
 
             Vector3 position = unityWorld_T_unityLocal.GetColumn(3);
             Quaternion rotation = Quaternion.LookRotation(unityWorld_T_unityLocal.GetColumn(2),
@@ -68,7 +68,7 @@ namespace GoogleARCoreInternal
 
         public static void ApiVectorToUnityVector(float[] ApiVector, out Vector3 unityVector)
         {
-            unityVector = k_UnityWorldToGLWorld * new Vector3(
+            unityVector = _unityWorldToGLWorld * new Vector3(
                 ApiVector[0], ApiVector[1], ApiVector[2]);
         }
     }

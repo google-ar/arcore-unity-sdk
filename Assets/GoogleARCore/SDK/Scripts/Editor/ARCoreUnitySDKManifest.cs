@@ -26,9 +26,9 @@ namespace UnityEditor.XR.ARCore
 {
     internal class ARCoreUnitySDKManifest : IPostGenerateGradleAndroidProject
     {
-        static readonly string k_AndroidURI = "http://schemas.android.com/apk/res/android";
-        static readonly string k_AndroidManifestPath = "/src/main/AndroidManifest.xml";
-        static readonly string k_AndroidPermissionCamera = "android.permission.CAMERA";
+        static readonly string _androidURI = "http://schemas.android.com/apk/res/android";
+        static readonly string _androidManifestPath = "/src/main/AndroidManifest.xml";
+        static readonly string _androidPermissionCamera = "android.permission.CAMERA";
 
         public int callbackOrder
         {
@@ -39,7 +39,7 @@ namespace UnityEditor.XR.ARCore
         // https://developers.google.com/ar/develop/java/enable-arcore
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-            string manifestPath = path + k_AndroidManifestPath;
+            string manifestPath = path + _androidManifestPath;
             var manifestDoc = new XmlDocument();
             manifestDoc.Load(manifestPath);
 
@@ -52,7 +52,7 @@ namespace UnityEditor.XR.ARCore
                 return;
 
             _FindOrCreateTagWithAttribute(manifestDoc, manifestNode,
-                                          "uses-permission", "name", k_AndroidPermissionCamera);
+                                          "uses-permission", "name", _androidPermissionCamera);
             _FindOrCreateTagWithAttributes(manifestDoc, applicationNode,
                                            "meta-data", "name",
                                            "unityplayer.SkipPermissionsDialog",
@@ -81,7 +81,7 @@ namespace UnityEditor.XR.ARCore
         private void _AppendNewAttribute(XmlDocument doc, XmlElement element,
             string attributeName, string attributeValue)
         {
-            var attribute = doc.CreateAttribute(attributeName, k_AndroidURI);
+            var attribute = doc.CreateAttribute(attributeName, _androidURI);
             attribute.Value = attributeValue;
             element.Attributes.Append(attribute);
         }
@@ -100,7 +100,7 @@ namespace UnityEditor.XR.ARCore
                         if (childElement != null && childElement.HasAttributes)
                         {
                             var attribute = childElement.GetAttributeNode(attributeName,
-                                                                          k_AndroidURI);
+                                                                          _androidURI);
                             if (attribute != null && attribute.Value == attributeValue)
                                 return;
                         }
@@ -129,13 +129,13 @@ namespace UnityEditor.XR.ARCore
                         if (childElement != null && childElement.HasAttributes)
                         {
                             var firstAttribute = childElement.GetAttributeNode(
-                                firstAttributeName, k_AndroidURI);
+                                firstAttributeName, _androidURI);
                             if (firstAttribute == null ||
                                 firstAttribute.Value != firstAttributeValue)
                                 continue;
 
                             var secondAttribute = childElement.GetAttributeNode(
-                                secondAttributeName, k_AndroidURI);
+                                secondAttributeName, _androidURI);
                             if (secondAttribute != null)
                             {
                                 secondAttribute.Value = secondAttributeValue;

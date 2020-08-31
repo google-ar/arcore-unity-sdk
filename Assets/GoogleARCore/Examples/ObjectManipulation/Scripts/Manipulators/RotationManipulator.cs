@@ -29,8 +29,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class RotationManipulator : Manipulator
     {
-        private const float k_RotationRateDegreesDrag = 100.0f;
-        private const float k_RotationRateDegreesTwist = 2.5f;
+        private const float _rotationRateDegreesDrag = 100.0f;
+        private const float _rotationRateDegreesTwist = 2.5f;
 
         /// <summary>
         /// Returns true if the manipulation can be started for the given Drag gesture.
@@ -85,7 +85,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             Quaternion DeviceToWorld = Camera.main.transform.rotation;
             Vector3 rotatedDelta = WorldToVerticalOrientedDevice * DeviceToWorld * gesture.Delta;
 
-            float rotationAmount = sign * (rotatedDelta.x / Screen.dpi) * k_RotationRateDegreesDrag;
+            float rotationAmount = sign * (rotatedDelta.x / Screen.dpi) * _rotationRateDegreesDrag;
             transform.Rotate(0.0f, rotationAmount, 0.0f);
         }
 
@@ -95,7 +95,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current twist gesture.</param>
         protected override void OnContinueManipulation(TwistGesture gesture)
         {
-            float rotationAmount = -gesture.DeltaRotation * k_RotationRateDegreesTwist;
+            float rotationAmount = -gesture.DeltaRotation * _rotationRateDegreesTwist;
             transform.Rotate(0.0f, rotationAmount, 0.0f);
         }
     }

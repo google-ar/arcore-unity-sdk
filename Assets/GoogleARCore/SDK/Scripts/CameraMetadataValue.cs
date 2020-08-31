@@ -36,19 +36,19 @@ namespace GoogleARCore
     public struct CameraMetadataValue
     {
         [FieldOffset(0)]
-        private NdkCameraMetadataType m_Type;
+        private NdkCameraMetadataType _type;
         [FieldOffset(4)]
-        private sbyte m_ByteValue;
+        private sbyte _byteValue;
         [FieldOffset(4)]
-        private int m_IntValue;
+        private int _intValue;
         [FieldOffset(4)]
-        private long m_LongValue;
+        private long _longValue;
         [FieldOffset(4)]
-        private float m_FloatValue;
+        private float _floatValue;
         [FieldOffset(4)]
-        private double m_DoubleValue;
+        private double _doubleValue;
         [FieldOffset(4)]
-        private CameraMetadataRational m_RationalValue;
+        private CameraMetadataRational _rationalValue;
 
         /// <summary>
         /// Constructs CameraMetadataValue using sbyte. This constructor only sets the sbyte field
@@ -57,14 +57,14 @@ namespace GoogleARCore
         /// <param name="byteValue">The byte value set to the struct.</param>
         public CameraMetadataValue(sbyte byteValue)
         {
-            m_IntValue = 0;
-            m_LongValue = 0;
-            m_FloatValue = 0;
-            m_DoubleValue = 0;
-            m_RationalValue = new CameraMetadataRational();
+            _intValue = 0;
+            _longValue = 0;
+            _floatValue = 0;
+            _doubleValue = 0;
+            _rationalValue = new CameraMetadataRational();
 
-            m_Type = NdkCameraMetadataType.Byte;
-            m_ByteValue = byteValue;
+            _type = NdkCameraMetadataType.Byte;
+            _byteValue = byteValue;
         }
 
         /// <summary>
@@ -74,14 +74,14 @@ namespace GoogleARCore
         /// <param name="intValue">The int value set to the struct.</param>
         public CameraMetadataValue(int intValue)
         {
-            m_ByteValue = 0;
-            m_LongValue = 0;
-            m_FloatValue = 0;
-            m_DoubleValue = 0;
-            m_RationalValue = new CameraMetadataRational();
+            _byteValue = 0;
+            _longValue = 0;
+            _floatValue = 0;
+            _doubleValue = 0;
+            _rationalValue = new CameraMetadataRational();
 
-            m_Type = NdkCameraMetadataType.Int32;
-            m_IntValue = intValue;
+            _type = NdkCameraMetadataType.Int32;
+            _intValue = intValue;
         }
 
         /// <summary>
@@ -91,14 +91,14 @@ namespace GoogleARCore
         /// <param name="longValue">The long value set to the struct.</param>
         public CameraMetadataValue(long longValue)
         {
-            m_ByteValue = 0;
-            m_IntValue = 0;
-            m_FloatValue = 0;
-            m_DoubleValue = 0;
-            m_RationalValue = new CameraMetadataRational();
+            _byteValue = 0;
+            _intValue = 0;
+            _floatValue = 0;
+            _doubleValue = 0;
+            _rationalValue = new CameraMetadataRational();
 
-            m_Type = NdkCameraMetadataType.Int64;
-            m_LongValue = longValue;
+            _type = NdkCameraMetadataType.Int64;
+            _longValue = longValue;
         }
 
         /// <summary>
@@ -108,14 +108,14 @@ namespace GoogleARCore
         /// <param name="floatValue">The float value set to the struct.</param>
         public CameraMetadataValue(float floatValue)
         {
-            m_ByteValue = 0;
-            m_IntValue = 0;
-            m_LongValue = 0;
-            m_DoubleValue = 0;
-            m_RationalValue = new CameraMetadataRational();
+            _byteValue = 0;
+            _intValue = 0;
+            _longValue = 0;
+            _doubleValue = 0;
+            _rationalValue = new CameraMetadataRational();
 
-            m_Type = NdkCameraMetadataType.Float;
-            m_FloatValue = floatValue;
+            _type = NdkCameraMetadataType.Float;
+            _floatValue = floatValue;
         }
 
         /// <summary>
@@ -125,14 +125,14 @@ namespace GoogleARCore
         /// <param name="doubleValue">The double value set to the struct.</param>
         public CameraMetadataValue(double doubleValue)
         {
-            m_ByteValue = 0;
-            m_IntValue = 0;
-            m_LongValue = 0;
-            m_FloatValue = 0;
-            m_RationalValue = new CameraMetadataRational();
+            _byteValue = 0;
+            _intValue = 0;
+            _longValue = 0;
+            _floatValue = 0;
+            _rationalValue = new CameraMetadataRational();
 
-            m_Type = NdkCameraMetadataType.Double;
-            m_DoubleValue = doubleValue;
+            _type = NdkCameraMetadataType.Double;
+            _doubleValue = doubleValue;
         }
 
         /// <summary>
@@ -143,14 +143,14 @@ namespace GoogleARCore
         /// <param name="rationalValue">The CameraMetadataRational value set to the struct.</param>
         public CameraMetadataValue(CameraMetadataRational rationalValue)
         {
-            m_ByteValue = 0;
-            m_IntValue = 0;
-            m_LongValue = 0;
-            m_FloatValue = 0;
-            m_DoubleValue = 0;
+            _byteValue = 0;
+            _intValue = 0;
+            _longValue = 0;
+            _floatValue = 0;
+            _doubleValue = 0;
 
-            m_Type = NdkCameraMetadataType.Rational;
-            m_RationalValue = rationalValue;
+            _type = NdkCameraMetadataType.Rational;
+            _rationalValue = rationalValue;
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace GoogleARCore
         {
             get
             {
-                switch (m_Type)
+                switch (_type)
                 {
                 case NdkCameraMetadataType.Byte:
                     return typeof(Byte);
@@ -188,12 +188,12 @@ namespace GoogleARCore
         /// <returns>Returns sbyte value stored in the struct.</returns>
         public sbyte AsByte()
         {
-            if (m_Type != NdkCameraMetadataType.Byte)
+            if (_type != NdkCameraMetadataType.Byte)
             {
                 LogError(NdkCameraMetadataType.Byte);
             }
 
-            return m_ByteValue;
+            return _byteValue;
         }
 
         /// <summary>
@@ -203,12 +203,12 @@ namespace GoogleARCore
         /// <returns>Returns int value stored in the struct.</returns>
         public int AsInt()
         {
-            if (m_Type != NdkCameraMetadataType.Int32)
+            if (_type != NdkCameraMetadataType.Int32)
             {
                 LogError(NdkCameraMetadataType.Int32);
             }
 
-            return m_IntValue;
+            return _intValue;
         }
 
         /// <summary>
@@ -218,12 +218,12 @@ namespace GoogleARCore
         /// <returns>Returns float value stored in the struct.</returns>
         public float AsFloat()
         {
-            if (m_Type != NdkCameraMetadataType.Float)
+            if (_type != NdkCameraMetadataType.Float)
             {
                 LogError(NdkCameraMetadataType.Float);
             }
 
-            return m_FloatValue;
+            return _floatValue;
         }
 
         /// <summary>
@@ -233,12 +233,12 @@ namespace GoogleARCore
         /// <returns>Returns long value stored in the struct.</returns>
         public long AsLong()
         {
-            if (m_Type != NdkCameraMetadataType.Int64)
+            if (_type != NdkCameraMetadataType.Int64)
             {
                 LogError(NdkCameraMetadataType.Int64);
             }
 
-            return m_LongValue;
+            return _longValue;
         }
 
         /// <summary>
@@ -248,12 +248,12 @@ namespace GoogleARCore
         /// <returns>Returns double value stored in the struct.</returns>
         public double AsDouble()
         {
-            if (m_Type != NdkCameraMetadataType.Double)
+            if (_type != NdkCameraMetadataType.Double)
             {
                 LogError(NdkCameraMetadataType.Double);
             }
 
-            return m_DoubleValue;
+            return _doubleValue;
         }
 
         /// <summary>
@@ -263,12 +263,12 @@ namespace GoogleARCore
         /// <returns>Returns CameraMetadataRational value stored in the struct.</returns>
         public CameraMetadataRational AsRational()
         {
-            if (m_Type != NdkCameraMetadataType.Rational)
+            if (_type != NdkCameraMetadataType.Rational)
             {
                 LogError(NdkCameraMetadataType.Rational);
             }
 
-            return m_RationalValue;
+            return _rationalValue;
         }
 
         private void LogError(NdkCameraMetadataType requestedType)
@@ -276,7 +276,7 @@ namespace GoogleARCore
             ARDebug.LogErrorFormat(
                 "Error getting value from CameraMetadataType due to type mismatch. " +
                 "requested type = {0}, internal type = {1}\n" +
-                "Are you sure you are querying the correct type?", requestedType, m_Type);
+                "Are you sure you are querying the correct type?", requestedType, _type);
         }
     }
 

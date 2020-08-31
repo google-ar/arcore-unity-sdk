@@ -35,36 +35,36 @@ namespace GoogleARCoreInternal
 
     internal class LightEstimateApi
     {
-        internal static readonly float[] k_SHConstants =
+        internal static readonly float[] _shConstants =
         {
             0.886227f, 1.023328f, 1.023328f,
             1.023328f, 0.858086f, 0.858086f,
             0.247708f, 0.858086f, 0.429043f
         };
 
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
 #if !UNITY_2017_2_OR_NEWER
-        private Color[] m_TempCubemapFacePixels = new Color[0];
+        private Color[] _tempCubemapFacePixels = new Color[0];
 #endif
-        private float[] m_TempVector = new float[3];
-        private float[] m_TempColor = new float[3];
-        private float[] m_TempSHCoefficients = new float[27];
-        private Cubemap m_HDRCubemap = null;
-        private long m_CubemapTimestamp = -1;
-        private int m_CubemapTextureId = 0;
-        private bool m_PluginInitialized = false;
+        private float[] _tempVector = new float[3];
+        private float[] _tempColor = new float[3];
+        private float[] _tempSHCoefficients = new float[27];
+        private Cubemap _hdrCubemap = null;
+        private long _cubemapTimestamp = -1;
+        private int _cubemapTextureId = 0;
+        private bool _pluginInitialized = false;
 
         public LightEstimateApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public IntPtr Create()
         {
             IntPtr lightEstimateHandle = IntPtr.Zero;
             ExternApi.ArLightEstimate_create(
-                m_NativeSession.SessionHandle, ref lightEstimateHandle);
+                _nativeSession.SessionHandle, ref lightEstimateHandle);
             return lightEstimateHandle;
         }
 
@@ -77,7 +77,7 @@ namespace GoogleARCoreInternal
         {
             ApiLightEstimateState state = ApiLightEstimateState.NotValid;
             ExternApi.ArLightEstimate_getState(
-                m_NativeSession.SessionHandle, lightEstimateHandle, ref state);
+                _nativeSession.SessionHandle, lightEstimateHandle, ref state);
             return state.ToLightEstimateState();
         }
 
@@ -85,7 +85,7 @@ namespace GoogleARCoreInternal
         {
             float pixelIntensity = 0;
             ExternApi.ArLightEstimate_getPixelIntensity(
-                m_NativeSession.SessionHandle, lightEstimateHandle, ref pixelIntensity);
+                _nativeSession.SessionHandle, lightEstimateHandle, ref pixelIntensity);
             return pixelIntensity;
         }
 
@@ -93,7 +93,7 @@ namespace GoogleARCoreInternal
         {
             Color colorCorrection = Color.black;
             ExternApi.ArLightEstimate_getColorCorrection(
-                m_NativeSession.SessionHandle, lightEstimateHandle, ref colorCorrection);
+                _nativeSession.SessionHandle, lightEstimateHandle, ref colorCorrection);
             return colorCorrection;
         }
 
@@ -103,19 +103,19 @@ namespace GoogleARCoreInternal
             lightColor = Color.black;
 
             ExternApi.ArLightEstimate_getEnvironmentalHdrMainLightIntensity(sessionHandle,
-                lightEstimateHandle, m_TempColor);
-            lightColor.r = m_TempColor[0];
-            lightColor.g = m_TempColor[1];
-            lightColor.b = m_TempColor[2];
+                lightEstimateHandle, _tempColor);
+            lightColor.r = _tempColor[0];
+            lightColor.g = _tempColor[1];
+            lightColor.b = _tempColor[2];
 
             // Apply the energy conservation term to the light color directly since Unity doesn't
             // have that term in their PBR shader.
             lightColor = lightColor / Mathf.PI;
 
             ExternApi.ArLightEstimate_getEnvironmentalHdrMainLightDirection(sessionHandle,
-                lightEstimateHandle, m_TempVector);
+                lightEstimateHandle, _tempVector);
             Vector3 lightDirection = Vector3.one;
-            ConversionHelper.ApiVectorToUnityVector(m_TempVector, out lightDirection);
+            ConversionHelper.ApiVectorToUnityVector(_tempVector, out lightDirection);
 
             // The ARCore output the light direction defined for shader usage: lightPos-pixelPos
             // We need to invert the direction to set it Unity world space.
@@ -126,7 +126,7 @@ namespace GoogleARCoreInternal
             float[,] outSHCoefficients)
         {
             ExternApi.ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(sessionHandle,
-                lightEstimateHandle, m_TempSHCoefficients);
+                lightEstimateHandle, _tempSHCoefficients);
 
             // We need to invert the coefficients that contains the z axis to map it to
             // Unity world coordinate.
@@ -144,13 +144,13 @@ namespace GoogleARCoreInternal
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    outSHCoefficients[j, i] = m_TempSHCoefficients[(j * 3) + i];
+                    outSHCoefficients[j, i] = _tempSHCoefficients[(j * 3) + i];
                     if (j == 2 || j == 5 || j == 7)
                     {
                         outSHCoefficients[j, i] = outSHCoefficients[j, i] * -1.0f;
                     }
 
-                    outSHCoefficients[j, i] = outSHCoefficients[j, i] * k_SHConstants[j];
+                    outSHCoefficients[j, i] = outSHCoefficients[j, i] * _shConstants[j];
 
                     // Apply the energy conservation to SH coefficients as well.
                     outSHCoefficients[j, i] = outSHCoefficients[j, i] / Mathf.PI;
@@ -172,27 +172,27 @@ namespace GoogleARCoreInternal
             TextureFormat format = dataType == ApiTextureDataType.Half ?
                 TextureFormat.RGBAHalf : TextureFormat.RGBA32;
 
-            if (!m_PluginInitialized)
+            if (!_pluginInitialized)
             {
                 ExternApi.ARCoreRenderingUtils_SetTextureDataType(dataType, true);
                 ExternApi.ARCoreRenderingUtils_SetActiveColorSpace(usingGammaWorkflow);
-                m_PluginInitialized = true;
+                _pluginInitialized = true;
             }
 
             ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref textureId, ref size);
-            if (textureId != 0 && (m_HDRCubemap == null || textureId != m_CubemapTextureId))
+            if (textureId != 0 && (_hdrCubemap == null || textureId != _cubemapTextureId))
             {
-                m_HDRCubemap = Cubemap.CreateExternalTexture(size, format, true,
+                _hdrCubemap = Cubemap.CreateExternalTexture(size, format, true,
                     new IntPtr(textureId));
-                m_CubemapTextureId = textureId;
+                _cubemapTextureId = textureId;
             }
 
             long timestamp = GetTimestamp(sessionHandle, lightEstimateHandle);
-            if (m_CubemapTimestamp != timestamp)
+            if (_cubemapTimestamp != timestamp)
             {
                 ExternApi.ARCoreRenderingUtils_SetARCoreLightEstimation(sessionHandle,
                     lightEstimateHandle);
-                m_CubemapTimestamp = timestamp;
+                _cubemapTimestamp = timestamp;
             }
 
             // Issue plugin event to update cubemap texture.
@@ -203,52 +203,52 @@ namespace GoogleARCoreInternal
             // Gets raw color data from native plugin then update cubemap textures by
             // Cubemap.SetPixel().
             // Note, no GL texture will be created in this scenario.
-            if (!m_PluginInitialized)
+            if (!_pluginInitialized)
             {
                 ExternApi.ARCoreRenderingUtils_SetTextureDataType(
                     ApiTextureDataType.Float, false);
                 ExternApi.ARCoreRenderingUtils_SetActiveColorSpace(usingGammaWorkflow);
-                m_PluginInitialized = true;
+                _pluginInitialized = true;
             }
 
-            ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref m_CubemapTextureId, ref size);
+            ExternApi.ARCoreRenderingUtils_GetCubemapTexture(ref _cubemapTextureId, ref size);
             if (size > 0)
             {
-                if (m_HDRCubemap == null)
+                if (_hdrCubemap == null)
                 {
-                    m_HDRCubemap = new Cubemap(size, TextureFormat.RGBAHalf, true);
+                    _hdrCubemap = new Cubemap(size, TextureFormat.RGBAHalf, true);
                 }
 
-                if (m_TempCubemapFacePixels.Length != size)
+                if (_tempCubemapFacePixels.Length != size)
                 {
-                    Array.Resize(ref m_TempCubemapFacePixels, size * size);
+                    Array.Resize(ref _tempCubemapFacePixels, size * size);
                 }
             }
 
             long timestamp = GetTimestamp(sessionHandle, lightEstimateHandle);
-            if (m_CubemapTimestamp != timestamp)
+            if (_cubemapTimestamp != timestamp)
             {
                 ExternApi.ARCoreRenderingUtils_SetARCoreLightEstimation(sessionHandle,
                     lightEstimateHandle);
-                m_CubemapTimestamp = timestamp;
+                _cubemapTimestamp = timestamp;
 
-                if (m_HDRCubemap != null)
+                if (_hdrCubemap != null)
                 {
                     for (int i = 0; i < 6; i++)
                     {
                         ExternApi.ARCoreRenderingUtils_GetCubemapRawColors(i,
-                            m_TempCubemapFacePixels);
-                        m_HDRCubemap.SetPixels(m_TempCubemapFacePixels, CubemapFace.PositiveX + i);
+                            _tempCubemapFacePixels);
+                        _hdrCubemap.SetPixels(_tempCubemapFacePixels, CubemapFace.PositiveX + i);
                     }
 
                     // This operation is very expensive, only update cubemap texture when
                     // the light estimate is updated in this frame.
-                    m_HDRCubemap.Apply();
+                    _hdrCubemap.Apply();
                 }
             }
 #endif
 
-            return m_HDRCubemap;
+            return _hdrCubemap;
         }
 
         public long GetTimestamp(IntPtr sessionHandle, IntPtr lightEstimateHandle)

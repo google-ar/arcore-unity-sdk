@@ -42,6 +42,11 @@ namespace GoogleARCore.Examples.Common
         public Shader OcclusionShader;
 
         /// <summary>
+        /// The Depth Setting Menu.
+        /// </summary>
+        public DepthMenu DepthMenu;
+
+        /// <summary>
         /// The blur kernel size applied to the camera feed. In pixels.
         /// </summary>
         [Space]
@@ -80,86 +85,86 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public float TransitionSize = 0.1f;
 
-        private static readonly string k_CurrentDepthTexturePropertyName = "_CurrentDepthTexture";
-        private static readonly string k_TopLeftRightPropertyName = "_UvTopLeftRight";
-        private static readonly string k_BottomLeftRightPropertyName = "_UvBottomLeftRight";
+        private static readonly string _currentDepthTexturePropertyName = "_CurrentDepthTexture";
+        private static readonly string _topLeftRightPropertyName = "_UvTopLeftRight";
+        private static readonly string _bottomLeftRightPropertyName = "_UvBottomLeftRight";
 
-        private Camera m_Camera;
-        private Material m_DepthMaterial;
-        private Texture2D m_DepthTexture;
-        private float m_CurrentOcclusionTransparency = 1.0f;
-        private ARCoreBackgroundRenderer m_BackgroundRenderer;
-        private CommandBuffer m_DepthBuffer;
-        private CommandBuffer m_BackgroundBuffer;
-        private int m_BackgroundTextureID = -1;
+        private Camera _camera;
+        private Material _depthMaterial;
+        private Texture2D _depthTexture;
+        private float _currentOcclusionTransparency = 1.0f;
+        private ARCoreBackgroundRenderer _backgroundRenderer;
+        private CommandBuffer _depthBuffer;
+        private CommandBuffer _backgroundBuffer;
+        private int _backgroundTextureID = -1;
 
         /// <summary>
         /// Unity's Awake() method.
         /// </summary>
         public void Awake()
         {
-            m_CurrentOcclusionTransparency = OcclusionTransparency;
+            _currentOcclusionTransparency = OcclusionTransparency;
 
             Debug.Assert(OcclusionShader != null, "Occlusion Shader parameter must be set.");
-            m_DepthMaterial = new Material(OcclusionShader);
-            m_DepthMaterial.SetFloat("_OcclusionTransparency", m_CurrentOcclusionTransparency);
-            m_DepthMaterial.SetFloat("_OcclusionOffsetMeters", OcclusionOffset);
-            m_DepthMaterial.SetFloat("_TransitionSize", TransitionSize);
+            _depthMaterial = new Material(OcclusionShader);
+            _depthMaterial.SetFloat("_OcclusionTransparency", _currentOcclusionTransparency);
+            _depthMaterial.SetFloat("_OcclusionOffsetMeters", OcclusionOffset);
+            _depthMaterial.SetFloat("_TransitionSize", TransitionSize);
 
             // Default texture, will be updated each frame.
-            m_DepthTexture = new Texture2D(2, 2);
-            m_DepthTexture.filterMode = FilterMode.Bilinear;
-            m_DepthMaterial.SetTexture(k_CurrentDepthTexturePropertyName, m_DepthTexture);
+            _depthTexture = new Texture2D(2, 2);
+            _depthTexture.filterMode = FilterMode.Bilinear;
+            _depthMaterial.SetTexture(_currentDepthTexturePropertyName, _depthTexture);
 
-            m_Camera = Camera.main;
-            m_Camera.depthTextureMode |= DepthTextureMode.Depth;
+            _camera = Camera.main;
+            _camera.depthTextureMode |= DepthTextureMode.Depth;
 
-            m_DepthBuffer = new CommandBuffer();
-            m_DepthBuffer.name = "Auxilary occlusion textures";
+            _depthBuffer = new CommandBuffer();
+            _depthBuffer.name = "Auxilary occlusion textures";
 
             // Creates the occlusion map.
             int occlusionMapTextureID = Shader.PropertyToID("_OcclusionMap");
-            m_DepthBuffer.GetTemporaryRT(occlusionMapTextureID, -1, -1, 0, FilterMode.Bilinear);
+            _depthBuffer.GetTemporaryRT(occlusionMapTextureID, -1, -1, 0, FilterMode.Bilinear);
 
             // Pass #0 renders an auxilary buffer - occlusion map that indicates the
             // regions of virtual objects that are behind real geometry.
-            m_DepthBuffer.Blit(
+            _depthBuffer.Blit(
                 BuiltinRenderTextureType.CameraTarget,
-                occlusionMapTextureID, m_DepthMaterial, /*pass=*/ 0);
+                occlusionMapTextureID, _depthMaterial, /*pass=*/ 0);
 
             // Blurs the occlusion map.
-            m_DepthBuffer.SetGlobalTexture("_OcclusionMapBlurred", occlusionMapTextureID);
+            _depthBuffer.SetGlobalTexture("_OcclusionMapBlurred", occlusionMapTextureID);
 
-            m_Camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, m_DepthBuffer);
-            m_Camera.AddCommandBuffer(CameraEvent.AfterGBuffer, m_DepthBuffer);
+            _camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, _depthBuffer);
+            _camera.AddCommandBuffer(CameraEvent.AfterGBuffer, _depthBuffer);
 
-            m_BackgroundRenderer = FindObjectOfType<ARCoreBackgroundRenderer>();
-            if (m_BackgroundRenderer == null)
+            _backgroundRenderer = FindObjectOfType<ARCoreBackgroundRenderer>();
+            if (_backgroundRenderer == null)
             {
                 Debug.LogError("BackgroundTextureProvider requires ARCoreBackgroundRenderer " +
                     "anywhere in the scene.");
                 return;
             }
 
-            m_BackgroundBuffer = new CommandBuffer();
-            m_BackgroundBuffer.name = "Camera texture";
-            m_BackgroundTextureID = Shader.PropertyToID(BackgroundTexturePropertyName);
-            m_BackgroundBuffer.GetTemporaryRT(m_BackgroundTextureID,
+            _backgroundBuffer = new CommandBuffer();
+            _backgroundBuffer.name = "Camera texture";
+            _backgroundTextureID = Shader.PropertyToID(BackgroundTexturePropertyName);
+            _backgroundBuffer.GetTemporaryRT(_backgroundTextureID,
                 /*width=*/
                 -1, /*height=*/ -1,
                 /*depthBuffer=*/
                 0, FilterMode.Bilinear);
 
-            var material = m_BackgroundRenderer.BackgroundMaterial;
+            var material = _backgroundRenderer.BackgroundMaterial;
             if (material != null)
             {
-                m_BackgroundBuffer.Blit(material.mainTexture, m_BackgroundTextureID, material);
+                _backgroundBuffer.Blit(material.mainTexture, _backgroundTextureID, material);
             }
 
-            m_BackgroundBuffer.SetGlobalTexture(
-                BackgroundTexturePropertyName, m_BackgroundTextureID);
-            m_Camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, m_BackgroundBuffer);
-            m_Camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, m_BackgroundBuffer);
+            _backgroundBuffer.SetGlobalTexture(
+                BackgroundTexturePropertyName, _backgroundTextureID);
+            _camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, _backgroundBuffer);
+            _camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, _backgroundBuffer);
         }
 
         /// <summary>
@@ -167,21 +172,24 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void Update()
         {
-            m_CurrentOcclusionTransparency +=
-                (OcclusionTransparency - m_CurrentOcclusionTransparency) *
+            _currentOcclusionTransparency +=
+                (OcclusionTransparency - _currentOcclusionTransparency) *
                 Time.deltaTime * OcclusionFadeVelocity;
 
-            m_CurrentOcclusionTransparency =
-                Mathf.Clamp(m_CurrentOcclusionTransparency, 0.0f, OcclusionTransparency);
-            m_DepthMaterial.SetFloat("_OcclusionTransparency", m_CurrentOcclusionTransparency);
-            m_DepthMaterial.SetFloat("_TransitionSize", TransitionSize);
+            _currentOcclusionTransparency =
+                Mathf.Clamp(_currentOcclusionTransparency, 0.0f, OcclusionTransparency);
+            _depthMaterial.SetFloat("_OcclusionTransparency", _currentOcclusionTransparency);
+            _depthMaterial.SetFloat("_TransitionSize", TransitionSize);
             Shader.SetGlobalFloat("_BlurSize", BlurSize / BlurDownsample);
 
-            // Gets the latest depth map from ARCore.
-            Frame.CameraImage.UpdateDepthTexture(ref m_DepthTexture);
+            if (DepthMenu != null && DepthMenu.IsDepthEnabled())
+            {
+                // Gets the latest depth map from ARCore.
+                Frame.CameraImage.UpdateDepthTexture(ref _depthTexture);
+            }
 
             // Updates the screen orientation for each material.
-            _UpdateScreenOrientationOnMaterial();
+            UpdateScreenOrientationOnMaterial();
         }
 
         /// <summary>
@@ -189,16 +197,16 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnEnable()
         {
-            if (m_DepthBuffer != null)
+            if (_depthBuffer != null)
             {
-                m_Camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, m_DepthBuffer);
-                m_Camera.AddCommandBuffer(CameraEvent.AfterGBuffer, m_DepthBuffer);
+                _camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, _depthBuffer);
+                _camera.AddCommandBuffer(CameraEvent.AfterGBuffer, _depthBuffer);
             }
 
-            if (m_BackgroundBuffer != null)
+            if (_backgroundBuffer != null)
             {
-                m_Camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, m_BackgroundBuffer);
-                m_Camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, m_BackgroundBuffer);
+                _camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, _backgroundBuffer);
+                _camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, _backgroundBuffer);
             }
         }
 
@@ -207,16 +215,16 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnDisable()
         {
-            if (m_DepthBuffer != null)
+            if (_depthBuffer != null)
             {
-                m_Camera.RemoveCommandBuffer(CameraEvent.AfterForwardOpaque, m_DepthBuffer);
-                m_Camera.RemoveCommandBuffer(CameraEvent.AfterGBuffer, m_DepthBuffer);
+                _camera.RemoveCommandBuffer(CameraEvent.AfterForwardOpaque, _depthBuffer);
+                _camera.RemoveCommandBuffer(CameraEvent.AfterGBuffer, _depthBuffer);
             }
 
-            if (m_BackgroundBuffer != null)
+            if (_backgroundBuffer != null)
             {
-                m_Camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, m_BackgroundBuffer);
-                m_Camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, m_BackgroundBuffer);
+                _camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, _backgroundBuffer);
+                _camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, _backgroundBuffer);
             }
         }
 
@@ -229,21 +237,21 @@ namespace GoogleARCore.Examples.Common
             }
 
             // Pass #1 combines virtual and real cameras based on the occlusion map.
-            Graphics.Blit(source, destination, m_DepthMaterial, /*pass=*/ 1);
+            Graphics.Blit(source, destination, _depthMaterial, /*pass=*/ 1);
         }
 
         /// <summary>
         /// Updates the screen orientation of the depth map.
         /// </summary>
-        private void _UpdateScreenOrientationOnMaterial()
+        private void UpdateScreenOrientationOnMaterial()
         {
             var uvQuad = Frame.CameraImage.TextureDisplayUvs;
-            m_DepthMaterial.SetVector(
-                k_TopLeftRightPropertyName,
+            _depthMaterial.SetVector(
+                _topLeftRightPropertyName,
                 new Vector4(
                     uvQuad.TopLeft.x, uvQuad.TopLeft.y, uvQuad.TopRight.x, uvQuad.TopRight.y));
-            m_DepthMaterial.SetVector(
-                k_BottomLeftRightPropertyName,
+            _depthMaterial.SetVector(
+                _bottomLeftRightPropertyName,
                 new Vector4(uvQuad.BottomLeft.x, uvQuad.BottomLeft.y, uvQuad.BottomRight.x,
                     uvQuad.BottomRight.y));
         }

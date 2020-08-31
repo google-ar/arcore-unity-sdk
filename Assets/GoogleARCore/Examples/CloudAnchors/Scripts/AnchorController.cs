@@ -24,6 +24,9 @@ namespace GoogleARCore.Examples.CloudAnchors
     using GoogleARCore.CrossPlatform;
     using UnityEngine;
     using UnityEngine.Networking;
+#if ARCORE_IOS_SUPPORT
+    using UnityEngine.XR.iOS;
+#endif
 
     /// <summary>
     /// A Controller for the Anchor object that handles hosting and resolving the Cloud Anchor.
@@ -36,61 +39,61 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// The customized timeout duration for resolving request to prevent retrying to resolve
         /// indefinitely.
         /// </summary>
-        private const float k_ResolvingTimeout = 10.0f;
+        private const float _resolvingTimeout = 10.0f;
 
         /// <summary>
         /// The Cloud Anchor ID that will be used to host and resolve the Cloud Anchor. This
         /// variable will be syncrhonized over all clients.
         /// </summary>
 #pragma warning disable 618
-        [SyncVar(hook = "_OnChangeId")]
+        [SyncVar(hook = "OnChangeId")]
 #pragma warning restore 618
-        private string m_CloudAnchorId = string.Empty;
+        private string _cloudAnchorId = string.Empty;
 
         /// <summary>
         /// Indicates whether this script is running in the Host.
         /// </summary>
-        private bool m_IsHost = false;
+        private bool _isHost = false;
 
         /// <summary>
         /// Indicates whether an attempt to resolve the Cloud Anchor should be made.
         /// </summary>
-        private bool m_ShouldResolve = false;
+        private bool _shouldResolve = false;
 
         /// <summary>
         /// Record the time since started resolving.
         /// If it passed the resolving timeout, additional instruction displays.
         /// </summary>
-        private float m_TimeSinceStartResolving = 0.0f;
+        private float _timeSinceStartResolving = 0.0f;
 
         /// <summary>
         /// Indicates whether passes the resolving timeout duration or the anchor has been
         /// successfully resolved.
         /// </summary>
-        private bool m_PassedResolvingTimeout = false;
+        private bool _passedResolvingTimeout = false;
 
         /// <summary>
         /// The anchor mesh object.
         /// In order to avoid placing the Anchor on identity pose, the mesh object should
         /// be disabled by default and enabled after hosted or resolved.
         /// </summary>
-        private GameObject m_AnchorMesh;
+        private GameObject _anchorMesh;
 
         /// <summary>
         /// The Cloud Anchors example controller.
         /// </summary>
-        private CloudAnchorsExampleController m_CloudAnchorsExampleController;
+        private CloudAnchorsExampleController _cloudAnchorsExampleController;
 
         /// <summary>
         /// The Unity Awake() method.
         /// </summary>
         public void Awake()
         {
-            m_CloudAnchorsExampleController =
+            _cloudAnchorsExampleController =
                 GameObject.Find("CloudAnchorsExampleController")
                     .GetComponent<CloudAnchorsExampleController>();
-            m_AnchorMesh = transform.Find("AnchorMesh").gameObject;
-            m_AnchorMesh.SetActive(false);
+            _anchorMesh = transform.Find("AnchorMesh").gameObject;
+            _anchorMesh.SetActive(false);
         }
 
         /// <summary>
@@ -98,9 +101,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public override void OnStartClient()
         {
-            if (m_CloudAnchorId != string.Empty)
+            if (_cloudAnchorId != string.Empty)
             {
-                m_ShouldResolve = true;
+                _shouldResolve = true;
             }
         }
 
@@ -109,28 +112,28 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         public void Update()
         {
-            if (!m_ShouldResolve)
+            if (!_shouldResolve)
             {
                 return;
             }
 
-            if (!m_CloudAnchorsExampleController.IsResolvingPrepareTimePassed())
+            if (!_cloudAnchorsExampleController.IsResolvingPrepareTimePassed())
             {
                 return;
             }
 
-            if (!m_PassedResolvingTimeout)
+            if (!_passedResolvingTimeout)
             {
-                m_TimeSinceStartResolving += Time.deltaTime;
+                _timeSinceStartResolving += Time.deltaTime;
 
-                if (m_TimeSinceStartResolving > k_ResolvingTimeout)
+                if (_timeSinceStartResolving > _resolvingTimeout)
                 {
-                    m_PassedResolvingTimeout = true;
-                    m_CloudAnchorsExampleController.OnResolvingTimeoutPassed();
+                    _passedResolvingTimeout = true;
+                    _cloudAnchorsExampleController.OnResolvingTimeoutPassed();
                 }
             }
 
-            _ResolveAnchorFromId(m_CloudAnchorId);
+            ResolveAnchorFromId(_cloudAnchorId);
         }
 
         /// <summary>
@@ -142,7 +145,7 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning restore 618
         public void CmdSetCloudAnchorId(string cloudAnchorId)
         {
-            m_CloudAnchorId = cloudAnchorId;
+            _cloudAnchorId = cloudAnchorId;
         }
 
         /// <summary>
@@ -151,7 +154,7 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// <returns>The Cloud Anchor Id.</returns>
         public string GetCloudAnchorId()
         {
-            return m_CloudAnchorId;
+            return _cloudAnchorId;
         }
 
         /// <summary>
@@ -160,13 +163,13 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// <param name="lastPlacedAnchor">The last placed anchor.</param>
         public void HostLastPlacedAnchor(Component lastPlacedAnchor)
         {
-            m_IsHost = true;
-            m_AnchorMesh.SetActive(true);
+            _isHost = true;
+            _anchorMesh.SetActive(true);
 
 #if !UNITY_IOS
             var anchor = (Anchor)lastPlacedAnchor;
 #elif ARCORE_IOS_SUPPORT
-            var anchor = (UnityEngine.XR.iOS.UnityARUserAnchorComponent)lastPlacedAnchor;
+            var anchor = (UnityARUserAnchorComponent)lastPlacedAnchor;
 #endif
 
 #if !UNITY_IOS || ARCORE_IOS_SUPPORT
@@ -176,7 +179,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                 {
                     Debug.Log(string.Format("Failed to host Cloud Anchor: {0}", result.Response));
 
-                    m_CloudAnchorsExampleController.OnAnchorHosted(
+                    _cloudAnchorsExampleController.OnAnchorHosted(
                         false, result.Response.ToString());
                     return;
                 }
@@ -185,7 +188,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                     "Cloud Anchor {0} was created and saved.", result.Anchor.CloudId));
                 CmdSetCloudAnchorId(result.Anchor.CloudId);
 
-                m_CloudAnchorsExampleController.OnAnchorHosted(true, result.Response.ToString());
+                _cloudAnchorsExampleController.OnAnchorHosted(true, result.Response.ToString());
             });
 #endif
         }
@@ -194,9 +197,9 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// Resolves an anchor id and instantiates an Anchor prefab on it.
         /// </summary>
         /// <param name="cloudAnchorId">Cloud anchor id to be resolved.</param>
-        private void _ResolveAnchorFromId(string cloudAnchorId)
+        private void ResolveAnchorFromId(string cloudAnchorId)
         {
-            m_CloudAnchorsExampleController.OnAnchorInstantiated(false);
+            _cloudAnchorsExampleController.OnAnchorInstantiated(false);
 
             // If device is not tracking, let's wait to try to resolve the anchor.
             if (Session.Status != SessionStatus.Tracking)
@@ -204,7 +207,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                 return;
             }
 
-            m_ShouldResolve = false;
+            _shouldResolve = false;
 
             XPSession.ResolveCloudAnchor(cloudAnchorId).ThenAction(
                 (System.Action<CloudAnchorResult>)(result =>
@@ -215,9 +218,9 @@ namespace GoogleARCore.Examples.CloudAnchors
                                 "Client could not resolve Cloud Anchor {0}: {1}",
                                 cloudAnchorId, result.Response));
 
-                            m_CloudAnchorsExampleController.OnAnchorResolved(
+                            _cloudAnchorsExampleController.OnAnchorResolved(
                                 false, result.Response.ToString());
-                            m_ShouldResolve = true;
+                            _shouldResolve = true;
                             return;
                         }
 
@@ -225,10 +228,10 @@ namespace GoogleARCore.Examples.CloudAnchors
                             "Client successfully resolved Cloud Anchor {0}.",
                             cloudAnchorId));
 
-                        m_CloudAnchorsExampleController.OnAnchorResolved(
+                        _cloudAnchorsExampleController.OnAnchorResolved(
                             true, result.Response.ToString());
-                        _OnResolved(result.Anchor.transform);
-                        m_AnchorMesh.SetActive(true);
+                        OnResolved(result.Anchor.transform);
+                        _anchorMesh.SetActive(true);
                     }));
         }
 
@@ -236,26 +239,26 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// Callback invoked once the Cloud Anchor is resolved.
         /// </summary>
         /// <param name="anchorTransform">Transform of the resolved Cloud Anchor.</param>
-        private void _OnResolved(Transform anchorTransform)
+        private void OnResolved(Transform anchorTransform)
         {
             var cloudAnchorController = GameObject.Find("CloudAnchorsExampleController")
                                                   .GetComponent<CloudAnchorsExampleController>();
             cloudAnchorController.SetWorldOrigin(anchorTransform);
 
             // Mark resolving timeout passed so it won't fire OnResolvingTimeoutPassed event.
-            m_PassedResolvingTimeout = true;
+            _passedResolvingTimeout = true;
         }
 
         /// <summary>
         /// Callback invoked once the Cloud Anchor Id changes.
         /// </summary>
         /// <param name="newId">New identifier.</param>
-        private void _OnChangeId(string newId)
+        private void OnChangeId(string newId)
         {
-            if (!m_IsHost && newId != string.Empty)
+            if (!_isHost && newId != string.Empty)
             {
-                m_CloudAnchorId = newId;
-                m_ShouldResolve = true;
+                _cloudAnchorId = newId;
+                _shouldResolve = true;
             }
         }
     }

@@ -39,10 +39,10 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
     /// </summary>
     internal class GestureTouchesUtility
     {
-        private const float k_EdgeThresholdInches = 0.1f;
-        private static GestureTouchesUtility s_Instance;
+        private const float _edgeThresholdInches = 0.1f;
+        private static GestureTouchesUtility _instance;
 
-        private HashSet<int> m_RetainedFingerIds = new HashSet<int>();
+        private HashSet<int> _retainedFingerIds = new HashSet<int>();
 
         /// <summary>
         /// Initializes a new instance of the GestureTouchesUtility class. Intended for private use
@@ -102,7 +102,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <returns>True if the touch is off screen edge.</returns>
         public static bool IsTouchOffScreenEdge(Touch touch)
         {
-            float slopPixels = InchesToPixels(k_EdgeThresholdInches);
+            float slopPixels = InchesToPixels(_edgeThresholdInches);
 
             bool result = touch.position.x <= slopPixels;
             result |= touch.position.y <= slopPixels;
@@ -146,7 +146,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         {
             if (!IsFingerIdRetained(fingerId))
             {
-                _GetInstance().m_RetainedFingerIds.Add(fingerId);
+                GetInstance()._retainedFingerIds.Add(fingerId);
             }
         }
 
@@ -158,7 +158,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         {
             if (IsFingerIdRetained(fingerId))
             {
-                _GetInstance().m_RetainedFingerIds.Remove(fingerId);
+                GetInstance()._retainedFingerIds.Remove(fingerId);
             }
         }
 
@@ -169,21 +169,21 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <returns>True if the finger is retained.</returns>
         public static bool IsFingerIdRetained(int fingerId)
         {
-            return _GetInstance().m_RetainedFingerIds.Contains(fingerId);
+            return GetInstance()._retainedFingerIds.Contains(fingerId);
         }
 
         /// <summary>
         /// Initializes the GestureTouchesUtility singleton if needed and returns a valid instance.
         /// </summary>
         /// <returns>The instance of GestureTouchesUtility.</returns>
-        private static GestureTouchesUtility _GetInstance()
+        private static GestureTouchesUtility GetInstance()
         {
-            if (s_Instance == null)
+            if (_instance == null)
             {
-                s_Instance = new GestureTouchesUtility();
+                _instance = new GestureTouchesUtility();
             }
 
-            return s_Instance;
+            return _instance;
         }
     }
 }

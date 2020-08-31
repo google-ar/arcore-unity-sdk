@@ -30,7 +30,7 @@ namespace GoogleARCoreInternal
     [CustomPropertyDrawer(typeof(HelpAttribute))]
     internal class HelpAttributeDrawer : PropertyDrawer
     {
-        private const float k_IconOffset = 40;
+        private const float _iconOffset = 40;
 
         /// <summary>
         /// Override Unity GetPropertyHeight to specify how tall the GUI for this field is
@@ -41,12 +41,12 @@ namespace GoogleARCoreInternal
         /// <returns>The height in pixels.</returns>
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (_IsHelpBoxEmpty())
+            if (IsHelpBoxEmpty())
             {
-                return _GetOriginalPropertyHeight(property, label);
+                return GetOriginalPropertyHeight(property, label);
             }
 
-            return _GetOriginalPropertyHeight(property, label) + _GetHelpAttributeHeight() +
+            return GetOriginalPropertyHeight(property, label) + GetHelpAttributeHeight() +
                 EditorStyles.helpBox.padding.vertical;
         }
 
@@ -61,17 +61,17 @@ namespace GoogleARCoreInternal
             EditorGUI.BeginProperty(position, label, property);
             Rect labelPosition = position;
             float labelHeight = base.GetPropertyHeight(property, label);
-            float propertyHeight = _GetOriginalPropertyHeight(property, label);
+            float propertyHeight = GetOriginalPropertyHeight(property, label);
             labelPosition.height = labelHeight;
 
             // Draw property based on defualt Unity GUI behavior.
-            string warningMessage = _GetIncompatibleAttributeWarning(property);
+            string warningMessage = GetIncompatibleAttributeWarning(property);
             if (!string.IsNullOrEmpty(warningMessage))
             {
                 var warningContent = new GUIContent(warningMessage);
                 EditorGUI.LabelField(labelPosition, label, warningContent);
             }
-            else if (_GetPropertyAttribute<TextAreaAttribute>() != null)
+            else if (GetPropertyAttribute<TextAreaAttribute>() != null)
             {
                 Rect textAreaPosition = position;
                 textAreaPosition.y += labelHeight;
@@ -84,7 +84,7 @@ namespace GoogleARCoreInternal
                     property.stringValue = text;
                 }
             }
-            else if (_GetPropertyAttribute<MultilineAttribute>() != null)
+            else if (GetPropertyAttribute<MultilineAttribute>() != null)
             {
                 Rect multilinePosition = position;
                 multilinePosition.x += EditorGUIUtility.labelWidth;
@@ -98,9 +98,9 @@ namespace GoogleARCoreInternal
                     property.stringValue = text;
                 }
             }
-            else if (_GetPropertyAttribute<RangeAttribute>() != null)
+            else if (GetPropertyAttribute<RangeAttribute>() != null)
             {
-                var rangeAttribute = _GetPropertyAttribute<RangeAttribute>();
+                var rangeAttribute = GetPropertyAttribute<RangeAttribute>();
                 if (property.propertyType == SerializedPropertyType.Integer)
                 {
                     EditorGUI.IntSlider(labelPosition, property,
@@ -117,43 +117,43 @@ namespace GoogleARCoreInternal
                 EditorGUI.PropertyField(labelPosition, property);
             }
 
-            if (!_IsHelpBoxEmpty())
+            if (!IsHelpBoxEmpty())
             {
                 var helpBoxPosition = position;
                 helpBoxPosition.y += propertyHeight + EditorStyles.helpBox.padding.top;
-                helpBoxPosition.height = _GetHelpAttributeHeight();
-                EditorGUI.HelpBox(helpBoxPosition, _GetHelpAttribute().HelpMessage,
-                    (MessageType)_GetHelpAttribute().MessageType);
+                helpBoxPosition.height = GetHelpAttributeHeight();
+                EditorGUI.HelpBox(helpBoxPosition, GetHelpAttribute().HelpMessage,
+                    (MessageType)GetHelpAttribute().MessageType);
             }
 
             EditorGUI.EndProperty();
         }
 
-        private HelpAttribute _GetHelpAttribute()
+        private HelpAttribute GetHelpAttribute()
         {
             return attribute as HelpAttribute;
         }
 
-        private bool _IsHelpBoxEmpty()
+        private bool IsHelpBoxEmpty()
         {
-            return string.IsNullOrEmpty(_GetHelpAttribute().HelpMessage);
+            return string.IsNullOrEmpty(GetHelpAttribute().HelpMessage);
         }
 
-        private bool _IsIconVisible()
+        private bool IsIconVisible()
         {
-            return _GetHelpAttribute().MessageType != HelpAttribute.HelpMessageType.None;
+            return GetHelpAttribute().MessageType != HelpAttribute.HelpMessageType.None;
         }
 
-        private T _GetPropertyAttribute<T>() where T : PropertyAttribute
+        private T GetPropertyAttribute<T>() where T : PropertyAttribute
         {
             var attributes = fieldInfo.GetCustomAttributes(typeof(T), true);
             return attributes != null && attributes.Length > 0 ? (T)attributes[0] : null;
         }
 
-        private float _GetOriginalPropertyHeight(SerializedProperty property, GUIContent label)
+        private float GetOriginalPropertyHeight(SerializedProperty property, GUIContent label)
         {
             float labelHeight = base.GetPropertyHeight(property, label);
-            string warningMessage = _GetIncompatibleAttributeWarning(property);
+            string warningMessage = GetIncompatibleAttributeWarning(property);
             if (!string.IsNullOrEmpty(warningMessage))
             {
                 return labelHeight;
@@ -161,7 +161,7 @@ namespace GoogleARCoreInternal
 
             // Calculate property height for TextArea attribute.
             // TextArea is below property label.
-            var textAreaAttribute = _GetPropertyAttribute<TextAreaAttribute>();
+            var textAreaAttribute = GetPropertyAttribute<TextAreaAttribute>();
             if (textAreaAttribute != null)
             {
                 var textAreaContent = new GUIContent(property.stringValue);
@@ -180,7 +180,7 @@ namespace GoogleARCoreInternal
 
             // Calculate property height for Multiline attribute.
             // Multiline is on the same line of property label.
-            var multilineAttribute = _GetPropertyAttribute<MultilineAttribute>();
+            var multilineAttribute = GetPropertyAttribute<MultilineAttribute>();
             if (multilineAttribute != null)
             {
                 var textFieldStyle = new GUIStyle(EditorStyles.textField);
@@ -197,7 +197,7 @@ namespace GoogleARCoreInternal
             "UnityRules.UnityStyleRules",
             "US1300:LinesMustBe100CharactersOrShorter",
             Justification = "Unity issue URL length > 100")]
-        private float _GetTextAreaWidth()
+        private float GetTextAreaWidth()
         {
             // Use reflection to determine contextWidth, to workaround the following Unity issue:
             // https://issuetracker.unity3d.com/issues/decoratordrawers-ongui-rect-has-a-different-width-compared-to-editorguiutility-dot-currentviewwidth
@@ -218,17 +218,17 @@ namespace GoogleARCoreInternal
             return textAreaWidth;
         }
 
-        private float _GetHelpAttributeHeight()
+        private float GetHelpAttributeHeight()
         {
             float attributeHeight = 0;
-            if (_IsHelpBoxEmpty())
+            if (IsHelpBoxEmpty())
             {
                 return attributeHeight;
             }
 
-            var content = new GUIContent(_GetHelpAttribute().HelpMessage);
-            var iconOffset = _IsIconVisible() ? k_IconOffset : 0;
-            float textAreaWidth = _GetTextAreaWidth();
+            var content = new GUIContent(GetHelpAttribute().HelpMessage);
+            var iconOffset = IsIconVisible() ? _iconOffset : 0;
+            float textAreaWidth = GetTextAreaWidth();
 
             // When HelpBox icon is visble, part of the width is occupied by the icon.
             attributeHeight = EditorStyles.helpBox.CalcHeight(content, textAreaWidth - iconOffset);
@@ -240,24 +240,24 @@ namespace GoogleARCoreInternal
             return attributeHeight;
         }
 
-        private string _GetIncompatibleAttributeWarning(SerializedProperty property)
+        private string GetIncompatibleAttributeWarning(SerializedProperty property)
         {
             // Based on Unity default behavior, potential incompatible attributes have
             // following priorities: TextAreaAttribute > MultilineAttribute > RangeAttribute.
             // If higher priority exists, lower one will be ignored.
-            if (_GetPropertyAttribute<TextAreaAttribute>() != null)
+            if (GetPropertyAttribute<TextAreaAttribute>() != null)
             {
                 return property.propertyType == SerializedPropertyType.String ?
                     null : "Use TextArea with string.";
             }
 
-            if (_GetPropertyAttribute<MultilineAttribute>() != null)
+            if (GetPropertyAttribute<MultilineAttribute>() != null)
             {
                 return property.propertyType == SerializedPropertyType.String ?
                     null : "Use Multiline with string.";
             }
 
-            if (_GetPropertyAttribute<RangeAttribute>() != null)
+            if (GetPropertyAttribute<RangeAttribute>() != null)
             {
                 return property.propertyType == SerializedPropertyType.Float ||
                     property.propertyType == SerializedPropertyType.Integer ?

@@ -37,13 +37,13 @@ namespace GoogleARCoreInternal
 
     internal class CameraMetadataApi
     {
-        private const int k_MaximumTagCountForWarning = 5000;
-        private HashSet<int> m_WarningTags = new HashSet<int>();
-        private NativeSession m_NativeSession;
+        private const int _maximumTagCountForWarning = 5000;
+        private HashSet<int> _warningTags = new HashSet<int>();
+        private NativeSession _nativeSession;
 
         public CameraMetadataApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public void Release(IntPtr arCameraMetadataHandle)
@@ -55,7 +55,7 @@ namespace GoogleARCoreInternal
             CameraMetadataTag tag, List<CameraMetadataValue> resultList)
         {
             IntPtr ndkMetadataHandle = IntPtr.Zero;
-            ExternApi.ArImageMetadata_getNdkCameraMetadata(m_NativeSession.SessionHandle,
+            ExternApi.ArImageMetadata_getNdkCameraMetadata(_nativeSession.SessionHandle,
                 cameraMetadataHandle, ref ndkMetadataHandle);
 
             resultList.Clear();
@@ -70,12 +70,12 @@ namespace GoogleARCoreInternal
                 return false;
             }
 
-            if (entry.Count > k_MaximumTagCountForWarning && !m_WarningTags.Contains((int)tag))
+            if (entry.Count > _maximumTagCountForWarning && !_warningTags.Contains((int)tag))
             {
                 Debug.LogWarningFormat(
                     "TryGetValues for tag {0} has {1} values. Accessing tags with a large " +
                     "number of values may impede performance.", tag, entry.Count);
-                m_WarningTags.Add((int)tag);
+                _warningTags.Add((int)tag);
             }
 
             for (int i = 0; i < entry.Count; i++)
@@ -140,7 +140,7 @@ namespace GoogleARCoreInternal
                 return false;
             }
 
-            ExternApi.ArImageMetadata_getNdkCameraMetadata(m_NativeSession.SessionHandle,
+            ExternApi.ArImageMetadata_getNdkCameraMetadata(_nativeSession.SessionHandle,
                 cameraMetadataHandle, ref ndkMetadataHandle);
 
             IntPtr tagsHandle = IntPtr.Zero;

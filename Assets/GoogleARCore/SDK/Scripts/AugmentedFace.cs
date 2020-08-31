@@ -41,8 +41,8 @@ namespace GoogleARCore
         internal AugmentedFace(IntPtr nativeHandle, NativeSession nativeApi)
             : base(nativeHandle, nativeApi)
         {
-            m_TrackableNativeHandle = nativeHandle;
-            m_NativeSession = nativeApi;
+            _trackableNativeHandle = nativeHandle;
+            _nativeSession = nativeApi;
         }
 
         /// <summary>
@@ -59,14 +59,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "CenterPose:: Trying to access a session that has already been destroyed.");
                     return new Pose();
                 }
 
-                return m_NativeSession.AugmentedFaceApi.GetCenterPose(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedFaceApi.GetCenterPose(_trackableNativeHandle);
             }
         }
 
@@ -77,15 +77,15 @@ namespace GoogleARCore
         /// <returns>The position and orientation of a face region in world space.</returns>
         public Pose GetRegionPose(AugmentedFaceRegion region)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetRegionPose: Trying to access a session that has already been destroyed.");
                 return new Pose();
             }
 
-            return m_NativeSession.AugmentedFaceApi.GetRegionPose(
-                m_TrackableNativeHandle, (ApiAugmentedFaceRegionType)region);
+            return _nativeSession.AugmentedFaceApi.GetRegionPose(
+                _trackableNativeHandle, (ApiAugmentedFaceRegionType)region);
         }
 
         /// <summary>
@@ -101,14 +101,14 @@ namespace GoogleARCore
         /// </param>
         public void GetVertices(List<Vector3> vertices)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetVertices:: Trying to access a session that has already been destroyed.");
                 return;
             }
 
-            m_NativeSession.AugmentedFaceApi.GetVertices(m_TrackableNativeHandle, vertices);
+            _nativeSession.AugmentedFaceApi.GetVertices(_trackableNativeHandle, vertices);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace GoogleARCore
         /// </param>
         public void GetTextureCoordinates(List<Vector2> textureCoordinates)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetTextureCoordinates:: Trying to access a session that has already been " +
@@ -129,8 +129,8 @@ namespace GoogleARCore
                 return;
             }
 
-            m_NativeSession.AugmentedFaceApi.GetTextureCoordinates(
-                m_TrackableNativeHandle, textureCoordinates);
+            _nativeSession.AugmentedFaceApi.GetTextureCoordinates(
+                _trackableNativeHandle, textureCoordinates);
         }
 
         /// <summary>
@@ -143,14 +143,14 @@ namespace GoogleARCore
         /// </param>
         public void GetNormals(List<Vector3> normals)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetNormals:: Trying to access a session that has already been destroyed.");
                 return;
             }
 
-            m_NativeSession.AugmentedFaceApi.GetNormals(m_TrackableNativeHandle, normals);
+            _nativeSession.AugmentedFaceApi.GetNormals(_trackableNativeHandle, normals);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace GoogleARCore
         /// </param>
         public void GetTriangleIndices(List<int> indices)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetTriangleIndices:: Trying to access a session that has already been " +
@@ -171,7 +171,7 @@ namespace GoogleARCore
                 return;
             }
 
-            m_NativeSession.AugmentedFaceApi.GetTriangleIndices(m_TrackableNativeHandle, indices);
+            _nativeSession.AugmentedFaceApi.GetTriangleIndices(_trackableNativeHandle, indices);
       }
     }
 }

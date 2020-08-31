@@ -32,18 +32,18 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class ManipulationSystem : MonoBehaviour
     {
-        private static ManipulationSystem s_Instance = null;
+        private static ManipulationSystem _instance = null;
 
-        private DragGestureRecognizer m_DragGestureRecognizer = new DragGestureRecognizer();
+        private DragGestureRecognizer _dragGestureRecognizer = new DragGestureRecognizer();
 
-        private PinchGestureRecognizer m_PinchGestureRecognizer = new PinchGestureRecognizer();
+        private PinchGestureRecognizer _pinchGestureRecognizer = new PinchGestureRecognizer();
 
-        private TwoFingerDragGestureRecognizer m_TwoFingerDragGestureRecognizer =
+        private TwoFingerDragGestureRecognizer _twoFingerDragGestureRecognizer =
             new TwoFingerDragGestureRecognizer();
 
-        private TapGestureRecognizer m_TapGestureRecognizer = new TapGestureRecognizer();
+        private TapGestureRecognizer _tapGestureRecognizer = new TapGestureRecognizer();
 
-        private TwistGestureRecognizer m_TwistGestureRecognizer = new TwistGestureRecognizer();
+        private TwistGestureRecognizer _twistGestureRecognizer = new TwistGestureRecognizer();
 
         /// <summary>
         /// Gets the ManipulationSystem instance.
@@ -52,12 +52,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                if (s_Instance == null)
+                if (_instance == null)
                 {
                     var manipulationSystems = FindObjectsOfType<ManipulationSystem>();
                     if (manipulationSystems.Length > 0)
                     {
-                        s_Instance = manipulationSystems[0];
+                        _instance = manipulationSystems[0];
                     }
                     else
                     {
@@ -65,7 +65,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     }
                 }
 
-                return s_Instance;
+                return _instance;
             }
         }
 
@@ -76,7 +76,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                return m_DragGestureRecognizer;
+                return _dragGestureRecognizer;
             }
         }
 
@@ -87,7 +87,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                return m_PinchGestureRecognizer;
+                return _pinchGestureRecognizer;
             }
         }
 
@@ -98,7 +98,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                return m_TwoFingerDragGestureRecognizer;
+                return _twoFingerDragGestureRecognizer;
             }
         }
 
@@ -109,7 +109,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                return m_TapGestureRecognizer;
+                return _tapGestureRecognizer;
             }
         }
 
@@ -120,7 +120,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         {
             get
             {
-                return m_TwistGestureRecognizer;
+                return _twistGestureRecognizer;
             }
         }
 

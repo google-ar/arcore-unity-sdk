@@ -29,11 +29,11 @@ namespace GoogleARCore.Examples.Common
     [RequireComponent(typeof(Renderer))]
     public class DepthTexture : MonoBehaviour
     {
-        private static readonly string k_CurrentDepthTexturePropertyName = "_CurrentDepthTexture";
-        private static readonly string k_TopLeftRightPropertyName = "_UvTopLeftRight";
-        private static readonly string k_BottomLeftRightPropertyName = "_UvBottomLeftRight";
-        private Texture2D m_DepthTexture;
-        private Material m_Material;
+        private static readonly string _currentDepthTexturePropertyName = "_CurrentDepthTexture";
+        private static readonly string _topLeftRightPropertyName = "_UvTopLeftRight";
+        private static readonly string _bottomLeftRightPropertyName = "_UvBottomLeftRight";
+        private Texture2D _depthTexture;
+        private Material _material;
 
         /// <summary>
         /// Unity's Start() method.
@@ -41,13 +41,13 @@ namespace GoogleARCore.Examples.Common
         public void Start()
         {
             // Default texture, will be updated each frame.
-            m_DepthTexture = new Texture2D(2, 2);
-            m_DepthTexture.filterMode = FilterMode.Bilinear;
+            _depthTexture = new Texture2D(2, 2);
+            _depthTexture.filterMode = FilterMode.Bilinear;
 
             // Assign the texture to the material.
-            m_Material = GetComponent<Renderer>().sharedMaterial;
-            m_Material.SetTexture(k_CurrentDepthTexturePropertyName, m_DepthTexture);
-            _UpdateScreenOrientationOnMaterial();
+            _material = GetComponent<Renderer>().sharedMaterial;
+            _material.SetTexture(_currentDepthTexturePropertyName, _depthTexture);
+            UpdateScreenOrientationOnMaterial();
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void Update()
         {
-            if (Frame.CameraImage.UpdateDepthTexture(ref m_DepthTexture) !=
+            if (Frame.CameraImage.UpdateDepthTexture(ref _depthTexture) !=
                 DepthStatus.Success)
             {
                 // Rendering will use the most recently acquired depth image.
@@ -64,21 +64,21 @@ namespace GoogleARCore.Examples.Common
                 // or suggest behavior changes to the user.
             }
 
-            _UpdateScreenOrientationOnMaterial();
+            UpdateScreenOrientationOnMaterial();
         }
 
         /// <summary>
         /// Updates the screen orientation of the depth map.
         /// </summary>
-        private void _UpdateScreenOrientationOnMaterial()
+        private void UpdateScreenOrientationOnMaterial()
         {
             var uvQuad = Frame.CameraImage.TextureDisplayUvs;
-            m_Material.SetVector(
-                k_TopLeftRightPropertyName,
+            _material.SetVector(
+                _topLeftRightPropertyName,
                 new Vector4(
                     uvQuad.TopLeft.x, uvQuad.TopLeft.y, uvQuad.TopRight.x, uvQuad.TopRight.y));
-            m_Material.SetVector(
-                k_BottomLeftRightPropertyName,
+            _material.SetVector(
+                _bottomLeftRightPropertyName,
                 new Vector4(uvQuad.BottomLeft.x, uvQuad.BottomLeft.y, uvQuad.BottomRight.x,
                     uvQuad.BottomRight.y));
         }

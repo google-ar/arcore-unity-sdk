@@ -33,7 +33,7 @@ namespace GoogleARCore
         /// </summary>
         public const int InvalidPointId = -1;
 
-        private int m_Id;
+        private int _id;
 
         /// <summary>
         /// Constructs a new PointCloudPoint.
@@ -66,12 +66,12 @@ namespace GoogleARCore
                     return 0;
                 }
 
-                return m_Id;
+                return _id;
             }
 
             set
             {
-                m_Id = value;
+                _id = value;
             }
         }
 

@@ -36,17 +36,17 @@ namespace GoogleARCoreInternal
 
     internal class SessionApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public SessionApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public void ReportEngineType()
         {
             ExternApi.ArSession_reportEngineType(
-                m_NativeSession.SessionHandle, "Unity", Application.unityVersion);
+                _nativeSession.SessionHandle, "Unity", Application.unityVersion);
         }
 
         public void GetSupportedCameraConfigurationsWithFilter(
@@ -55,24 +55,24 @@ namespace GoogleARCoreInternal
             List<CameraConfig> supportedCameraConfigs, DeviceCameraDirection cameraFacingDirection)
         {
             IntPtr cameraConfigFilterHandle =
-                m_NativeSession.CameraConfigFilterApi.Create(cameraConfigFilter);
-            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(m_NativeSession.SessionHandle,
+                _nativeSession.CameraConfigFilterApi.Create(cameraConfigFilter);
+            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(_nativeSession.SessionHandle,
                 cameraConfigFilterHandle, cameraConfigListHandle);
-            m_NativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
+            _nativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
 
             supportedCameraConfigHandles.Clear();
             supportedCameraConfigs.Clear();
-            int listSize = m_NativeSession.CameraConfigListApi.GetSize(cameraConfigListHandle);
+            int listSize = _nativeSession.CameraConfigListApi.GetSize(cameraConfigListHandle);
 
             for (int i = 0; i < listSize; i++)
             {
-                IntPtr cameraConfigHandle = m_NativeSession.CameraConfigApi.Create();
-                m_NativeSession.CameraConfigListApi.GetItemAt(
+                IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
+                _nativeSession.CameraConfigListApi.GetItemAt(
                     cameraConfigListHandle, i, cameraConfigHandle);
 
                 // Skip camera config that has a different camera facing direction.
                 DeviceCameraDirection configDirection =
-                    m_NativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle)
+                    _nativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle)
                     .ToDeviceCameraDirection();
                 if (configDirection != cameraFacingDirection)
                 {
@@ -80,19 +80,19 @@ namespace GoogleARCoreInternal
                 }
 
                 supportedCameraConfigHandles.Add(cameraConfigHandle);
-                supportedCameraConfigs.Add(_CreateCameraConfig(cameraConfigHandle));
+                supportedCameraConfigs.Add(CreateCameraConfig(cameraConfigHandle));
             }
         }
 
         public ApiArStatus SetCameraConfig(IntPtr cameraConfigHandle)
         {
             return ExternApi.ArSession_setCameraConfig(
-                m_NativeSession.SessionHandle, cameraConfigHandle);
+                _nativeSession.SessionHandle, cameraConfigHandle);
         }
 
         public CameraConfig GetCameraConfig()
         {
-            IntPtr cameraConfigHandle = m_NativeSession.CameraConfigApi.Create();
+            IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
 
             if (InstantPreviewManager.IsProvidingPlatform)
             {
@@ -100,37 +100,37 @@ namespace GoogleARCoreInternal
                 return new CameraConfig();
             }
 
-            ExternApi.ArSession_getCameraConfig(m_NativeSession.SessionHandle, cameraConfigHandle);
-            CameraConfig currentCameraConfig = _CreateCameraConfig(cameraConfigHandle);
-            m_NativeSession.CameraConfigApi.Destroy(cameraConfigHandle);
+            ExternApi.ArSession_getCameraConfig(_nativeSession.SessionHandle, cameraConfigHandle);
+            CameraConfig currentCameraConfig = CreateCameraConfig(cameraConfigHandle);
+            _nativeSession.CameraConfigApi.Destroy(cameraConfigHandle);
             return currentCameraConfig;
         }
 
         public void GetAllTrackables(List<Trackable> trackables)
         {
-            IntPtr listHandle = m_NativeSession.TrackableListApi.Create();
+            IntPtr listHandle = _nativeSession.TrackableListApi.Create();
             ExternApi.ArSession_getAllTrackables(
-                m_NativeSession.SessionHandle, ApiTrackableType.BaseTrackable, listHandle);
+                _nativeSession.SessionHandle, ApiTrackableType.BaseTrackable, listHandle);
 
             trackables.Clear();
-            int count = m_NativeSession.TrackableListApi.GetCount(listHandle);
+            int count = _nativeSession.TrackableListApi.GetCount(listHandle);
             for (int i = 0; i < count; i++)
             {
                 IntPtr trackableHandle =
-                    m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
+                    _nativeSession.TrackableListApi.AcquireItem(listHandle, i);
 
-                Trackable trackable = m_NativeSession.TrackableFactory(trackableHandle);
+                Trackable trackable = _nativeSession.TrackableFactory(trackableHandle);
                 if (trackable != null)
                 {
                     trackables.Add(trackable);
                 }
                 else
                 {
-                    m_NativeSession.TrackableApi.Release(trackableHandle);
+                    _nativeSession.TrackableApi.Release(trackableHandle);
                 }
             }
 
-            m_NativeSession.TrackableListApi.Destroy(listHandle);
+            _nativeSession.TrackableListApi.Destroy(listHandle);
         }
 
         public void SetDisplayGeometry(ScreenOrientation orientation, int width, int height)
@@ -158,17 +158,17 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArSession_setDisplayGeometry(
-                m_NativeSession.SessionHandle, androidOrientation, width, height);
+                _nativeSession.SessionHandle, androidOrientation, width, height);
         }
 
         public Anchor CreateAnchor(Pose pose)
         {
-            IntPtr poseHandle = m_NativeSession.PoseApi.Create(pose);
+            IntPtr poseHandle = _nativeSession.PoseApi.Create(pose);
             IntPtr anchorHandle = IntPtr.Zero;
             ExternApi.ArSession_acquireNewAnchor(
-                m_NativeSession.SessionHandle, poseHandle, ref anchorHandle);
-            var anchorResult = Anchor.Factory(m_NativeSession, anchorHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, poseHandle, ref anchorHandle);
+            var anchorResult = Anchor.Factory(_nativeSession, anchorHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return anchorResult;
         }
 
@@ -178,7 +178,7 @@ namespace GoogleARCoreInternal
             cloudAnchorHandle = IntPtr.Zero;
             var result =
                 ExternApi.ArSession_hostAndAcquireNewCloudAnchor(
-                    m_NativeSession.SessionHandle, platformAnchorHandle, ref cloudAnchorHandle);
+                    _nativeSession.SessionHandle, platformAnchorHandle, ref cloudAnchorHandle);
             return result;
         }
 
@@ -186,18 +186,18 @@ namespace GoogleARCoreInternal
         {
             cloudAnchorHandle = IntPtr.Zero;
             return ExternApi.ArSession_resolveAndAcquireNewCloudAnchor(
-                m_NativeSession.SessionHandle, cloudAnchorId, ref cloudAnchorHandle);
+                _nativeSession.SessionHandle, cloudAnchorId, ref cloudAnchorHandle);
         }
 
         public bool IsDepthModeSupported(ApiDepthMode depthMode)
         {
             int isSupported = 0;
             ExternApi.ArSession_isDepthModeSupported(
-                m_NativeSession.SessionHandle, depthMode, ref isSupported);
+                _nativeSession.SessionHandle, depthMode, ref isSupported);
             return isSupported != 0;
         }
 
-        private CameraConfig _CreateCameraConfig(IntPtr cameraConfigHandle)
+        private CameraConfig CreateCameraConfig(IntPtr cameraConfigHandle)
         {
             int imageWidth = 0;
             int imageHeight = 0;
@@ -206,12 +206,12 @@ namespace GoogleARCoreInternal
             int minFps = 0;
             int maxFps = 0;
             CameraConfigDepthSensorUsages depthSensorUsage =
-                m_NativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
-            m_NativeSession.CameraConfigApi.GetImageDimensions(
+                _nativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
+            _nativeSession.CameraConfigApi.GetImageDimensions(
                 cameraConfigHandle, out imageWidth, out imageHeight);
-            m_NativeSession.CameraConfigApi.GetTextureDimensions(
+            _nativeSession.CameraConfigApi.GetTextureDimensions(
                 cameraConfigHandle, out textureWidth, out textureHeight);
-            m_NativeSession.CameraConfigApi.GetFpsRange(
+            _nativeSession.CameraConfigApi.GetFpsRange(
                 cameraConfigHandle, out minFps, out maxFps);
 
             return new CameraConfig(new Vector2(imageWidth, imageHeight),

@@ -32,19 +32,19 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public class AugmentedImageDatabaseInspector : Editor
     {
-        private const float k_ImageSpacerHeight = 55f;
-        private const int k_PageSize = 5;
-        private const float k_HeaderHeight = 30f;
-        private static readonly Vector2 k_ContainerStart = new Vector2(14f, 87f);
+        private const float _imageSpacerHeight = 55f;
+        private const int _pageSize = 5;
+        private const float _headerHeight = 30f;
+        private static readonly Vector2 _containerStart = new Vector2(14f, 87f);
 
-        private static BackgroundJobExecutor s_QualityBackgroundExecutor =
+        private static BackgroundJobExecutor _qualityBackgroundExecutor =
             new BackgroundJobExecutor();
 
-        private static AugmentedImageDatabase s_DatabaseForQualityJobs = null;
-        private static Dictionary<string, string> s_UpdatedQualityScores =
+        private static AugmentedImageDatabase _databaseForQualityJobs = null;
+        private static Dictionary<string, string> _updatedQualityScores =
             new Dictionary<string, string>();
 
-        private int m_PageIndex = 0;
+        private int _pageIndex = 0;
 
         public override void OnInspectorGUI()
         {
@@ -54,27 +54,27 @@ namespace GoogleARCoreInternal
                 return;
             }
 
-            _RunDirtyQualityJobs(database);
+            RunDirtyQualityJobs(database);
 
-            m_PageIndex = Mathf.Min(m_PageIndex, database.Count / k_PageSize);
+            _pageIndex = Mathf.Min(_pageIndex, database.Count / _pageSize);
 
-            _DrawTitle();
-            _DrawContainer();
-            _DrawColumnNames();
+            DrawTitle();
+            DrawContainer();
+            DrawColumnNames();
 
             // Draw the rows for AugmentedImageDatabaseEntry in the database,
             // update the database if the entry's image is replaced and
             // check whether the entry is deleted.
             int displayedImageCount = 0;
             int removeAt = -1;
-            int pageStartIndex = m_PageIndex * k_PageSize;
-            int pageEndIndex = Mathf.Min(database.Count, pageStartIndex + k_PageSize);
+            int pageStartIndex = _pageIndex * _pageSize;
+            int pageEndIndex = Mathf.Min(database.Count, pageStartIndex + _pageSize);
             for (int i = pageStartIndex; i < pageEndIndex; i++, displayedImageCount++)
             {
                 AugmentedImageDatabaseEntry updatedImage;
                 bool wasRemoved;
 
-                _DrawImageField(database[i], out updatedImage, out wasRemoved);
+                DrawImageField(database[i], out updatedImage, out wasRemoved);
 
                 if (wasRemoved)
                 {
@@ -119,37 +119,37 @@ namespace GoogleARCoreInternal
                 }
             }
 
-            _DrawImageSpacers(displayedImageCount);
-            _DrawPageField(database.Count);
+            DrawImageSpacers(displayedImageCount);
+            DrawPageField(database.Count);
         }
 
-        private static void _RunDirtyQualityJobs(AugmentedImageDatabase database)
+        private static void RunDirtyQualityJobs(AugmentedImageDatabase database)
         {
             if (database == null)
             {
                 return;
             }
 
-            if (s_DatabaseForQualityJobs != database)
+            if (_databaseForQualityJobs != database)
             {
                 // If another database is already running quality evaluation,
                 // stop all pending jobs to prioritise the current database.
-                if (s_DatabaseForQualityJobs != null)
+                if (_databaseForQualityJobs != null)
                 {
-                    s_QualityBackgroundExecutor.RemoveAllPendingJobs();
+                    _qualityBackgroundExecutor.RemoveAllPendingJobs();
                 }
 
-                s_DatabaseForQualityJobs = database;
+                _databaseForQualityJobs = database;
             }
 
-            _UpdateDatabaseQuality(database);
+            UpdateDatabaseQuality(database);
 
             // Set database dirty to refresh inspector UI for each frame that there are still
             // pending jobs.
             // Otherwise if there exists one frame with no newly finished jobs, the UI will never
             // get refreshed.
             // EditorUtility.SetDirty can only be called from main thread.
-            if (s_QualityBackgroundExecutor.PendingJobsCount > 0)
+            if (_qualityBackgroundExecutor.PendingJobsCount > 0)
             {
                 EditorUtility.SetDirty(database);
                 return;
@@ -172,7 +172,7 @@ namespace GoogleARCoreInternal
                 AugmentedImageDatabaseEntry image = dirtyEntries[i];
                 var imagePath = AssetDatabase.GetAssetPath(image.Texture);
                 var textureGUID = image.TextureGUID;
-                s_QualityBackgroundExecutor.PushJob(() =>
+                _qualityBackgroundExecutor.PushJob(() =>
                 {
                     string quality;
                     string error;
@@ -187,9 +187,9 @@ namespace GoogleARCoreInternal
                         quality = "ERROR";
                     }
 
-                    lock (s_UpdatedQualityScores)
+                    lock (_updatedQualityScores)
                     {
-                        s_UpdatedQualityScores.Add(textureGUID, quality);
+                        _updatedQualityScores.Add(textureGUID, quality);
                     }
                 });
             }
@@ -198,33 +198,33 @@ namespace GoogleARCoreInternal
             EditorUtility.SetDirty(database);
         }
 
-        private static void _UpdateDatabaseQuality(AugmentedImageDatabase database)
+        private static void UpdateDatabaseQuality(AugmentedImageDatabase database)
         {
-            lock (s_UpdatedQualityScores)
+            lock (_updatedQualityScores)
             {
-                if (s_UpdatedQualityScores.Count == 0)
+                if (_updatedQualityScores.Count == 0)
                 {
                     return;
                 }
 
                 for (int i = 0; i < database.Count; ++i)
                 {
-                    if (s_UpdatedQualityScores.ContainsKey(database[i].TextureGUID))
+                    if (_updatedQualityScores.ContainsKey(database[i].TextureGUID))
                     {
                         AugmentedImageDatabaseEntry updatedImage = database[i];
-                        updatedImage.Quality = s_UpdatedQualityScores[updatedImage.TextureGUID];
+                        updatedImage.Quality = _updatedQualityScores[updatedImage.TextureGUID];
                         database[i] = updatedImage;
                     }
                 }
 
-                s_UpdatedQualityScores.Clear();
+                _updatedQualityScores.Clear();
             }
 
             // For refreshing inspector UI for updated quality scores.
             EditorUtility.SetDirty(database);
         }
 
-        private void _DrawTitle()
+        private void DrawTitle()
         {
             const string TITLE_STRING = "Images in Database";
             GUIStyle titleStyle = new GUIStyle();
@@ -241,15 +241,15 @@ namespace GoogleARCoreInternal
             EditorGUILayout.EndVertical();
         }
 
-        private void _DrawContainer()
+        private void DrawContainer()
         {
             var containerRect = new Rect(
-                k_ContainerStart.x, k_ContainerStart.y, EditorGUIUtility.currentViewWidth - 30,
-                (k_PageSize * k_ImageSpacerHeight) + k_HeaderHeight);
+                _containerStart.x, _containerStart.y, EditorGUIUtility.currentViewWidth - 30,
+                (_pageSize * _imageSpacerHeight) + _headerHeight);
             GUI.Box(containerRect, string.Empty);
         }
 
-        private void _DrawColumnNames()
+        private void DrawColumnNames()
         {
             EditorGUILayout.BeginVertical();
             GUILayout.Space(5);
@@ -268,7 +268,7 @@ namespace GoogleARCoreInternal
 
             GUILayoutOption[] options =
                 {
-                    GUILayout.Height(k_HeaderHeight - 10),
+                    GUILayout.Height(_headerHeight - 10),
                     GUILayout.MaxWidth(80f)
                 };
             EditorGUILayout.LabelField("Name", style, options);
@@ -283,7 +283,7 @@ namespace GoogleARCoreInternal
             EditorGUILayout.EndVertical();
         }
 
-        private string _QualityForDisplay(string quality)
+        private string QualityForDisplay(string quality)
         {
             if (string.IsNullOrEmpty(quality))
             {
@@ -298,7 +298,7 @@ namespace GoogleARCoreInternal
             return quality + "/100";
         }
 
-        private void _DrawImageField(
+        private void DrawImageField(
             AugmentedImageDatabaseEntry image, out AugmentedImageDatabaseEntry updatedImage,
             out bool wasRemoved)
         {
@@ -326,7 +326,7 @@ namespace GoogleARCoreInternal
             var labelStyle = new GUIStyle(GUI.skin.label);
             labelStyle.alignment = TextAnchor.MiddleLeft;
             GUILayout.Space(5);
-            EditorGUILayout.LabelField(_QualityForDisplay(image.Quality), labelStyle,
+            EditorGUILayout.LabelField(QualityForDisplay(image.Quality), labelStyle,
                                        GUILayout.Height(42), GUILayout.MaxWidth(80f));
 
             GUILayout.FlexibleSpace();
@@ -345,16 +345,16 @@ namespace GoogleARCoreInternal
             EditorGUILayout.EndVertical();
         }
 
-        private void _DrawImageSpacers(int displayedImageCount)
+        private void DrawImageSpacers(int displayedImageCount)
         {
             EditorGUILayout.BeginVertical();
-            GUILayout.Space((k_PageSize - displayedImageCount) * k_ImageSpacerHeight);
+            GUILayout.Space((_pageSize - displayedImageCount) * _imageSpacerHeight);
             EditorGUILayout.EndVertical();
         }
 
-        private void _DrawPageField(int imageCount)
+        private void DrawPageField(int imageCount)
         {
-            var lastPageIndex = Mathf.Max(imageCount - 1, 0) / k_PageSize;
+            var lastPageIndex = Mathf.Max(imageCount - 1, 0) / _pageSize;
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(15);
@@ -373,22 +373,22 @@ namespace GoogleARCoreInternal
             var textStyle = new GUIStyle(GUI.skin.textField);
             textStyle.margin = new RectOffset(0, 0, 15, 0);
             var pageString = EditorGUILayout.TextField(
-                (m_PageIndex + 1).ToString(), textStyle, GUILayout.Width(30));
+                (_pageIndex + 1).ToString(), textStyle, GUILayout.Width(30));
             int pageNumber;
             int.TryParse(pageString, out pageNumber);
-            m_PageIndex = Mathf.Clamp(pageNumber - 1, 0, lastPageIndex);
+            _pageIndex = Mathf.Clamp(pageNumber - 1, 0, lastPageIndex);
 
             var buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.margin = new RectOffset(10, 10, 13, 0);
 
-            GUI.enabled = m_PageIndex > 0;
+            GUI.enabled = _pageIndex > 0;
             bool moveLeft = GUILayout.Button("<", buttonStyle);
-            GUI.enabled = m_PageIndex < lastPageIndex;
+            GUI.enabled = _pageIndex < lastPageIndex;
             bool moveRight = GUILayout.Button(">", buttonStyle);
             GUI.enabled = true;
 
-            m_PageIndex = moveLeft ? m_PageIndex - 1 : m_PageIndex;
-            m_PageIndex = moveRight ? m_PageIndex + 1 : m_PageIndex;
+            _pageIndex = moveLeft ? _pageIndex - 1 : _pageIndex;
+            _pageIndex = moveRight ? _pageIndex + 1 : _pageIndex;
 
             GUILayout.Space(15);
             EditorGUILayout.EndHorizontal();

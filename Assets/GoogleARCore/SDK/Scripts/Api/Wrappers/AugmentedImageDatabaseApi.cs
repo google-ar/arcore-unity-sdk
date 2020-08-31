@@ -38,11 +38,11 @@ namespace GoogleARCoreInternal
 
     internal class AugmentedImageDatabaseApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public AugmentedImageDatabaseApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public static void Release(IntPtr augmentedImageDatabaseHandle)
@@ -58,7 +58,7 @@ namespace GoogleARCoreInternal
                 GCHandle handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
 
                 ApiArStatus status = ExternApi.ArAugmentedImageDatabase_deserialize(
-                    m_NativeSession.SessionHandle, handle.AddrOfPinnedObject(), rawData.Length,
+                    _nativeSession.SessionHandle, handle.AddrOfPinnedObject(), rawData.Length,
                     ref outDatabaseHandle);
                 if (status != ApiArStatus.Success)
                 {
@@ -76,7 +76,7 @@ namespace GoogleARCoreInternal
             else
             {
                 ExternApi.ArAugmentedImageDatabase_create(
-                    m_NativeSession.SessionHandle, ref outDatabaseHandle);
+                    _nativeSession.SessionHandle, ref outDatabaseHandle);
             }
 
             return outDatabaseHandle;
@@ -93,7 +93,7 @@ namespace GoogleARCoreInternal
                 return outIndex;
             }
 
-            GCHandle grayscaleBytesHandle = _ConvertTextureToGrayscaleBytes(imageSrc);
+            GCHandle grayscaleBytesHandle = ConvertTextureToGrayscaleBytes(imageSrc);
             if (grayscaleBytesHandle.AddrOfPinnedObject() == IntPtr.Zero)
             {
                 return -1;
@@ -103,16 +103,16 @@ namespace GoogleARCoreInternal
             if (width > 0)
             {
                 status = ExternApi.ArAugmentedImageDatabase_addImageWithPhysicalSize(
-                    m_NativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
-                    grayscaleBytesHandle.AddrOfPinnedObject(), imageSrc.Width,
-                    imageSrc.Height, imageSrc.Width, width, ref outIndex);
+                    _nativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
+                    grayscaleBytesHandle.AddrOfPinnedObject(), imageSrc._width,
+                    imageSrc._height, imageSrc._width, width, ref outIndex);
             }
             else
             {
                 status = ExternApi.ArAugmentedImageDatabase_addImage(
-                    m_NativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
-                    grayscaleBytesHandle.AddrOfPinnedObject(), imageSrc.Width,
-                    imageSrc.Height, imageSrc.Width, ref outIndex);
+                    _nativeSession.SessionHandle, augmentedImageDatabaseHandle, name,
+                    grayscaleBytesHandle.AddrOfPinnedObject(), imageSrc._width,
+                    imageSrc._height, imageSrc._width, ref outIndex);
             }
 
             if (grayscaleBytesHandle.IsAllocated)
@@ -130,21 +130,21 @@ namespace GoogleARCoreInternal
             return outIndex;
         }
 
-        private GCHandle _ConvertTextureToGrayscaleBytes(AugmentedImageSrc imageSrc)
+        private GCHandle ConvertTextureToGrayscaleBytes(AugmentedImageSrc imageSrc)
         {
             byte[] grayscaleBytes = null;
 
-            if (imageSrc.Format == TextureFormat.RGB24 ||
-                imageSrc.Format == TextureFormat.RGBA32)
+            if (imageSrc._format == TextureFormat.RGB24 ||
+                imageSrc._format == TextureFormat.RGBA32)
             {
-                Color[] pixels = imageSrc.Pixels;
+                Color[] pixels = imageSrc._pixels;
                 grayscaleBytes = new byte[pixels.Length];
-                for (int i = 0; i < imageSrc.Height; i++)
+                for (int i = 0; i < imageSrc._height; i++)
                 {
-                    int widthDelta = i * imageSrc.Width;
-                    for (int j = 0; j < imageSrc.Width; j++)
+                    int widthDelta = i * imageSrc._width;
+                    for (int j = 0; j < imageSrc._width; j++)
                     {
-                        int pixelIndex = ((imageSrc.Height - 1 - i) * imageSrc.Width) + j;
+                        int pixelIndex = ((imageSrc._height - 1 - i) * imageSrc._width) + j;
                         grayscaleBytes[widthDelta + j] =
                             (byte)((
                             (0.213 * pixels[pixelIndex].r) +
@@ -155,7 +155,7 @@ namespace GoogleARCoreInternal
             }
             else
             {
-                Debug.LogError("Unsupported texture format " + imageSrc.Format);
+                Debug.LogError("Unsupported texture format " + imageSrc._format);
             }
 
             return GCHandle.Alloc(grayscaleBytes, GCHandleType.Pinned);

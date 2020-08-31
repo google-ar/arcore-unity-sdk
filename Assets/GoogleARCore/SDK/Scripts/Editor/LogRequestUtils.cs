@@ -33,8 +33,8 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public class LogRequestUtils
     {
-        private const string k_GoogleAnalyticsId = "GoogleAnalyticsId";
-        private static string s_SessionId = string.Empty;
+        private const string _googleAnalyticsId = "GoogleAnalyticsId";
+        private static string _sessionId = string.Empty;
 
         /// <summary>
         /// Generates a new LogRequest using the current system configuration.
@@ -59,27 +59,27 @@ namespace GoogleARCoreInternal
             // Collect the set of information to be sent to Google.
             ArCoreSdkLog logSDK = new ArCoreSdkLog()
             {
-                SdkInstanceId = _UniqueId(),
+                SdkInstanceId = UniqueId(),
                 OsVersion = SystemInfo.operatingSystem,
                 ArcoreSdkVersion = GoogleARCore.VersionInfo.Version,
                 SdkType = ArCoreSdkLog.Types.SDKType.ArcoreSdk,
                 Unity = engine,     // Unity engine version.
-                SdkSessionId = _SessionId(),
+                SdkSessionId = SessionId(),
             };
 
             // Assemble the Clearcut log event data.
             LogEvent logEvent = new LogEvent()
             {
-                EventTimeMs = _GetCurrentUnixEpochTimeMs(),
-                EventUptimeMs = _GetSystemUptimeMs(),
+                EventTimeMs = GetCurrentUnixEpochTimeMs(),
+                EventUptimeMs = GetSystemUptimeMs(),
                 SourceExtension = logSDK.ToByteString(),
             };
 
             // Package all data in a log request.
             LogRequest logRequest = new LogRequest()
             {
-                RequestTimeMs = _GetCurrentUnixEpochTimeMs(),
-                RequestUptimeMs = _GetSystemUptimeMs(),
+                RequestTimeMs = GetCurrentUnixEpochTimeMs(),
+                RequestUptimeMs = GetSystemUptimeMs(),
                 LogSourceVal = LogRequest.Types.LogSource.ArcoreSdk,
                 LogEvent = { logEvent },
             };
@@ -92,10 +92,10 @@ namespace GoogleARCoreInternal
         /// in Unity's EditorPrefs, subsequent calls return the retrieved value.
         /// </summary>
         /// <returns>A unique string representing this client.</returns>
-        private static string _UniqueId()
+        private static string UniqueId()
         {
             // Check to see if the id already exists.
-            string id = EditorPrefs.GetString(k_GoogleAnalyticsId, string.Empty);
+            string id = EditorPrefs.GetString(_googleAnalyticsId, string.Empty);
             if (id != string.Empty)
             {
                 return id;
@@ -117,7 +117,7 @@ namespace GoogleARCoreInternal
             id = str.ToString();
 
             // Store for retrieval next time.
-            EditorPrefs.SetString(k_GoogleAnalyticsId, id);
+            EditorPrefs.SetString(_googleAnalyticsId, id);
 
             return id;
         }
@@ -127,22 +127,22 @@ namespace GoogleARCoreInternal
         /// used while the current project remains open.
         /// </summary>
         /// <returns>The current session id.</returns>
-        private static string _SessionId()
+        private static string SessionId()
         {
             // Generate on first request.
-            if (s_SessionId == string.Empty)
+            if (_sessionId == string.Empty)
             {
-                s_SessionId = Guid.NewGuid().ToString();
+                _sessionId = Guid.NewGuid().ToString();
             }
 
-            return s_SessionId;
+            return _sessionId;
         }
 
         /// <summary>
         /// Current UTC coordinated time.
         /// </summary>
         /// <returns>Current UTC time in milliseconds.</returns>
-        private static long _GetCurrentUnixEpochTimeMs()
+        private static long GetCurrentUnixEpochTimeMs()
         {
             // UTC Epoch Time (0h 00m 00.00s Jan 1, 1970).
             DateTimeOffset epoch = new DateTimeOffset(1970, 1, 1, 0, 0, 0, 0, TimeSpan.Zero);
@@ -158,7 +158,7 @@ namespace GoogleARCoreInternal
         /// The time since the system was booted in millseconds.
         /// </summary>
         /// <returns>Current system uptime in milliseconds.</returns>
-        private static long _GetSystemUptimeMs()
+        private static long GetSystemUptimeMs()
         {
             return Environment.TickCount;
         }

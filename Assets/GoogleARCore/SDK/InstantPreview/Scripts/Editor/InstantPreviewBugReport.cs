@@ -29,7 +29,7 @@ namespace GoogleARCoreInternal
 
     internal static class InstantPreviewBugReport
     {
-        private const string k_FileNamePrefix = "arcore_unity_editor_bug_report_";
+        private const string _fileNamePrefix = "arcore_unity_editor_bug_report_";
 
         [MenuItem("Help/Capture ARCore Bug Report")]
         private static void CaptureBugReport()
@@ -39,7 +39,7 @@ namespace GoogleARCoreInternal
             DateTime timeStamp = DateTime.Now;
             string fileNameTimestamp = timeStamp.ToString("yyyyMMdd_hhmmss");
             string filePath = Path.Combine(
-                desktopPath, k_FileNamePrefix + fileNameTimestamp + ".txt");
+                desktopPath, _fileNamePrefix + fileNameTimestamp + ".txt");
             StreamWriter writer;
 
             // Operating system and hardware info have to be handled separately based on OS

@@ -44,25 +44,25 @@ namespace GoogleARCore
         [Tooltip("A material used to render the AR background image.")]
         public Material BackgroundMaterial;
 
-        private static readonly float k_BlackScreenDuration = 0.5f;
+        private static readonly float _blackScreenDuration = 0.5f;
 
-        private static readonly float k_FadingInDuration = 0.5f;
+        private static readonly float _fadingInDuration = 0.5f;
 
-        private Camera m_Camera;
+        private Camera _camera;
 
-        private Texture m_TransitionImageTexture;
+        private Texture _transitionImageTexture;
 
-        private BackgroundTransitionState m_TransitionState = BackgroundTransitionState.BlackScreen;
+        private BackgroundTransitionState _transitionState = BackgroundTransitionState.BlackScreen;
 
-        private float m_CurrentStateElapsed = 0.0f;
+        private float _currentStateElapsed = 0.0f;
 
-        private bool m_SessionEnabled = false;
+        private bool _sessionEnabled = false;
 
-        private bool m_UserInvertCullingValue = false;
+        private bool _userInvertCullingValue = false;
 
-        private CameraClearFlags m_CameraClearFlags = CameraClearFlags.Skybox;
+        private CameraClearFlags _cameraClearFlags = CameraClearFlags.Skybox;
 
-        private CommandBuffer m_CommandBuffer = null;
+        private CommandBuffer _commandBuffer = null;
 
         private enum BackgroundTransitionState
         {
@@ -79,30 +79,30 @@ namespace GoogleARCore
                 return;
             }
 
-            LifecycleManager.Instance.OnSessionSetEnabled += _OnSessionSetEnabled;
+            LifecycleManager.Instance.OnSessionSetEnabled += OnSessionSetEnabled;
 
-            m_Camera = GetComponent<Camera>();
+            _camera = GetComponent<Camera>();
 
-            m_TransitionImageTexture = Resources.Load<Texture2D>("ViewInARIcon");
-            BackgroundMaterial.SetTexture("_TransitionIconTex", m_TransitionImageTexture);
+            _transitionImageTexture = Resources.Load<Texture2D>("ViewInARIcon");
+            BackgroundMaterial.SetTexture("_TransitionIconTex", _transitionImageTexture);
 
             EnableARBackgroundRendering();
         }
 
         private void OnDisable()
         {
-            LifecycleManager.Instance.OnSessionSetEnabled -= _OnSessionSetEnabled;
-            m_TransitionState = BackgroundTransitionState.BlackScreen;
-            m_CurrentStateElapsed = 0.0f;
+            LifecycleManager.Instance.OnSessionSetEnabled -= OnSessionSetEnabled;
+            _transitionState = BackgroundTransitionState.BlackScreen;
+            _currentStateElapsed = 0.0f;
 
-            m_Camera.ResetProjectionMatrix();
+            _camera.ResetProjectionMatrix();
 
             DisableARBackgroundRendering();
         }
 
         private void OnPreRender()
         {
-            m_UserInvertCullingValue = GL.invertCulling;
+            _userInvertCullingValue = GL.invertCulling;
             var sessionComponent = LifecycleManager.Instance.SessionComponent;
             if (sessionComponent != null &&
                 sessionComponent.DeviceCameraDirection == DeviceCameraDirection.FrontFacing)
@@ -113,51 +113,51 @@ namespace GoogleARCore
 
         private void OnPostRender()
         {
-            GL.invertCulling = m_UserInvertCullingValue;
+            GL.invertCulling = _userInvertCullingValue;
         }
 
         private void Update()
         {
-            m_CurrentStateElapsed += Time.deltaTime;
-            _UpdateState();
-            _UpdateShaderVariables();
+            _currentStateElapsed += Time.deltaTime;
+            UpdateState();
+            UpdateShaderVariables();
         }
 
-        private void _UpdateState()
+        private void UpdateState()
         {
-            if (!m_SessionEnabled && m_TransitionState != BackgroundTransitionState.BlackScreen)
+            if (!_sessionEnabled && _transitionState != BackgroundTransitionState.BlackScreen)
             {
-                m_TransitionState = BackgroundTransitionState.BlackScreen;
-                m_CurrentStateElapsed = 0.0f;
+                _transitionState = BackgroundTransitionState.BlackScreen;
+                _currentStateElapsed = 0.0f;
             }
-            else if (m_SessionEnabled &&
-                     m_TransitionState == BackgroundTransitionState.BlackScreen &&
-                     m_CurrentStateElapsed > k_BlackScreenDuration)
+            else if (_sessionEnabled &&
+                     _transitionState == BackgroundTransitionState.BlackScreen &&
+                     _currentStateElapsed > _blackScreenDuration)
             {
-                m_TransitionState = BackgroundTransitionState.FadingIn;
-                m_CurrentStateElapsed = 0.0f;
+                _transitionState = BackgroundTransitionState.FadingIn;
+                _currentStateElapsed = 0.0f;
             }
-            else if (m_SessionEnabled &&
-                     m_TransitionState == BackgroundTransitionState.FadingIn &&
-                     m_CurrentStateElapsed > k_FadingInDuration)
+            else if (_sessionEnabled &&
+                     _transitionState == BackgroundTransitionState.FadingIn &&
+                     _currentStateElapsed > _fadingInDuration)
             {
-                m_TransitionState = BackgroundTransitionState.CameraImage;
-                m_CurrentStateElapsed = 0.0f;
+                _transitionState = BackgroundTransitionState.CameraImage;
+                _currentStateElapsed = 0.0f;
             }
         }
 
-        private void _UpdateShaderVariables()
+        private void UpdateShaderVariables()
         {
             const string brightnessVar = "_Brightness";
-            if (m_TransitionState == BackgroundTransitionState.BlackScreen)
+            if (_transitionState == BackgroundTransitionState.BlackScreen)
             {
                 BackgroundMaterial.SetFloat(brightnessVar, 0.0f);
             }
-            else if (m_TransitionState == BackgroundTransitionState.FadingIn)
+            else if (_transitionState == BackgroundTransitionState.FadingIn)
             {
                 BackgroundMaterial.SetFloat(
                     brightnessVar,
-                    _CosineLerp(m_CurrentStateElapsed, k_FadingInDuration));
+                    CosineLerp(_currentStateElapsed, _fadingInDuration));
             }
             else
             {
@@ -167,11 +167,11 @@ namespace GoogleARCore
             // Set transform of the transition image texture, it may be visible or invisible based
             // on lerp value.
             const string transformVar = "_TransitionIconTexTransform";
-            BackgroundMaterial.SetVector(transformVar, _TextureTransform());
+            BackgroundMaterial.SetVector(transformVar, TextureTransform());
 
             // Background texture should not be rendered when the session is disabled or
             // there is no camera image texture available.
-            if (m_TransitionState == BackgroundTransitionState.BlackScreen ||
+            if (_transitionState == BackgroundTransitionState.BlackScreen ||
                 Frame.CameraImage.Texture == null)
             {
                 return;
@@ -193,21 +193,21 @@ namespace GoogleARCore
                 new Vector4(uvQuad.BottomLeft.x, uvQuad.BottomLeft.y, uvQuad.BottomRight.x,
                     uvQuad.BottomRight.y));
 
-            m_Camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(
-                m_Camera.nearClipPlane, m_Camera.farClipPlane);
+            _camera.projectionMatrix = Frame.CameraImage.GetCameraProjectionMatrix(
+                _camera.nearClipPlane, _camera.farClipPlane);
         }
 
-        private void _OnSessionSetEnabled(bool sessionEnabled)
+        private void OnSessionSetEnabled(bool sessionEnabled)
         {
-            m_SessionEnabled = sessionEnabled;
-            if (!m_SessionEnabled)
+            _sessionEnabled = sessionEnabled;
+            if (!_sessionEnabled)
             {
-                _UpdateState();
-                _UpdateShaderVariables();
+                UpdateState();
+                UpdateShaderVariables();
             }
         }
 
-        private float _CosineLerp(float elapsed, float duration)
+        private float CosineLerp(float elapsed, float duration)
         {
             float clampedElapsed = Mathf.Clamp(elapsed, 0.0f, duration);
             return Mathf.Cos(((clampedElapsed / duration) - 1) * (Mathf.PI / 2));
@@ -221,35 +221,35 @@ namespace GoogleARCore
         /// textureUv.y = transform[2] * screenUv.y + transform[3].
         /// </summary>
         /// <returns>The transform.</returns>
-        private Vector4 _TextureTransform()
+        private Vector4 TextureTransform()
         {
-            float transitionWidthTransform = (m_TransitionImageTexture.width - Screen.width) /
-                (2.0f * m_TransitionImageTexture.width);
-            float transitionHeightTransform = (m_TransitionImageTexture.height - Screen.height) /
-                (2.0f * m_TransitionImageTexture.height);
+            float transitionWidthTransform = (_transitionImageTexture.width - Screen.width) /
+                (2.0f * _transitionImageTexture.width);
+            float transitionHeightTransform = (_transitionImageTexture.height - Screen.height) /
+                (2.0f * _transitionImageTexture.height);
             return new Vector4(
-                (float)Screen.width / m_TransitionImageTexture.width,
+                (float)Screen.width / _transitionImageTexture.width,
                 transitionWidthTransform,
-                (float)Screen.height / m_TransitionImageTexture.height,
+                (float)Screen.height / _transitionImageTexture.height,
                 transitionHeightTransform);
         }
 
         private void EnableARBackgroundRendering()
         {
-            if (BackgroundMaterial == null || m_Camera == null)
+            if (BackgroundMaterial == null || _camera == null)
             {
                 return;
             }
 
-            m_CameraClearFlags = m_Camera.clearFlags;
-            m_Camera.clearFlags = CameraClearFlags.Depth;
+            _cameraClearFlags = _camera.clearFlags;
+            _camera.clearFlags = CameraClearFlags.Depth;
 
-            m_CommandBuffer = new CommandBuffer();
+            _commandBuffer = new CommandBuffer();
 
 #if UNITY_ANDROID
             if (SystemInfo.graphicsMultiThreaded && !InstantPreviewManager.IsProvidingPlatform)
             {
-                m_CommandBuffer.IssuePluginEvent(ExternApi.ARCoreRenderingUtils_GetRenderEventFunc(),
+                _commandBuffer.IssuePluginEvent(ExternApi.ARCoreRenderingUtils_GetRenderEventFunc(),
                                                 (int)ApiRenderEvent.WaitOnPostUpdateFence);
 #if UNITY_2018_2_OR_NEWER
                 // There is a bug in Unity that IssuePluginEvent will reset the opengl state but it
@@ -260,30 +260,30 @@ namespace GoogleARCore
                 if (sessionComponent != null &&
                     sessionComponent.DeviceCameraDirection == DeviceCameraDirection.FrontFacing)
                 {
-                    m_CommandBuffer.SetInvertCulling(true);
+                    _commandBuffer.SetInvertCulling(true);
                 }
 #endif
             }
 
 #endif
-            m_CommandBuffer.Blit(null,
+            _commandBuffer.Blit(null,
                 BuiltinRenderTextureType.CameraTarget, BackgroundMaterial);
 
-            m_Camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, m_CommandBuffer);
-            m_Camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, m_CommandBuffer);
+            _camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, _commandBuffer);
+            _camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, _commandBuffer);
         }
 
         private void DisableARBackgroundRendering()
         {
-            if (m_CommandBuffer == null || m_Camera == null)
+            if (_commandBuffer == null || _camera == null)
             {
                 return;
             }
 
-            m_Camera.clearFlags = m_CameraClearFlags;
+            _camera.clearFlags = _cameraClearFlags;
 
-            m_Camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, m_CommandBuffer);
-            m_Camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, m_CommandBuffer);
+            _camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, _commandBuffer);
+            _camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, _commandBuffer);
         }
 
 #if UNITY_ANDROID

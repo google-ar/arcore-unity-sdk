@@ -33,12 +33,12 @@ namespace GoogleARCore
         /// <summary>
         /// A native handle for the ARCore trackable.
         /// </summary>
-        internal IntPtr m_TrackableNativeHandle = IntPtr.Zero;
+        internal IntPtr _trackableNativeHandle = IntPtr.Zero;
 
         /// <summary>
         /// The native api for ARCore.
         /// </summary>
-        internal NativeSession m_NativeSession;
+        internal NativeSession _nativeSession;
 
         internal Trackable()
         {
@@ -46,13 +46,13 @@ namespace GoogleARCore
 
         internal Trackable(IntPtr trackableNativeHandle, NativeSession nativeSession)
         {
-            m_TrackableNativeHandle = trackableNativeHandle;
-            m_NativeSession = nativeSession;
+            _trackableNativeHandle = trackableNativeHandle;
+            _nativeSession = nativeSession;
         }
 
         ~Trackable()
         {
-            m_NativeSession.TrackableApi.Release(m_TrackableNativeHandle);
+            _nativeSession.TrackableApi.Release(_trackableNativeHandle);
         }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace GoogleARCore
                 IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     // Trackables from another session are considered stopped.
                     return TrackingState.Stopped;
                 }
 
-                return m_NativeSession.TrackableApi.GetTrackingState(m_TrackableNativeHandle);
+                return _nativeSession.TrackableApi.GetTrackingState(_trackableNativeHandle);
             }
         }
 
@@ -87,7 +87,7 @@ namespace GoogleARCore
         [SuppressMemoryAllocationError(Reason = "Could allocate a new Anchor object")]
         public virtual Anchor CreateAnchor(Pose pose)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "CreateAnchor:: Trying to access a session that has already been destroyed.");
@@ -95,14 +95,14 @@ namespace GoogleARCore
             }
 
             IntPtr anchorHandle;
-            if (!m_NativeSession.TrackableApi.AcquireNewAnchor(
-                m_TrackableNativeHandle, pose, out anchorHandle))
+            if (!_nativeSession.TrackableApi.AcquireNewAnchor(
+                _trackableNativeHandle, pose, out anchorHandle))
             {
                 Debug.Log("Failed to create anchor on trackable.");
                 return null;
             }
 
-            return Anchor.Factory(m_NativeSession, anchorHandle);
+            return Anchor.Factory(_nativeSession, anchorHandle);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace GoogleARCore
         [SuppressMemoryAllocationError(Reason = "List could be resized.")]
         public virtual void GetAllAnchors(List<Anchor> anchors)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetAllAnchors:: Trying to access a session that has already been destroyed.");
@@ -120,7 +120,7 @@ namespace GoogleARCore
                 return;
             }
 
-            m_NativeSession.TrackableApi.GetAnchors(m_TrackableNativeHandle, anchors);
+            _nativeSession.TrackableApi.GetAnchors(_trackableNativeHandle, anchors);
         }
 
         /// <summary>
@@ -128,9 +128,9 @@ namespace GoogleARCore
         /// </summary>
         /// <returns><c>true</c> if the session this Trackable belongs to was destroyed,
         /// <c>false</c> otherwise.</returns>
-        protected bool _IsSessionDestroyed()
+        protected bool IsSessionDestroyed()
         {
-            return m_NativeSession.IsDestroyed;
+            return _nativeSession.IsDestroyed;
         }
     }
 }

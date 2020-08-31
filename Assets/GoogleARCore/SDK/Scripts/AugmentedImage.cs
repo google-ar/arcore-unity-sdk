@@ -51,7 +51,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetDatabaseIndex(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetDatabaseIndex(_trackableNativeHandle);
             }
         }
 
@@ -65,7 +65,7 @@ namespace GoogleARCore
             [SuppressMemoryAllocationError(IsWarning = true, Reason = "Allocates new string")]
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetName(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetName(_trackableNativeHandle);
             }
         }
 
@@ -81,7 +81,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetCenterPose(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetCenterPose(_trackableNativeHandle);
             }
         }
 
@@ -101,7 +101,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetExtentX(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetExtentX(_trackableNativeHandle);
             }
         }
 
@@ -120,7 +120,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetExtentZ(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetExtentZ(_trackableNativeHandle);
             }
         }
 
@@ -132,7 +132,7 @@ namespace GoogleARCore
         {
             get
             {
-                return m_NativeSession.AugmentedImageApi.GetTrackingMethod(m_TrackableNativeHandle);
+                return _nativeSession.AugmentedImageApi.GetTrackingMethod(_trackableNativeHandle);
             }
         }
     }

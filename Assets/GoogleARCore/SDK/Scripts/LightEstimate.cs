@@ -30,13 +30,13 @@ namespace GoogleARCore
     /// </summary>
     public struct LightEstimate
     {
-        private float m_PixelIntensity;
-        private Color m_ColorCorrection;
+        private float _pixelIntensity;
+        private Color _colorCorrection;
 
-        private Quaternion m_DirectionalLightRotation;
-        private Color m_DirectionalLightColor;
-        private SphericalHarmonicsL2 m_AmbientProbe;
-        private Cubemap m_CachedCubemap;
+        private Quaternion _directionalLightRotation;
+        private Color _directionalLightColor;
+        private SphericalHarmonicsL2 _ambientProbe;
+        private Cubemap _cachedCubemap;
 
         /// <summary>
         /// Constructor for a LightEstimate.
@@ -84,20 +84,20 @@ namespace GoogleARCore
             Quaternion directionalLightRotation, Color directionalLightColor,
             float[,] ambientSHCoefficients, long timestamp) : this()
         {
-            _InitializeLightEstimateMode();
+            InitializeLightEstimateMode();
             State = state;
             Timestamp = timestamp;
-            m_PixelIntensity = pixelIntensity;
-            m_ColorCorrection = colorCorrection;
+            _pixelIntensity = pixelIntensity;
+            _colorCorrection = colorCorrection;
 
-            m_DirectionalLightRotation = directionalLightRotation;
+            _directionalLightRotation = directionalLightRotation;
 
             // Apply the energy conservation term to the light color directly since Unity doesn't
             // apply the term in their standard shader.
-            m_DirectionalLightColor = directionalLightColor;
+            _directionalLightColor = directionalLightColor;
 
             // Apply gamma correction to the light color. Unity light color is in gamma space.
-            m_DirectionalLightColor = m_DirectionalLightColor.gamma;
+            _directionalLightColor = _directionalLightColor.gamma;
 
             // Unity spherical harmonics is in linear space.
             var ambientProbe = new SphericalHarmonicsL2();
@@ -112,8 +112,8 @@ namespace GoogleARCore
                 }
             }
 
-            m_AmbientProbe = ambientProbe;
-            m_CachedCubemap = null;
+            _ambientProbe = ambientProbe;
+            _cachedCubemap = null;
         }
 
         /// <summary>
@@ -141,12 +141,12 @@ namespace GoogleARCore
                         "LightEstimationMode is not AmbientIntensity.");
                 }
 
-                return m_PixelIntensity;
+                return _pixelIntensity;
             }
 
             private set
             {
-                m_PixelIntensity = value;
+                _pixelIntensity = value;
             }
         }
 
@@ -167,12 +167,12 @@ namespace GoogleARCore
                         "LightEstimationMode is not AmbientIntensity.");
                 }
 
-                return m_ColorCorrection;
+                return _colorCorrection;
             }
 
             private set
             {
-                m_ColorCorrection = value;
+                _colorCorrection = value;
             }
         }
 
@@ -192,12 +192,12 @@ namespace GoogleARCore
                         "LightEstimationMode is not one of the Environmental HDR modes.");
                 }
 
-                return m_DirectionalLightRotation;
+                return _directionalLightRotation;
             }
 
             private set
             {
-                m_DirectionalLightRotation = value;
+                _directionalLightRotation = value;
             }
         }
 
@@ -217,12 +217,12 @@ namespace GoogleARCore
                         "LightEstimationMode is not one of the Environmental HDR modes.");
                 }
 
-                return m_DirectionalLightColor;
+                return _directionalLightColor;
             }
 
             private set
             {
-                m_DirectionalLightColor = value;
+                _directionalLightColor = value;
             }
         }
 
@@ -242,12 +242,12 @@ namespace GoogleARCore
                         "LightEstimationMode is not one of the Environmental HDR modes.");
                 }
 
-                return m_AmbientProbe;
+                return _ambientProbe;
             }
 
             private set
             {
-                m_AmbientProbe = value;
+                _ambientProbe = value;
             }
         }
 
@@ -270,7 +270,7 @@ namespace GoogleARCore
                     return null;
                 }
 
-                if (m_CachedCubemap == null)
+                if (_cachedCubemap == null)
                 {
                     var nativeSession = LifecycleManager.Instance.NativeSession;
                     if (nativeSession == null)
@@ -278,10 +278,10 @@ namespace GoogleARCore
                         return null;
                     }
 
-                    m_CachedCubemap = nativeSession.FrameApi.GetReflectionCubemap();
+                    _cachedCubemap = nativeSession.FrameApi.GetReflectionCubemap();
                 }
 
-                return m_CachedCubemap;
+                return _cachedCubemap;
             }
         }
 
@@ -294,7 +294,7 @@ namespace GoogleARCore
         /// <value>The timestamp of the LightEstimate.</value>
         public long Timestamp { get; private set; }
 
-        private void _InitializeLightEstimateMode()
+        private void InitializeLightEstimateMode()
         {
             Mode = LightEstimationMode.Disabled;
             if (LifecycleManager.Instance.SessionComponent != null)

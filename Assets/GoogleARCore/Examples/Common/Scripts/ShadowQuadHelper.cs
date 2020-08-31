@@ -30,20 +30,20 @@ namespace GoogleARCore.Examples.Common
         /// <summary>
         /// The Depth Setting Menu.
         /// </summary>
-        private DepthMenu m_DepthMenu;
+        private DepthMenu _depthMenu;
 
         /// <summary>
         /// The GameObject of ShadowQuad.
         /// </summary>
-        private GameObject m_ShadowQuad;
+        private GameObject _shadowQuad;
 
         /// <summary>
         /// The Unity Start() method.
         /// </summary>
         public void Start()
         {
-            m_ShadowQuad = this.gameObject.transform.Find("ShadowQuad").gameObject;
-            m_DepthMenu = FindObjectOfType<DepthMenu>();
+            _shadowQuad = this.gameObject.transform.Find("ShadowQuad").gameObject;
+            _depthMenu = FindObjectOfType<DepthMenu>();
         }
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace GoogleARCore.Examples.Common
             // Shadows are cast onto the light estimation shadow plane, which do not respect depth.
             // Shadows are disabled when depth is enabled to prevent undesirable rendering
             // artifacts.
-            if (m_ShadowQuad.activeSelf == m_DepthMenu.IsDepthEnabled())
+            if (_shadowQuad.activeSelf == _depthMenu.IsDepthEnabled())
             {
-                m_ShadowQuad.SetActive(!m_DepthMenu.IsDepthEnabled());
+                _shadowQuad.SetActive(!_depthMenu.IsDepthEnabled());
             }
         }
     }

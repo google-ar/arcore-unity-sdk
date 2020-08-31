@@ -23,6 +23,7 @@ namespace GoogleARCore.Examples.Common
     using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
+    using UnityEngine.Serialization;
     using UnityEngine.UI;
 
     /// <summary>
@@ -52,47 +53,57 @@ namespace GoogleARCore.Examples.Common
         /// <summary>
         /// The time to delay, after Unity Start, showing the plane discovery guide.
         /// </summary>
-        private const float k_OnStartDelay = 1f;
+        private const float _onStartDelay = 1f;
 
         /// <summary>
         /// The time to delay, after a at least one plane is tracked by ARCore, hiding the plane discovery guide.
         /// </summary>
-        private const float k_HideGuideDelay = 0.75f;
+        private const float _hideGuideDelay = 0.75f;
 
         /// <summary>
         /// The duration of the hand animation fades.
         /// </summary>
-        private const float k_AnimationFadeDuration = 0.15f;
+        private const float _animationFadeDuration = 0.15f;
 
         /// <summary>
         /// The Game Object that provides feature points visualization.
         /// </summary>
         [Tooltip("The Game Object that provides feature points visualization.")]
-        [SerializeField] private GameObject m_FeaturePoints = null;
+        [FormerlySerializedAs("m_FeaturePoints")]
+        [SerializeField]
+        private GameObject _featurePoints = null;
 
         /// <summary>
         /// The RawImage that provides rotating hand animation.
         /// </summary>
         [Tooltip("The RawImage that provides rotating hand animation.")]
-        [SerializeField] private RawImage m_HandAnimation = null;
+        [FormerlySerializedAs("m_HandAnimation")]
+        [SerializeField]
+        private RawImage _handAnimation = null;
 
         /// <summary>
         /// The snackbar Game Object.
         /// </summary>
         [Tooltip("The snackbar Game Object.")]
-        [SerializeField] private GameObject m_SnackBar = null;
+        [FormerlySerializedAs("m_SnackBar")]
+        [SerializeField]
+        private GameObject _snackBar = null;
 
         /// <summary>
         /// The snackbar text.
         /// </summary>
         [Tooltip("The snackbar text.")]
-        [SerializeField] private Text m_SnackBarText = null;
+        [FormerlySerializedAs("m_SnackBarText")]
+        [SerializeField]
+        private Text _snackBarText = null;
 
         /// <summary>
         /// The Game Object that contains the button to open the help window.
         /// </summary>
         [Tooltip("The Game Object that contains the button to open the help window.")]
-        [SerializeField] private GameObject m_OpenButton = null;
+        [FormerlySerializedAs("m_OpenButton")]
+        [SerializeField]
+        private GameObject _openButton = null;
 
         /// <summary>
         /// The Game Object that contains the window with more instructions on how to find a plane.
@@ -100,46 +111,50 @@ namespace GoogleARCore.Examples.Common
         [Tooltip(
             "The Game Object that contains the window with more instructions on how to find " +
             "a plane.")]
-        [SerializeField] private GameObject m_MoreHelpWindow = null;
+        [FormerlySerializedAs("m_MoreHelpWindow")]
+        [SerializeField]
+        private GameObject _moreHelpWindow = null;
 
         /// <summary>
         /// The Game Object that contains the button to close the help window.
         /// </summary>
         [Tooltip("The Game Object that contains the button to close the help window.")]
-        [SerializeField] private Button m_GotItButton = null;
+        [FormerlySerializedAs("m_GotItButton")]
+        [SerializeField]
+        private Button _gotItButton = null;
 
         /// <summary>
         /// The elapsed time ARCore has been detecting at least one plane.
         /// </summary>
-        private float m_DetectedPlaneElapsed;
+        private float _detectedPlaneElapsed;
 
         /// <summary>
         /// The elapsed time ARCore has been tracking but not detected any planes.
         /// </summary>
-        private float m_NotDetectedPlaneElapsed;
+        private float _notDetectedPlaneElapsed;
 
         /// <summary>
         /// Indicates whether a lost tracking reason is displayed.
         /// </summary>
-        private bool m_IsLostTrackingDisplayed;
+        private bool _isLostTrackingDisplayed;
 
         /// <summary>
         /// A list to hold detected planes ARCore is tracking in the current frame.
         /// </summary>
-        private List<DetectedPlane> m_DetectedPlanes = new List<DetectedPlane>();
+        private List<DetectedPlane> _detectedPlanes = new List<DetectedPlane>();
 
         /// <summary>
         /// Unity's Start() method.
         /// </summary>
         public void Start()
         {
-            m_OpenButton.GetComponent<Button>().onClick.AddListener(_OnOpenButtonClicked);
-            m_GotItButton.onClick.AddListener(_OnGotItButtonClicked);
+            _openButton.GetComponent<Button>().onClick.AddListener(OnOpenButtonClicked);
+            _gotItButton.onClick.AddListener(OnGotItButtonClicked);
 
-            _CheckFieldsAreNotNull();
-            m_MoreHelpWindow.SetActive(false);
-            m_IsLostTrackingDisplayed = false;
-            m_NotDetectedPlaneElapsed = DisplayGuideDelay - k_OnStartDelay;
+            CheckFieldsAreNotNull();
+            _moreHelpWindow.SetActive(false);
+            _isLostTrackingDisplayed = false;
+            _notDetectedPlaneElapsed = DisplayGuideDelay - _onStartDelay;
         }
 
         /// <summary>
@@ -147,8 +162,8 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnDestroy()
         {
-            m_OpenButton.GetComponent<Button>().onClick.RemoveListener(_OnOpenButtonClicked);
-            m_GotItButton.onClick.RemoveListener(_OnGotItButtonClicked);
+            _openButton.GetComponent<Button>().onClick.RemoveListener(OnOpenButtonClicked);
+            _gotItButton.onClick.RemoveListener(OnGotItButtonClicked);
         }
 
         /// <summary>
@@ -156,8 +171,8 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void Update()
         {
-            _UpdateDetectedPlaneTrackingState();
-            _UpdateUI();
+            UpdateDetectedPlaneTrackingState();
+            UpdateUI();
         }
 
         /// <summary>
@@ -173,187 +188,187 @@ namespace GoogleARCore.Examples.Common
             else
             {
                 enabled = false;
-                m_FeaturePoints.SetActive(false);
-                m_HandAnimation.enabled = false;
-                m_SnackBar.SetActive(false);
+                _featurePoints.SetActive(false);
+                _handAnimation.enabled = false;
+                _snackBar.SetActive(false);
             }
         }
 
         /// <summary>
         /// Callback executed when the open button has been clicked by the user.
         /// </summary>
-        private void _OnOpenButtonClicked()
+        private void OnOpenButtonClicked()
         {
-            m_MoreHelpWindow.SetActive(true);
+            _moreHelpWindow.SetActive(true);
 
             enabled = false;
-            m_FeaturePoints.SetActive(false);
-            m_HandAnimation.enabled = false;
-            m_SnackBar.SetActive(false);
+            _featurePoints.SetActive(false);
+            _handAnimation.enabled = false;
+            _snackBar.SetActive(false);
         }
 
         /// <summary>
         /// Callback executed when the got-it button has been clicked by the user.
         /// </summary>
-        private void _OnGotItButtonClicked()
+        private void OnGotItButtonClicked()
         {
-            m_MoreHelpWindow.SetActive(false);
+            _moreHelpWindow.SetActive(false);
             enabled = true;
         }
 
         /// <summary>
         /// Checks whether at least one plane being actively tracked exists.
         /// </summary>
-        private void _UpdateDetectedPlaneTrackingState()
+        private void UpdateDetectedPlaneTrackingState()
         {
             if (Session.Status != SessionStatus.Tracking)
             {
                 return;
             }
 
-            Session.GetTrackables<DetectedPlane>(m_DetectedPlanes, TrackableQueryFilter.All);
-            foreach (DetectedPlane plane in m_DetectedPlanes)
+            Session.GetTrackables<DetectedPlane>(_detectedPlanes, TrackableQueryFilter.All);
+            foreach (DetectedPlane plane in _detectedPlanes)
             {
                 if (plane.TrackingState == TrackingState.Tracking)
                 {
-                    m_DetectedPlaneElapsed += Time.deltaTime;
-                    m_NotDetectedPlaneElapsed = 0f;
+                    _detectedPlaneElapsed += Time.deltaTime;
+                    _notDetectedPlaneElapsed = 0f;
                     return;
                 }
             }
 
-            m_DetectedPlaneElapsed = 0f;
-            m_NotDetectedPlaneElapsed += Time.deltaTime;
+            _detectedPlaneElapsed = 0f;
+            _notDetectedPlaneElapsed += Time.deltaTime;
         }
 
         /// <summary>
         /// Hides or shows the UI based on the existence of a plane being currently tracked.
         /// </summary>
-        private void _UpdateUI()
+        private void UpdateUI()
         {
             if (Session.Status == SessionStatus.LostTracking &&
                 Session.LostTrackingReason != LostTrackingReason.None)
             {
                 // The session has lost tracking.
-                m_FeaturePoints.SetActive(false);
-                m_HandAnimation.enabled = false;
-                m_SnackBar.SetActive(true);
+                _featurePoints.SetActive(false);
+                _handAnimation.enabled = false;
+                _snackBar.SetActive(true);
                 switch (Session.LostTrackingReason)
                 {
                     case LostTrackingReason.InsufficientLight:
-                        m_SnackBarText.text = "Too dark. Try moving to a well-lit area.";
+                        _snackBarText.text = "Too dark. Try moving to a well-lit area.";
                         break;
                     case LostTrackingReason.InsufficientFeatures:
-                        m_SnackBarText.text = "Aim device at a surface with more texture or color.";
+                        _snackBarText.text = "Aim device at a surface with more texture or color.";
                         break;
                     case LostTrackingReason.ExcessiveMotion:
-                        m_SnackBarText.text = "Moving too fast. Slow down.";
+                        _snackBarText.text = "Moving too fast. Slow down.";
                         break;
                     case LostTrackingReason.CameraUnavailable:
-                        m_SnackBarText.text = "Another app is using the camera. Tap on this app " +
+                        _snackBarText.text = "Another app is using the camera. Tap on this app " +
                             "or try closing the other one.";
                         break;
                     default:
-                        m_SnackBarText.text = "Motion tracking is lost.";
+                        _snackBarText.text = "Motion tracking is lost.";
                         break;
                 }
 
-                m_OpenButton.SetActive(false);
-                m_IsLostTrackingDisplayed = true;
+                _openButton.SetActive(false);
+                _isLostTrackingDisplayed = true;
                 return;
             }
-            else if (m_IsLostTrackingDisplayed)
+            else if (_isLostTrackingDisplayed)
             {
                 // The session has moved from the lost tracking state.
-                m_SnackBar.SetActive(false);
-                m_IsLostTrackingDisplayed = false;
+                _snackBar.SetActive(false);
+                _isLostTrackingDisplayed = false;
             }
 
-            if (m_NotDetectedPlaneElapsed > DisplayGuideDelay)
+            if (_notDetectedPlaneElapsed > DisplayGuideDelay)
             {
                 // The session has been tracking but no planes have been found by
                 // 'DisplayGuideDelay'.
-                m_FeaturePoints.SetActive(true);
+                _featurePoints.SetActive(true);
 
-                if (!m_HandAnimation.enabled)
+                if (!_handAnimation.enabled)
                 {
-                    m_HandAnimation.GetComponent<CanvasRenderer>().SetAlpha(0f);
-                    m_HandAnimation.CrossFadeAlpha(1f, k_AnimationFadeDuration, false);
+                    _handAnimation.GetComponent<CanvasRenderer>().SetAlpha(0f);
+                    _handAnimation.CrossFadeAlpha(1f, _animationFadeDuration, false);
                 }
 
-                m_HandAnimation.enabled = true;
-                m_SnackBar.SetActive(true);
+                _handAnimation.enabled = true;
+                _snackBar.SetActive(true);
 
-                if (m_NotDetectedPlaneElapsed > OfferDetailedInstructionsDelay)
+                if (_notDetectedPlaneElapsed > OfferDetailedInstructionsDelay)
                 {
-                    m_SnackBarText.text = "Need Help?";
-                    m_OpenButton.SetActive(true);
+                    _snackBarText.text = "Need Help?";
+                    _openButton.SetActive(true);
                 }
                 else
                 {
-                    m_SnackBarText.text = "Point your camera to where you want to place an object.";
-                    m_OpenButton.SetActive(false);
+                    _snackBarText.text = "Point your camera to where you want to place an object.";
+                    _openButton.SetActive(false);
                 }
             }
-            else if (m_NotDetectedPlaneElapsed > 0f || m_DetectedPlaneElapsed > k_HideGuideDelay)
+            else if (_notDetectedPlaneElapsed > 0f || _detectedPlaneElapsed > _hideGuideDelay)
             {
                 // The session is tracking but no planes have been found in less than
                 // 'DisplayGuideDelay' or at least one plane has been tracking for more than
-                // 'k_HideGuideDelay'.
-                m_FeaturePoints.SetActive(false);
-                m_SnackBar.SetActive(false);
-                m_OpenButton.SetActive(false);
+                // '_hideGuideDelay'.
+                _featurePoints.SetActive(false);
+                _snackBar.SetActive(false);
+                _openButton.SetActive(false);
 
-                if (m_HandAnimation.enabled)
+                if (_handAnimation.enabled)
                 {
-                    m_HandAnimation.GetComponent<CanvasRenderer>().SetAlpha(1f);
-                    m_HandAnimation.CrossFadeAlpha(0f, k_AnimationFadeDuration, false);
+                    _handAnimation.GetComponent<CanvasRenderer>().SetAlpha(1f);
+                    _handAnimation.CrossFadeAlpha(0f, _animationFadeDuration, false);
                 }
 
-                m_HandAnimation.enabled = false;
+                _handAnimation.enabled = false;
             }
         }
 
         /// <summary>
         /// Checks the required fields are not null, and logs a Warning otherwise.
         /// </summary>
-        private void _CheckFieldsAreNotNull()
+        private void CheckFieldsAreNotNull()
         {
-            if (m_MoreHelpWindow == null)
+            if (_moreHelpWindow == null)
             {
                 Debug.LogError("MoreHelpWindow is null");
             }
 
-            if (m_GotItButton == null)
+            if (_gotItButton == null)
             {
                 Debug.LogError("GotItButton is null");
             }
 
-            if (m_SnackBarText == null)
+            if (_snackBarText == null)
             {
                 Debug.LogError("SnackBarText is null");
             }
 
-            if (m_SnackBar == null)
+            if (_snackBar == null)
             {
                 Debug.LogError("SnackBar is null");
             }
 
-            if (m_OpenButton == null)
+            if (_openButton == null)
             {
                 Debug.LogError("OpenButton is null");
             }
-            else if (m_OpenButton.GetComponent<Button>() == null)
+            else if (_openButton.GetComponent<Button>() == null)
             {
                 Debug.LogError("OpenButton does not have a Button Component.");
             }
 
-            if (m_HandAnimation == null)
+            if (_handAnimation == null)
             {
                 Debug.LogError("HandAnimation is null");
             }
 
-            if (m_FeaturePoints == null)
+            if (_featurePoints == null)
             {
                 Debug.LogError("FeaturePoints is null");
             }

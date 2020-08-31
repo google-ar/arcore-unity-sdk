@@ -39,8 +39,8 @@ namespace GoogleARCore
         internal DetectedPlane(IntPtr nativeHandle, NativeSession nativeApi)
             : base(nativeHandle, nativeApi)
         {
-            m_TrackableNativeHandle = nativeHandle;
-            m_NativeSession = nativeApi;
+            _trackableNativeHandle = nativeHandle;
+            _nativeSession = nativeApi;
         }
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "SubsumedBy:: Trying to access a session that has already been destroyed.");
                     return null;
                 }
 
-                return m_NativeSession.PlaneApi.GetSubsumedBy(m_TrackableNativeHandle);
+                return _nativeSession.PlaneApi.GetSubsumedBy(_trackableNativeHandle);
             }
         }
 
@@ -69,14 +69,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "CenterPose:: Trying to access a session that has already been destroyed.");
                     return new Pose();
                 }
 
-                return m_NativeSession.PlaneApi.GetCenterPose(m_TrackableNativeHandle);
+                return _nativeSession.PlaneApi.GetCenterPose(_trackableNativeHandle);
             }
         }
 
@@ -87,14 +87,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "ExtentX:: Trying to access a session that has already been destroyed.");
                     return 0f;
                 }
 
-                return m_NativeSession.PlaneApi.GetExtentX(m_TrackableNativeHandle);
+                return _nativeSession.PlaneApi.GetExtentX(_trackableNativeHandle);
             }
         }
 
@@ -105,14 +105,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "ExtentZ:: Trying to access a session that has already been destroyed.");
                     return 0f;
                 }
 
-                return m_NativeSession.PlaneApi.GetExtentZ(m_TrackableNativeHandle);
+                return _nativeSession.PlaneApi.GetExtentZ(_trackableNativeHandle);
             }
         }
 
@@ -123,14 +123,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "PlaneType:: Trying to access a session that has already been destroyed.");
                     return DetectedPlaneType.HorizontalUpwardFacing;
                 }
 
-                return m_NativeSession.PlaneApi.GetPlaneType(m_TrackableNativeHandle);
+                return _nativeSession.PlaneApi.GetPlaneType(_trackableNativeHandle);
             }
         }
 
@@ -143,7 +143,7 @@ namespace GoogleARCore
         [SuppressMemoryAllocationError(Reason = "List could be resized.")]
         public void GetBoundaryPolygon(List<Vector3> boundaryPolygonPoints)
         {
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 Debug.LogError(
                     "GetBoundaryPolygon:: Trying to access a session that has already been " +
@@ -151,7 +151,7 @@ namespace GoogleARCore
                 return;
             }
 
-            m_NativeSession.PlaneApi.GetPolygon(m_TrackableNativeHandle, boundaryPolygonPoints);
+            _nativeSession.PlaneApi.GetPolygon(_trackableNativeHandle, boundaryPolygonPoints);
         }
     }
 }

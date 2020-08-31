@@ -28,24 +28,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class PinchGestureRecognizer : GestureRecognizer<PinchGesture>
     {
-        private const float k_SlopInches = 0.05f;
-        private const float k_SlopMotionDirectionDegrees = 30.0f;
-
-        internal float SlopInches
-        {
-            get
-            {
-                return k_SlopInches;
-            }
-        }
-
-        internal float SlopMotionDirectionDegrees
-        {
-            get
-            {
-                return k_SlopMotionDirectionDegrees;
-            }
-        }
+        internal const float _slopInches = 0.05f;
+        internal const float _slopMotionDirectionDegrees = 30.0f;
 
         /// <summary>
         /// Creates a Pinch gesture with the given touches.

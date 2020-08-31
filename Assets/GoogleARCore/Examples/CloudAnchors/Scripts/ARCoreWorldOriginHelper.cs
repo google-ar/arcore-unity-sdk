@@ -46,23 +46,23 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// A list to hold new planes ARCore began tracking in the current frame. This object is
         /// used across the application to avoid per-frame allocations.
         /// </summary>
-        private List<DetectedPlane> m_NewPlanes = new List<DetectedPlane>();
+        private List<DetectedPlane> _newPlanes = new List<DetectedPlane>();
 
         /// <summary>
         /// A list to hold the planes ARCore began tracking before the WorldOrigin was placed.
         /// </summary>
-        private List<GameObject> m_PlanesBeforeOrigin = new List<GameObject>();
+        private List<GameObject> _planesBeforeOrigin = new List<GameObject>();
 
         /// <summary>
         /// Indicates whether the Origin of the new World Coordinate System, i.e. the Cloud Anchor,
         /// was placed.
         /// </summary>
-        private bool m_IsOriginPlaced = false;
+        private bool _isOriginPlaced = false;
 
         /// <summary>
         /// The Transform of the Anchor object representing the World Origin.
         /// </summary>
-        private Transform m_AnchorTransform;
+        private Transform _anchorTransform;
 
         /// <summary>
         /// The Unity Update() method.
@@ -75,23 +75,23 @@ namespace GoogleARCore.Examples.CloudAnchors
                 return;
             }
 
-            Pose worldPose = _WorldToAnchorPose(Pose.identity);
+            Pose worldPose = WorldToAnchorPose(Pose.identity);
 
             // Iterate over planes found in this frame and instantiate corresponding GameObjects to
             // visualize them.
-            Session.GetTrackables<DetectedPlane>(m_NewPlanes, TrackableQueryFilter.New);
-            for (int i = 0; i < m_NewPlanes.Count; i++)
+            Session.GetTrackables<DetectedPlane>(_newPlanes, TrackableQueryFilter.New);
+            for (int i = 0; i < _newPlanes.Count; i++)
             {
                 // Instantiate a plane visualization prefab and set it to track the new plane. The
                 // transform is set to the origin with an identity rotation since the mesh for our
                 // prefab is updated in Unity World coordinates.
                 GameObject planeObject = Instantiate(
                     DetectedPlanePrefab, worldPose.position, worldPose.rotation, transform);
-                planeObject.GetComponent<DetectedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
+                planeObject.GetComponent<DetectedPlaneVisualizer>().Initialize(_newPlanes[i]);
 
-                if (!m_IsOriginPlaced)
+                if (!_isOriginPlaced)
                 {
-                    m_PlanesBeforeOrigin.Add(planeObject);
+                    _planesBeforeOrigin.Add(planeObject);
                 }
             }
         }
@@ -108,21 +108,21 @@ namespace GoogleARCore.Examples.CloudAnchors
             // Each client will store the anchorTransform, and will have to move the ARCoreDevice
             // (and therefore also it's FirstPersonCamera child) and update other trakced poses
             // (planes, anchors, etc.) so that they appear in the same position in the real world.
-            if (m_IsOriginPlaced)
+            if (_isOriginPlaced)
             {
                 Debug.LogWarning("The World Origin can be set only once.");
                 return;
             }
 
-            m_IsOriginPlaced = true;
+            _isOriginPlaced = true;
 
-            m_AnchorTransform = anchorTransform;
+            _anchorTransform = anchorTransform;
 
-            Pose worldPose = _WorldToAnchorPose(new Pose(ARCoreDeviceTransform.position,
+            Pose worldPose = WorldToAnchorPose(new Pose(ARCoreDeviceTransform.position,
                                                          ARCoreDeviceTransform.rotation));
             ARCoreDeviceTransform.SetPositionAndRotation(worldPose.position, worldPose.rotation);
 
-            foreach (GameObject plane in m_PlanesBeforeOrigin)
+            foreach (GameObject plane in _planesBeforeOrigin)
             {
                 if (plane != null)
                 {
@@ -151,7 +151,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             bool foundHit = Frame.Raycast(x, y, filter, out hitResult);
             if (foundHit)
             {
-                Pose worldPose = _WorldToAnchorPose(hitResult.Pose);
+                Pose worldPose = WorldToAnchorPose(hitResult.Pose);
                 TrackableHit newHit = new TrackableHit(
                     worldPose, hitResult.Distance, hitResult.Flags, hitResult.Trackable);
                 hitResult = newHit;
@@ -165,15 +165,15 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// </summary>
         /// <returns>A pose in Unity world space.</returns>
         /// <param name="pose">A pose in Anchor-relative space.</param>
-        private Pose _WorldToAnchorPose(Pose pose)
+        private Pose WorldToAnchorPose(Pose pose)
         {
-            if (!m_IsOriginPlaced)
+            if (!_isOriginPlaced)
             {
                 return pose;
             }
 
             Matrix4x4 anchorTWorld = Matrix4x4.TRS(
-                m_AnchorTransform.position, m_AnchorTransform.rotation, Vector3.one).inverse;
+                _anchorTransform.position, _anchorTransform.rotation, Vector3.one).inverse;
 
             Vector3 position = anchorTWorld.MultiplyPoint(pose.position);
             Quaternion rotation = pose.rotation * Quaternion.LookRotation(

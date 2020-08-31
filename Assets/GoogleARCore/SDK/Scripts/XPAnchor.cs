@@ -33,12 +33,12 @@ namespace GoogleARCore.CrossPlatform
              "XPAnchor")]
     public class XPAnchor : MonoBehaviour
     {
-        private static Dictionary<IntPtr, XPAnchor> s_AnchorDict =
+        private static Dictionary<IntPtr, XPAnchor> _anchorDict =
             new Dictionary<IntPtr, XPAnchor>(new GoogleARCoreInternal.IntPtrEqualityComparer());
 
-        private XPTrackingState m_LastFrameTrackingState = XPTrackingState.Stopped;
+        private XPTrackingState _lastFrameTrackingState = XPTrackingState.Stopped;
 
-        private bool m_IsSessionDestroyed = false;
+        private bool _isSessionDestroyed = false;
 
         /// <summary>
         /// Gets the cloud id associated with this anchor or null if none exists.  Only anchors
@@ -54,20 +54,20 @@ namespace GoogleARCore.CrossPlatform
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     // Anchors from another session are considered stopped.
                     return XPTrackingState.Stopped;
                 }
 
-                return NativeSession.AnchorApi.GetTrackingState(NativeHandle)
+                return _nativeSession.AnchorApi.GetTrackingState(_nativeHandle)
                     .ToXPTrackingState();
             }
         }
 
-        internal NativeSession NativeSession { get; private set; }
+        internal NativeSession _nativeSession { get; private set; }
 
-        internal IntPtr NativeHandle { get; private set; }
+        internal IntPtr _nativeHandle { get; private set; }
 
         internal static XPAnchor Factory(NativeSession nativeSession, IntPtr anchorHandle,
             bool isCreate = true)
@@ -78,7 +78,7 @@ namespace GoogleARCore.CrossPlatform
             }
 
             XPAnchor result;
-            if (s_AnchorDict.TryGetValue(anchorHandle, out result))
+            if (_anchorDict.TryGetValue(anchorHandle, out result))
             {
                 // Release acquired handle and return cached result
                 AnchorApi.Release(anchorHandle);
@@ -90,11 +90,11 @@ namespace GoogleARCore.CrossPlatform
                XPAnchor anchor = (new GameObject()).AddComponent<XPAnchor>();
                anchor.gameObject.name = "XPAnchor";
                anchor.CloudId = nativeSession.AnchorApi.GetCloudAnchorId(anchorHandle);
-               anchor.NativeHandle = anchorHandle;
-               anchor.NativeSession = nativeSession;
+               anchor._nativeHandle = anchorHandle;
+               anchor._nativeSession = nativeSession;
                anchor.Update();
 
-               s_AnchorDict.Add(anchorHandle, anchor);
+               _anchorDict.Add(anchorHandle, anchor);
                return anchor;
             }
 
@@ -106,7 +106,7 @@ namespace GoogleARCore.CrossPlatform
         /// </summary>
         private void Update()
         {
-            if (NativeHandle == IntPtr.Zero)
+            if (_nativeHandle == IntPtr.Zero)
             {
                 Debug.LogError(
                     "Anchor components instantiated outside of ARCore are not supported. " +
@@ -114,17 +114,17 @@ namespace GoogleARCore.CrossPlatform
                 return;
             }
 
-            if (_IsSessionDestroyed())
+            if (IsSessionDestroyed())
             {
                 return;
             }
 
-            var pose = NativeSession.AnchorApi.GetPose(NativeHandle);
+            var pose = _nativeSession.AnchorApi.GetPose(_nativeHandle);
             transform.position = pose.position;
             transform.rotation = pose.rotation;
 
             var currentFrameTrackingState = TrackingState;
-            if (m_LastFrameTrackingState != currentFrameTrackingState)
+            if (_lastFrameTrackingState != currentFrameTrackingState)
             {
                 bool isAnchorTracking = currentFrameTrackingState == XPTrackingState.Tracking;
                 foreach (Transform child in transform)
@@ -132,42 +132,42 @@ namespace GoogleARCore.CrossPlatform
                     child.gameObject.SetActive(isAnchorTracking);
                 }
 
-                m_LastFrameTrackingState = currentFrameTrackingState;
+                _lastFrameTrackingState = currentFrameTrackingState;
             }
         }
 
         private void OnDestroy()
         {
-            if (NativeHandle == IntPtr.Zero)
+            if (_nativeHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            if (NativeSession != null && !NativeSession.IsDestroyed)
+            if (_nativeSession != null && !_nativeSession.IsDestroyed)
             {
-                NativeSession.AnchorApi.Detach(NativeHandle);
+                _nativeSession.AnchorApi.Detach(_nativeHandle);
             }
 
-            s_AnchorDict.Remove(NativeHandle);
-            AnchorApi.Release(NativeHandle);
+            _anchorDict.Remove(_nativeHandle);
+            AnchorApi.Release(_nativeHandle);
         }
 
-        private bool _IsSessionDestroyed()
+        private bool IsSessionDestroyed()
         {
-            if (!m_IsSessionDestroyed)
+            if (!_isSessionDestroyed)
             {
                 var nativeSession = LifecycleManager.Instance.NativeSession;
-                if (nativeSession != NativeSession)
+                if (nativeSession != _nativeSession)
                 {
                     Debug.LogErrorFormat(
                         "The session which created this anchor has been destroyed. " +
                         "The anchor on GameObject {0} can no longer update.",
                         this.gameObject != null ? this.gameObject.name : "Unknown");
-                    m_IsSessionDestroyed = true;
+                    _isSessionDestroyed = true;
                 }
             }
 
-            return m_IsSessionDestroyed;
+            return _isSessionDestroyed;
         }
     }
 }

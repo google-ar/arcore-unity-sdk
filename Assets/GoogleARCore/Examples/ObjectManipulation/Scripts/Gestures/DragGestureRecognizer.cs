@@ -28,15 +28,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class DragGestureRecognizer : GestureRecognizer<DragGesture>
     {
-        private const float k_SlopInches = 0.1f;
-
-        internal float SlopInches
-        {
-            get
-            {
-                return k_SlopInches;
-            }
-        }
+        internal const float _slopInches = 0.1f;
 
         /// <summary>
         /// Creates a Drag gesture with the given touch.

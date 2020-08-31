@@ -35,11 +35,11 @@ namespace GoogleARCoreInternal
 
     internal class CameraConfigApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public CameraConfigApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public IntPtr Create()
@@ -52,7 +52,7 @@ namespace GoogleARCoreInternal
                 return cameraConfigHandle;
             }
 
-            ExternApi.ArCameraConfig_create(m_NativeSession.SessionHandle, ref cameraConfigHandle);
+            ExternApi.ArCameraConfig_create(_nativeSession.SessionHandle, ref cameraConfigHandle);
             return cameraConfigHandle;
         }
 
@@ -73,7 +73,7 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraConfig_getImageDimensions(
-                m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
+                _nativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
 
         public void GetTextureDimensions(IntPtr cameraConfigHandle, out int width, out int height)
@@ -89,7 +89,7 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraConfig_getTextureDimensions(
-                m_NativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
+                _nativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
 
         public ApiCameraConfigFacingDirection GetFacingDirection(IntPtr cameraConfigHandle)
@@ -103,7 +103,7 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraConfig_getFacingDirection(
-                m_NativeSession.SessionHandle, cameraConfigHandle, ref direction);
+                _nativeSession.SessionHandle, cameraConfigHandle, ref direction);
 
             return direction;
         }
@@ -120,7 +120,7 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraConfig_getFpsRange(
-                m_NativeSession.SessionHandle, cameraConfigHandle, ref minFps, ref maxFps);
+                _nativeSession.SessionHandle, cameraConfigHandle, ref minFps, ref maxFps);
         }
 
         public CameraConfigDepthSensorUsages GetDepthSensorUsage(IntPtr cameraConfigHandle)
@@ -134,7 +134,7 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraConfig_getDepthSensorUsage(
-                m_NativeSession.SessionHandle, cameraConfigHandle, ref depthSensorUsage);
+                _nativeSession.SessionHandle, cameraConfigHandle, ref depthSensorUsage);
             return (CameraConfigDepthSensorUsages)depthSensorUsage;
         }
 

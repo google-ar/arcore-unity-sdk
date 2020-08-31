@@ -27,9 +27,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public abstract class Manipulator : MonoBehaviour
     {
-        private bool m_IsManipulating;
+        private bool _isManipulating;
 
-        private GameObject m_SelectedObject;
+        private GameObject _selectedObject;
 
         /// <summary>
         /// Makes this game object become the Selected Object.
@@ -56,7 +56,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <returns><c>true</c>, if this is the Selected Object, <c>false</c> otherwise.</returns>
         public bool IsSelected()
         {
-            return m_SelectedObject == gameObject;
+            return _selectedObject == gameObject;
         }
 
         /// <summary>
@@ -281,21 +281,21 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// </summary>
         protected virtual void Update()
         {
-            if (m_SelectedObject == gameObject &&
+            if (_selectedObject == gameObject &&
                 ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_SelectedObject = ManipulationSystem.Instance.SelectedObject;
+                _selectedObject = ManipulationSystem.Instance.SelectedObject;
                 OnDeselected();
             }
-            else if (m_SelectedObject != gameObject &&
+            else if (_selectedObject != gameObject &&
                 ManipulationSystem.Instance.SelectedObject == gameObject)
             {
-                m_SelectedObject = ManipulationSystem.Instance.SelectedObject;
+                _selectedObject = ManipulationSystem.Instance.SelectedObject;
                 OnSelected();
             }
             else
             {
-                m_SelectedObject = ManipulationSystem.Instance.SelectedObject;
+                _selectedObject = ManipulationSystem.Instance.SelectedObject;
             }
         }
 
@@ -389,14 +389,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnGestureStarted(DragGesture gesture)
         {
-            if (m_IsManipulating)
+            if (_isManipulating)
             {
                 return;
             }
 
             if (CanStartManipulationForGesture(gesture))
             {
-                m_IsManipulating = true;
+                _isManipulating = true;
                 gesture.onUpdated += OnUpdated;
                 gesture.onFinished += OnFinished;
                 OnStartManipulation(gesture);
@@ -405,14 +405,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnGestureStarted(PinchGesture gesture)
         {
-            if (m_IsManipulating)
+            if (_isManipulating)
             {
                 return;
             }
 
             if (CanStartManipulationForGesture(gesture))
             {
-                m_IsManipulating = true;
+                _isManipulating = true;
                 gesture.onUpdated += OnUpdated;
                 gesture.onFinished += OnFinished;
                 OnStartManipulation(gesture);
@@ -421,14 +421,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnGestureStarted(TapGesture gesture)
         {
-            if (m_IsManipulating)
+            if (_isManipulating)
             {
                 return;
             }
 
             if (CanStartManipulationForGesture(gesture))
             {
-                m_IsManipulating = true;
+                _isManipulating = true;
                 gesture.onUpdated += OnUpdated;
                 gesture.onFinished += OnFinished;
                 OnStartManipulation(gesture);
@@ -437,14 +437,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnGestureStarted(TwistGesture gesture)
         {
-            if (m_IsManipulating)
+            if (_isManipulating)
             {
                 return;
             }
 
             if (CanStartManipulationForGesture(gesture))
             {
-                m_IsManipulating = true;
+                _isManipulating = true;
                 gesture.onUpdated += OnUpdated;
                 gesture.onFinished += OnFinished;
                 OnStartManipulation(gesture);
@@ -453,14 +453,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnGestureStarted(TwoFingerDragGesture gesture)
         {
-            if (m_IsManipulating)
+            if (_isManipulating)
             {
                 return;
             }
 
             if (CanStartManipulationForGesture(gesture))
             {
-                m_IsManipulating = true;
+                _isManipulating = true;
                 gesture.onUpdated += OnUpdated;
                 gesture.onFinished += OnFinished;
                 OnStartManipulation(gesture);
@@ -469,7 +469,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnUpdated(DragGesture gesture)
         {
-            if (!m_IsManipulating)
+            if (!_isManipulating)
             {
                 return;
             }
@@ -477,7 +477,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             // Can only transform selected Items.
             if (ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_IsManipulating = false;
+                _isManipulating = false;
                 OnEndManipulation(gesture);
                 return;
             }
@@ -487,7 +487,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnUpdated(PinchGesture gesture)
         {
-            if (!m_IsManipulating)
+            if (!_isManipulating)
             {
                 return;
             }
@@ -495,7 +495,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             // Can only transform selected Items.
             if (ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_IsManipulating = false;
+                _isManipulating = false;
                 OnEndManipulation(gesture);
                 return;
             }
@@ -505,7 +505,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnUpdated(TapGesture gesture)
         {
-            if (!m_IsManipulating)
+            if (!_isManipulating)
             {
                 return;
             }
@@ -513,7 +513,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             // Can only transform selected Items.
             if (ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_IsManipulating = false;
+                _isManipulating = false;
                 OnEndManipulation(gesture);
                 return;
             }
@@ -523,7 +523,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnUpdated(TwistGesture gesture)
         {
-            if (!m_IsManipulating)
+            if (!_isManipulating)
             {
                 return;
             }
@@ -531,7 +531,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             // Can only transform selected Items.
             if (ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_IsManipulating = false;
+                _isManipulating = false;
                 OnEndManipulation(gesture);
                 return;
             }
@@ -541,7 +541,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnUpdated(TwoFingerDragGesture gesture)
         {
-            if (!m_IsManipulating)
+            if (!_isManipulating)
             {
                 return;
             }
@@ -549,7 +549,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             // Can only transform selected Items.
             if (ManipulationSystem.Instance.SelectedObject != gameObject)
             {
-                m_IsManipulating = false;
+                _isManipulating = false;
                 OnEndManipulation(gesture);
                 return;
             }
@@ -559,31 +559,31 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private void OnFinished(DragGesture gesture)
         {
-            m_IsManipulating = false;
+            _isManipulating = false;
             OnEndManipulation(gesture);
         }
 
         private void OnFinished(PinchGesture gesture)
         {
-            m_IsManipulating = false;
+            _isManipulating = false;
             OnEndManipulation(gesture);
         }
 
         private void OnFinished(TapGesture gesture)
         {
-            m_IsManipulating = false;
+            _isManipulating = false;
             OnEndManipulation(gesture);
         }
 
         private void OnFinished(TwistGesture gesture)
         {
-            m_IsManipulating = false;
+            _isManipulating = false;
             OnEndManipulation(gesture);
         }
 
         private void OnFinished(TwoFingerDragGesture gesture)
         {
-            m_IsManipulating = false;
+            _isManipulating = false;
             OnEndManipulation(gesture);
         }
     }

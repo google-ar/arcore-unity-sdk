@@ -31,12 +31,12 @@ namespace GoogleARCore.Examples.ComputerVision
         /// <summary>
         /// Output image width, in pixels.
         /// </summary>
-        public int ImageWidth = k_ARCoreTextureWidth;
+        public int ImageWidth = _arCoreTextureWidth;
 
         /// <summary>
         /// Output image height, in pixels.
         /// </summary>
-        public int ImageHeight = k_ARCoreTextureHeight;
+        public int ImageHeight = _arCoreTextureHeight;
 
         /// <summary>
         /// Output image sampling option.
@@ -49,14 +49,14 @@ namespace GoogleARCore.Examples.ComputerVision
         public TextureReaderApi.ImageFormatType ImageFormat =
             TextureReaderApi.ImageFormatType.ImageFormatGrayscale;
 
-        private const int k_ARCoreTextureWidth = 1920;
-        private const int k_ARCoreTextureHeight = 1080;
+        private const int _arCoreTextureWidth = 1920;
+        private const int _arCoreTextureHeight = 1080;
 
-        private TextureReaderApi m_TextureReaderApi = null;
+        private TextureReaderApi _textureReaderApi = null;
 
-        private CommandType m_Command = CommandType.None;
+        private CommandType _command = CommandType.None;
 
-        private int m_ImageBufferIndex = -1;
+        private int _imageBufferIndex = -1;
 
         /// <summary>
         /// Callback function type for receiving the output images.
@@ -107,11 +107,11 @@ namespace GoogleARCore.Examples.ComputerVision
         /// </summary>
         public void Start()
         {
-            if (m_TextureReaderApi == null)
+            if (_textureReaderApi == null)
             {
-                m_TextureReaderApi = new TextureReaderApi();
-                m_Command = CommandType.Create;
-                m_ImageBufferIndex = -1;
+                _textureReaderApi = new TextureReaderApi();
+                _command = CommandType.Create;
+                _imageBufferIndex = -1;
             }
         }
 
@@ -120,7 +120,7 @@ namespace GoogleARCore.Examples.ComputerVision
         /// </summary>
         public void Apply()
         {
-            m_Command = CommandType.Reset;
+            _command = CommandType.Reset;
         }
 
         /// <summary>
@@ -134,11 +134,11 @@ namespace GoogleARCore.Examples.ComputerVision
             }
 
             // Process command.
-            switch (m_Command)
+            switch (_command)
             {
             case CommandType.Create:
             {
-                m_TextureReaderApi.Create(
+                _textureReaderApi.Create(
                     ImageFormat, ImageWidth, ImageHeight,
                     ImageSampleMode == SampleMode.KeepAspectRatio);
                 break;
@@ -146,31 +146,31 @@ namespace GoogleARCore.Examples.ComputerVision
 
             case CommandType.Reset:
             {
-                m_TextureReaderApi.ReleaseFrame(m_ImageBufferIndex);
-                m_TextureReaderApi.Destroy();
-                m_TextureReaderApi.Create(
+                _textureReaderApi.ReleaseFrame(_imageBufferIndex);
+                _textureReaderApi.Destroy();
+                _textureReaderApi.Create(
                     ImageFormat, ImageWidth, ImageHeight,
                     ImageSampleMode == SampleMode.KeepAspectRatio);
-                m_ImageBufferIndex = -1;
+                _imageBufferIndex = -1;
                 break;
             }
 
             case CommandType.ReleasePreviousBuffer:
             {
                 // Clear previously used buffer, and submits a new request.
-                m_TextureReaderApi.ReleaseFrame(m_ImageBufferIndex);
-                m_ImageBufferIndex = -1;
+                _textureReaderApi.ReleaseFrame(_imageBufferIndex);
+                _imageBufferIndex = -1;
                 break;
             }
 
             case CommandType.ProcessNextFrame:
             {
-                if (m_ImageBufferIndex >= 0)
+                if (_imageBufferIndex >= 0)
                 {
                     // Get image pixels from previously submitted request.
                     int bufferSize = 0;
                     IntPtr pixelBuffer =
-                        m_TextureReaderApi.AcquireFrame(m_ImageBufferIndex, ref bufferSize);
+                        _textureReaderApi.AcquireFrame(_imageBufferIndex, ref bufferSize);
 
                     if (pixelBuffer != IntPtr.Zero && OnImageAvailableCallback != null)
                     {
@@ -179,7 +179,7 @@ namespace GoogleARCore.Examples.ComputerVision
                     }
 
                     // Release the texture reader internal buffer.
-                    m_TextureReaderApi.ReleaseFrame(m_ImageBufferIndex);
+                    _textureReaderApi.ReleaseFrame(_imageBufferIndex);
                 }
 
                 break;
@@ -194,12 +194,12 @@ namespace GoogleARCore.Examples.ComputerVision
             if (Frame.CameraImage.Texture != null)
             {
                 int textureId = Frame.CameraImage.Texture.GetNativeTexturePtr().ToInt32();
-                m_ImageBufferIndex = m_TextureReaderApi.SubmitFrame(
-                    textureId, k_ARCoreTextureWidth, k_ARCoreTextureHeight);
+                _imageBufferIndex = _textureReaderApi.SubmitFrame(
+                    textureId, _arCoreTextureWidth, _arCoreTextureHeight);
             }
 
             // Set next command.
-            m_Command = CommandType.ProcessNextFrame;
+            _command = CommandType.ProcessNextFrame;
         }
 
         /// <summary>
@@ -207,10 +207,10 @@ namespace GoogleARCore.Examples.ComputerVision
         /// </summary>
         private void OnDestroy()
         {
-            if (m_TextureReaderApi != null)
+            if (_textureReaderApi != null)
             {
-                m_TextureReaderApi.Destroy();
-                m_TextureReaderApi = null;
+                _textureReaderApi.Destroy();
+                _textureReaderApi = null;
             }
         }
 
@@ -220,7 +220,7 @@ namespace GoogleARCore.Examples.ComputerVision
         private void OnDisable()
         {
             // Force to release previously used buffer.
-            m_Command = CommandType.ReleasePreviousBuffer;
+            _command = CommandType.ReleasePreviousBuffer;
         }
     }
 }

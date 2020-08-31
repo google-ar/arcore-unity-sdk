@@ -772,9 +772,9 @@ MonoBehaviour:
   EnablePopAnimation: 1
   MaxPointsToAddPerFrame: 1
   AnimationDuration: 0.3
-  m_MaxPointCount: 1000
-  m_DefaultSize: 10
-  m_PopSize: 50
+  _maxPointCount: 1000
+  _defaultSize: 10
+  _popSize: 50
 --- !u!114 &114691982231484394
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -788,13 +788,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DisplayGuideDelay: 3
   OfferDetailedInstructionsDelay: 8
-  m_FeaturePoints: {fileID: 1947850325268790}
-  m_HandAnimation: {fileID: 114376072597821902}
-  m_SnackBar: {fileID: 1628086211047416}
-  m_SnackBarText: {fileID: 114675208815321770}
-  m_OpenButton: {fileID: 1620356295715200}
-  m_MoreHelpWindow: {fileID: 1841743570407438}
-  m_GotItButton: {fileID: 114278378996577766}
+  _featurePoints: {fileID: 1947850325268790}
+  _handAnimation: {fileID: 114376072597821902}
+  _snackBar: {fileID: 1628086211047416}
+  _snackBarText: {fileID: 114675208815321770}
+  _openButton: {fileID: 1620356295715200}
+  _moreHelpWindow: {fileID: 1841743570407438}
+  _gotItButton: {fileID: 114278378996577766}
 --- !u!114 &114697064341765078
 MonoBehaviour:
   m_ObjectHideFlags: 1

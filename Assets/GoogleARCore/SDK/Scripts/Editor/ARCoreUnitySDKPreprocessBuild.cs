@@ -31,11 +31,11 @@ namespace GoogleARCoreInternal
 {
     internal class ARCoreUnitySDKPreprocessBuild : IPreprocessBuildWithReport
     {
-        private static int k_MinSdkVersion = 14;
+        private static int _minSdkVersion = 14;
 
         public int callbackOrder { get { return 0; } }
 
-        private ListRequest m_Request;
+        private ListRequest _request;
 
         public void OnPreprocessBuild(BuildReport report)
         {
@@ -51,27 +51,27 @@ namespace GoogleARCoreInternal
 
         private void _EnsureMinSdkVersion()
         {
-            if ((int)PlayerSettings.Android.minSdkVersion < k_MinSdkVersion)
+            if ((int)PlayerSettings.Android.minSdkVersion < _minSdkVersion)
             {
                 throw new BuildFailedException(string.Format("ARCore apps require a minimum " +
                     "SDK version of {0}. Currently set to {1}",
-                    k_MinSdkVersion, PlayerSettings.Android.minSdkVersion));
+                    _minSdkVersion, PlayerSettings.Android.minSdkVersion));
             }
         }
 
         private void _EnsureUnityARCoreIsNotPresent()
         {
-            m_Request = Client.List();    // List packages installed for the Project
+            _request = Client.List();    // List packages installed for the Project
             EditorApplication.update += _PackageListProgress;
         }
 
         private void _PackageListProgress()
         {
-            if (m_Request.IsCompleted)
+            if (_request.IsCompleted)
             {
-                if (m_Request.Status == StatusCode.Success)
+                if (_request.Status == StatusCode.Success)
                 {
-                    foreach (var package in m_Request.Result)
+                    foreach (var package in _request.Result)
                     {
                         if (package.name == "com.unity.xr.arcore")
                         {
@@ -81,7 +81,7 @@ namespace GoogleARCoreInternal
                         }
                     }
                 }
-                else if (m_Request.Status >= StatusCode.Failure)
+                else if (_request.Status >= StatusCode.Failure)
                 {
                     throw new BuildFailedException("Failure iterating packages when checking for" +
                     " ARCore XR Plugin.");

@@ -34,27 +34,47 @@ namespace GoogleARCoreInternal
 
     internal class PointApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public PointApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public Pose GetPose(IntPtr pointHandle)
         {
-            var poseHandle = m_NativeSession.PoseApi.Create();
-            ExternApi.ArPoint_getPose(m_NativeSession.SessionHandle, pointHandle, poseHandle);
-            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+            var poseHandle = _nativeSession.PoseApi.Create();
+            ExternApi.ArPoint_getPose(_nativeSession.SessionHandle, pointHandle, poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
+        }
+
+        public Pose GetInstantPlacementPointPose(IntPtr instantPlacementPointHandle)
+        {
+            var poseHandle = _nativeSession.PoseApi.Create();
+            ExternApi.ArInstantPlacementPoint_getPose(
+                _nativeSession.SessionHandle, instantPlacementPointHandle, poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
+            return resultPose;
+        }
+
+        public InstantPlacementPointTrackingMethod GetInstantPlacementPointTrackingMethod(
+        IntPtr instantPlacementPointHandle)
+        {
+            InstantPlacementPointTrackingMethod trackingMethod =
+                InstantPlacementPointTrackingMethod.NotTracking;
+            ExternApi.ArInstantPlacementPoint_getTrackingMethod(
+                _nativeSession.SessionHandle, instantPlacementPointHandle, ref trackingMethod);
+            return trackingMethod;
         }
 
         public FeaturePointOrientationMode GetOrientationMode(IntPtr pointHandle)
         {
             ApiFeaturePointOrientationMode orientationMode =
                 ApiFeaturePointOrientationMode.Identity;
-            ExternApi.ArPoint_getOrientationMode(m_NativeSession.SessionHandle, pointHandle,
+            ExternApi.ArPoint_getOrientationMode(_nativeSession.SessionHandle, pointHandle,
                 ref orientationMode);
             return orientationMode.ToFeaturePointOrientationMode();
         }
@@ -69,6 +89,15 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPoint_getOrientationMode(
                 IntPtr session, IntPtr point, ref ApiFeaturePointOrientationMode orientationMode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArInstantPlacementPoint_getPose(
+                IntPtr session, IntPtr instantPlacementPoint, IntPtr out_pose);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArInstantPlacementPoint_getTrackingMethod(
+                IntPtr session, IntPtr instantPlacementPoint,
+                ref InstantPlacementPointTrackingMethod trackingMethod);
 #pragma warning restore 626
         }
     }

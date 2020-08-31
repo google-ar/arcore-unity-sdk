@@ -35,11 +35,11 @@ namespace GoogleARCoreInternal
 
     internal class SessionConfigApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public SessionConfigApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public static void UpdateApiConfigWithARCoreSessionConfig(IntPtr sessionHandle,
@@ -64,7 +64,7 @@ namespace GoogleARCoreInternal
             IntPtr augmentedImageDatabaseHandle = IntPtr.Zero;
             if (sessionConfig.AugmentedImageDatabase != null)
             {
-                augmentedImageDatabaseHandle = sessionConfig.AugmentedImageDatabase.NativeHandle;
+                augmentedImageDatabaseHandle = sessionConfig.AugmentedImageDatabase._nativeHandle;
                 ExternApi.ArConfig_setAugmentedImageDatabase(sessionHandle, configHandle,
                     augmentedImageDatabaseHandle);
             }
@@ -86,12 +86,18 @@ namespace GoogleARCoreInternal
                 ApiDepthMode depthMode = sessionConfig.DepthMode.ToApiDepthMode();
                 ExternApi.ArConfig_setDepthMode(sessionHandle, configHandle, depthMode);
             }
+
+            if (!InstantPreviewManager.IsProvidingPlatform)
+            {
+                ExternApi.ArConfig_setInstantPlacementMode(sessionHandle, configHandle,
+                    sessionConfig.InstantPlacementMode);
+            }
         }
 
         public IntPtr Create()
         {
             IntPtr configHandle = IntPtr.Zero;
-            ExternApi.ArConfig_create(m_NativeSession.SessionHandle, ref configHandle);
+            ExternApi.ArConfig_create(_nativeSession.SessionHandle, ref configHandle);
             return configHandle;
         }
 
@@ -140,6 +146,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setDepthMode(
                 IntPtr session, IntPtr config, ApiDepthMode mode);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArConfig_setInstantPlacementMode(
+                IntPtr session, IntPtr config, InstantPlacementMode instant_placement_mode);
 #pragma warning restore 626
         }
     }

@@ -28,30 +28,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class TapGestureRecognizer : GestureRecognizer<TapGesture>
     {
-        private const float k_SlopInches = 0.1f;
-        private const float k_TimeSeconds = 0.3f;
-
-        /// <summary>
-        /// Gets the edge slop distance to filter tap gestures.
-        /// </summary>
-        internal float SlopInches
-        {
-            get
-            {
-                return k_SlopInches;
-            }
-        }
-
-        /// <summary>
-        /// Gets the max time to be considered a Tap gesture.
-        /// </summary>
-        internal float TimeSeconds
-        {
-            get
-            {
-                return k_TimeSeconds;
-            }
-        }
+        internal const float _slopInches = 0.1f;
+        internal const float _timeSeconds = 0.3f;
 
         /// <summary>
         /// Creates a Tap gesture with the given touch.

@@ -35,44 +35,44 @@ namespace GoogleARCoreInternal
 
     internal class PlaneApi
     {
-        private const int k_MaxPolygonSize = 1024;
-        private NativeSession m_NativeSession;
-        private float[] m_TmpPoints;
-        private System.Runtime.InteropServices.GCHandle m_TmpPointsHandle;
+        private const int _maxPolygonSize = 1024;
+        private NativeSession _nativeSession;
+        private float[] _tmpPoints;
+        private System.Runtime.InteropServices.GCHandle _tmpPointsHandle;
 
         public PlaneApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
-            m_TmpPoints = new float[k_MaxPolygonSize * 2];
-            m_TmpPointsHandle = System.Runtime.InteropServices.GCHandle.Alloc(
-                m_TmpPoints, System.Runtime.InteropServices.GCHandleType.Pinned);
+            _nativeSession = nativeSession;
+            _tmpPoints = new float[_maxPolygonSize * 2];
+            _tmpPointsHandle = System.Runtime.InteropServices.GCHandle.Alloc(
+                _tmpPoints, System.Runtime.InteropServices.GCHandleType.Pinned);
         }
 
         ~PlaneApi()
         {
-            m_TmpPointsHandle.Free();
+            _tmpPointsHandle.Free();
         }
 
         public Pose GetCenterPose(IntPtr planeHandle)
         {
-            var poseHandle = m_NativeSession.PoseApi.Create();
-            ExternApi.ArPlane_getCenterPose(m_NativeSession.SessionHandle, planeHandle, poseHandle);
-            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+            var poseHandle = _nativeSession.PoseApi.Create();
+            ExternApi.ArPlane_getCenterPose(_nativeSession.SessionHandle, planeHandle, poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
         public float GetExtentX(IntPtr planeHandle)
         {
             float extentX = 0.0f;
-            ExternApi.ArPlane_getExtentX(m_NativeSession.SessionHandle, planeHandle, ref extentX);
+            ExternApi.ArPlane_getExtentX(_nativeSession.SessionHandle, planeHandle, ref extentX);
             return extentX;
         }
 
         public float GetExtentZ(IntPtr planeHandle)
         {
             float extentZ = 0.0f;
-            ExternApi.ArPlane_getExtentZ(m_NativeSession.SessionHandle, planeHandle, ref extentZ);
+            ExternApi.ArPlane_getExtentZ(_nativeSession.SessionHandle, planeHandle, ref extentZ);
             return extentZ;
         }
 
@@ -81,19 +81,19 @@ namespace GoogleARCoreInternal
             points.Clear();
             int pointCount = 0;
             ExternApi.ArPlane_getPolygonSize(
-                m_NativeSession.SessionHandle, planeHandle, ref pointCount);
+                _nativeSession.SessionHandle, planeHandle, ref pointCount);
             if (pointCount < 1)
             {
                 return;
             }
-            else if (pointCount > k_MaxPolygonSize)
+            else if (pointCount > _maxPolygonSize)
             {
                 Debug.LogError("GetPolygon::Plane polygon size exceeds buffer capacity.");
-                pointCount = k_MaxPolygonSize;
+                pointCount = _maxPolygonSize;
             }
 
             ExternApi.ArPlane_getPolygon(
-                m_NativeSession.SessionHandle, planeHandle, m_TmpPointsHandle.AddrOfPinnedObject());
+                _nativeSession.SessionHandle, planeHandle, _tmpPointsHandle.AddrOfPinnedObject());
 
             var planeCenter = GetCenterPose(planeHandle);
             var unityWorldTPlane =
@@ -101,7 +101,7 @@ namespace GoogleARCoreInternal
             for (int i = pointCount - 2; i >= 0; i -= 2)
             {
                 var point = unityWorldTPlane.MultiplyPoint3x4(
-                    new Vector3(m_TmpPoints[i], 0, -m_TmpPoints[i + 1]));
+                    new Vector3(_tmpPoints[i], 0, -_tmpPoints[i + 1]));
                 points.Add(point);
             }
         }
@@ -110,14 +110,14 @@ namespace GoogleARCoreInternal
         {
             IntPtr subsumerHandle = IntPtr.Zero;
             ExternApi.ArPlane_acquireSubsumedBy(
-                m_NativeSession.SessionHandle, planeHandle, ref subsumerHandle);
-            return m_NativeSession.TrackableFactory(subsumerHandle) as DetectedPlane;
+                _nativeSession.SessionHandle, planeHandle, ref subsumerHandle);
+            return _nativeSession.TrackableFactory(subsumerHandle) as DetectedPlane;
         }
 
         public DetectedPlaneType GetPlaneType(IntPtr planeHandle)
         {
             ApiPlaneType planeType = ApiPlaneType.HorizontalDownwardFacing;
-            ExternApi.ArPlane_getType(m_NativeSession.SessionHandle, planeHandle, ref planeType);
+            ExternApi.ArPlane_getType(_nativeSession.SessionHandle, planeHandle, ref planeType);
             return planeType.ToDetectedPlaneType();
         }
 
@@ -126,10 +126,10 @@ namespace GoogleARCoreInternal
             // The int is used as a boolean value as the C API expects a int32_t value to represent
             // a boolean.
             int isPoseInExtents = 0;
-            var poseHandle = m_NativeSession.PoseApi.Create(pose);
+            var poseHandle = _nativeSession.PoseApi.Create(pose);
             ExternApi.ArPlane_isPoseInExtents(
-                m_NativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInExtents);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInExtents);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return isPoseInExtents != 0;
         }
 
@@ -139,7 +139,7 @@ namespace GoogleARCoreInternal
             // a boolean.
             int isPoseInExtents = 0;
             ExternApi.ArPlane_isPoseInExtents(
-                m_NativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInExtents);
+                _nativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInExtents);
             return isPoseInExtents != 0;
         }
 
@@ -148,10 +148,10 @@ namespace GoogleARCoreInternal
             // The int is used as a boolean value as the C API expects a int32_t value to represent
             // a boolean.
             int isPoseInPolygon = 0;
-            var poseHandle = m_NativeSession.PoseApi.Create(pose);
+            var poseHandle = _nativeSession.PoseApi.Create(pose);
             ExternApi.ArPlane_isPoseInPolygon(
-                m_NativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInPolygon);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInPolygon);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return isPoseInPolygon != 0;
         }
 
@@ -161,7 +161,7 @@ namespace GoogleARCoreInternal
             // a boolean.
             int isPoseInPolygon = 0;
             ExternApi.ArPlane_isPoseInPolygon(
-                m_NativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInPolygon);
+                _nativeSession.SessionHandle, planeHandle, poseHandle, ref isPoseInPolygon);
             return isPoseInPolygon != 0;
         }
 

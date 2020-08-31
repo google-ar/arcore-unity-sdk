@@ -30,13 +30,13 @@ namespace GoogleARCoreInternal
         public static readonly GUIContent SDKAnalytics =
                     new GUIContent("Enable Google ARCore SDK Analytics");
 
-        private static float s_GroupLabelWidth = 260;
+        private static float _groupLabelWidth = 260;
 
         // Render ARCore Analytics Settings for ARCoreAnalyticsProvider and
         // ARCoreAnalyticsPreferences.
         internal static void OnGUI()
         {
-            EditorGUIUtility.labelWidth = s_GroupLabelWidth;
+            EditorGUIUtility.labelWidth = _groupLabelWidth;
             ARCoreAnalytics.Instance.EnableAnalytics =
                 EditorGUILayout.Toggle(SDKAnalytics, ARCoreAnalytics.Instance.EnableAnalytics);
 

@@ -36,34 +36,34 @@ namespace GoogleARCoreInternal
 
     internal class AugmentedFaceApi
     {
-        private NativeSession m_NativeSession;
-        private float[] m_TempVertices;
-        private float[] m_TempNormals;
-        private float[] m_TempUVs;
-        private short[] m_TempIndices;
+        private NativeSession _nativeSession;
+        private float[] _tempVertices;
+        private float[] _tempNormals;
+        private float[] _tempUVs;
+        private short[] _tempIndices;
 
         public AugmentedFaceApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public Pose GetCenterPose(IntPtr faceHandle)
         {
-            var poseHandle = m_NativeSession.PoseApi.Create();
+            var poseHandle = _nativeSession.PoseApi.Create();
             ExternApi.ArAugmentedFace_getCenterPose(
-                m_NativeSession.SessionHandle, faceHandle, poseHandle);
-            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, faceHandle, poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
         public Pose GetRegionPose(IntPtr faceHandle, ApiAugmentedFaceRegionType regionType)
         {
-            var poseHandle = m_NativeSession.PoseApi.Create();
+            var poseHandle = _nativeSession.PoseApi.Create();
             ExternApi.ArAugmentedFace_getRegionPose(
-                m_NativeSession.SessionHandle, faceHandle, regionType, poseHandle);
-            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, faceHandle, regionType, poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
@@ -71,22 +71,22 @@ namespace GoogleARCoreInternal
         {
             IntPtr verticesHandle = IntPtr.Zero;
             int verticesNum = 0;
-            ExternApi.ArAugmentedFace_getMeshVertices(m_NativeSession.SessionHandle, faceHandle,
+            ExternApi.ArAugmentedFace_getMeshVertices(_nativeSession.SessionHandle, faceHandle,
                 ref verticesHandle, ref verticesNum);
             int floatNum = verticesNum * 3;
-            if (m_TempVertices == null || m_TempVertices.Length != floatNum)
+            if (_tempVertices == null || _tempVertices.Length != floatNum)
             {
-                m_TempVertices = new float[floatNum];
+                _tempVertices = new float[floatNum];
             }
 
-            Marshal.Copy(verticesHandle, m_TempVertices, 0, floatNum);
+            Marshal.Copy(verticesHandle, _tempVertices, 0, floatNum);
 
             vertices.Clear();
             vertices.Capacity = verticesNum;
             for (int i = 0; i < floatNum; i += 3)
             {
                 vertices.Add(
-                    new Vector3(m_TempVertices[i], m_TempVertices[i + 1], -m_TempVertices[i + 2]));
+                    new Vector3(_tempVertices[i], _tempVertices[i + 1], -_tempVertices[i + 2]));
             }
         }
 
@@ -94,22 +94,22 @@ namespace GoogleARCoreInternal
         {
             IntPtr normalsHandle = IntPtr.Zero;
             int verticesNum = 0;
-            ExternApi.ArAugmentedFace_getMeshNormals(m_NativeSession.SessionHandle, faceHandle,
+            ExternApi.ArAugmentedFace_getMeshNormals(_nativeSession.SessionHandle, faceHandle,
                 ref normalsHandle, ref verticesNum);
             int floatNum = verticesNum * 3;
-            if (m_TempNormals == null || m_TempNormals.Length != floatNum)
+            if (_tempNormals == null || _tempNormals.Length != floatNum)
             {
-                m_TempNormals = new float[floatNum];
+                _tempNormals = new float[floatNum];
             }
 
-            Marshal.Copy(normalsHandle, m_TempNormals, 0, floatNum);
+            Marshal.Copy(normalsHandle, _tempNormals, 0, floatNum);
 
             normals.Clear();
             normals.Capacity = verticesNum;
             for (int i = 0; i < floatNum; i += 3)
             {
                 normals.Add(
-                    new Vector3(m_TempNormals[i], m_TempNormals[i + 1], -m_TempNormals[i + 2]));
+                    new Vector3(_tempNormals[i], _tempNormals[i + 1], -_tempNormals[i + 2]));
             }
         }
 
@@ -118,20 +118,20 @@ namespace GoogleARCoreInternal
             IntPtr textureCoordinatesHandle = IntPtr.Zero;
             int uvNum = 0;
             ExternApi.ArAugmentedFace_getMeshTextureCoordinates(
-                m_NativeSession.SessionHandle, faceHandle, ref textureCoordinatesHandle, ref uvNum);
+                _nativeSession.SessionHandle, faceHandle, ref textureCoordinatesHandle, ref uvNum);
             int floatNum = uvNum * 2;
-            if (m_TempUVs == null || m_TempUVs.Length != floatNum)
+            if (_tempUVs == null || _tempUVs.Length != floatNum)
             {
-                m_TempUVs = new float[floatNum];
+                _tempUVs = new float[floatNum];
             }
 
-            Marshal.Copy(textureCoordinatesHandle, m_TempUVs, 0, floatNum);
+            Marshal.Copy(textureCoordinatesHandle, _tempUVs, 0, floatNum);
 
             textureCoordinates.Clear();
             textureCoordinates.Capacity = uvNum;
             for (int i = 0; i < floatNum; i += 2)
             {
-                textureCoordinates.Add(new Vector2(m_TempUVs[i], m_TempUVs[i + 1]));
+                textureCoordinates.Add(new Vector2(_tempUVs[i], _tempUVs[i + 1]));
             }
         }
 
@@ -140,23 +140,23 @@ namespace GoogleARCoreInternal
             IntPtr triangleIndicesHandle = IntPtr.Zero;
             int triangleNum = 0;
             ExternApi.ArAugmentedFace_getMeshTriangleIndices(
-                m_NativeSession.SessionHandle, faceHandle, ref triangleIndicesHandle,
+                _nativeSession.SessionHandle, faceHandle, ref triangleIndicesHandle,
                 ref triangleNum);
             int indicesNum = triangleNum * 3;
-            if (m_TempIndices == null || m_TempIndices.Length != indicesNum)
+            if (_tempIndices == null || _tempIndices.Length != indicesNum)
             {
-                m_TempIndices = new short[indicesNum];
+                _tempIndices = new short[indicesNum];
             }
 
-            Marshal.Copy(triangleIndicesHandle, m_TempIndices, 0, indicesNum);
+            Marshal.Copy(triangleIndicesHandle, _tempIndices, 0, indicesNum);
 
             indices.Clear();
             indices.Capacity = indicesNum;
             for (int i = 0; i < indicesNum; i += 3)
             {
-                indices.Add(m_TempIndices[i]);
-                indices.Add(m_TempIndices[i + 2]);
-                indices.Add(m_TempIndices[i + 1]);
+                indices.Add(_tempIndices[i]);
+                indices.Add(_tempIndices[i + 2]);
+                indices.Add(_tempIndices[i + 1]);
             }
         }
 

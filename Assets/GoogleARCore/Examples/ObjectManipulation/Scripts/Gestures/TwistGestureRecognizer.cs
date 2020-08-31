@@ -28,15 +28,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class TwistGestureRecognizer : GestureRecognizer<TwistGesture>
     {
-        private const float k_SlopRotation = 10.0f;
-
-        internal float SlopRotation
-        {
-            get
-            {
-                return k_SlopRotation;
-            }
-        }
+        internal const float _slopRotation = 10.0f;
 
         /// <summary>
         /// Creates a Twist gesture with the given touches.

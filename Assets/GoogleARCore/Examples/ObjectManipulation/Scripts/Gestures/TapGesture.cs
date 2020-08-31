@@ -28,7 +28,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class TapGesture : Gesture<TapGesture>
     {
-        private float m_ElapsedTime = 0.0f;
+        private float _elapsedTime = 0.0f;
 
         /// <summary>
         /// Constructs a Tap gesture.
@@ -91,9 +91,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             Touch touch;
             if (GestureTouchesUtility.TryFindTouch(FingerId, out touch))
             {
-                TapGestureRecognizer tapRecognizer = Recognizer as TapGestureRecognizer;
-                m_ElapsedTime += touch.deltaTime;
-                if (m_ElapsedTime > tapRecognizer.TimeSeconds)
+                _elapsedTime += touch.deltaTime;
+                if (_elapsedTime > TapGestureRecognizer._timeSeconds)
                 {
                     Cancel();
                 }
@@ -101,7 +100,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 {
                     float diff = (touch.position - StartPosition).magnitude;
                     float diffInches = GestureTouchesUtility.PixelsToInches(diff);
-                    if (diffInches > tapRecognizer.SlopInches)
+                    if (diffInches > TapGestureRecognizer._slopInches)
                     {
                         Cancel();
                     }

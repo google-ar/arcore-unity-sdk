@@ -34,7 +34,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
     /// <typeparam name="T">The actual gesture.</typeparam>
     public abstract class Gesture<T> where T : Gesture<T>
     {
-        private bool m_HasStarted;
+        private bool _hasStarted;
 
         /// <summary>
         /// Constructs a Gesture with a given recognizer.
@@ -42,7 +42,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <param name="recognizer">The gesture recognizer.</param>
         internal Gesture(GestureRecognizer<T> recognizer)
         {
-            Recognizer = recognizer;
+            _recognizer = recognizer;
         }
 
         /// <summary>
@@ -73,20 +73,20 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// Gets the gesture recognizer.
         /// </summary>
-        protected internal GestureRecognizer<T> Recognizer { get; private set; }
+        protected internal GestureRecognizer<T> _recognizer { get; private set; }
 
         /// <summary>
         /// Updates this gesture.
         /// </summary>
         internal void Update()
         {
-            if (!m_HasStarted && CanStart())
+            if (!_hasStarted && CanStart())
             {
                 Start();
                 return;
             }
 
-            if (m_HasStarted)
+            if (_hasStarted)
             {
                 if (UpdateGesture() && onUpdated != null)
                 {
@@ -146,7 +146,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
 
         private void Start()
         {
-            m_HasStarted = true;
+            _hasStarted = true;
             OnStart();
             if (onStart != null)
             {

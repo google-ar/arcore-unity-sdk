@@ -42,14 +42,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
         [Range(0.1f, 10.0f)]
         public float MaxScale = 1.75f;
 
-        private const float k_ElasticRatioLimit = 0.8f;
-        private const float k_Sensitivity = 0.75f;
-        private const float k_Elasticity = 0.15f;
+        private const float _elasticRatioLimit = 0.8f;
+        private const float _sensitivity = 0.75f;
+        private const float _elasticity = 0.15f;
 
-        private float m_CurrentScaleRatio;
-        private bool m_IsScaling;
+        private float _currentScaleRatio;
+        private bool _isScaling;
 
-        private float ScaleDelta
+        private float _scaleDelta
         {
             get
             {
@@ -63,20 +63,20 @@ namespace GoogleARCore.Examples.ObjectManipulation
             }
         }
 
-        private float ClampedScaleRatio
+        private float _clampedScaleRatio
         {
             get
             {
-                return Mathf.Clamp01(m_CurrentScaleRatio);
+                return Mathf.Clamp01(_currentScaleRatio);
             }
         }
 
-        private float CurrentScale
+        private float _currentScale
         {
             get
             {
-                float elasticScaleRatio = ClampedScaleRatio + ElasticDelta();
-                float elasticScale = MinScale + (elasticScaleRatio * ScaleDelta);
+                float elasticScaleRatio = _clampedScaleRatio + ElasticDelta();
+                float elasticScale = MinScale + (elasticScaleRatio * _scaleDelta);
                 return elasticScale;
             }
         }
@@ -87,7 +87,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / ScaleDelta;
+            _currentScaleRatio = (transform.localScale.x - MinScale) / _scaleDelta;
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The gesture that started this transformation.</param>
         protected override void OnStartManipulation(PinchGesture gesture)
         {
-            m_IsScaling = true;
-            m_CurrentScaleRatio = (transform.localScale.x - MinScale) / ScaleDelta;
+            _isScaling = true;
+            _currentScaleRatio = (transform.localScale.x - MinScale) / _scaleDelta;
         }
 
         /// <summary>
@@ -126,16 +126,16 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnContinueManipulation(PinchGesture gesture)
         {
-            m_CurrentScaleRatio +=
-                k_Sensitivity * GestureTouchesUtility.PixelsToInches(gesture.GapDelta);
+            _currentScaleRatio +=
+                _sensitivity * GestureTouchesUtility.PixelsToInches(gesture.GapDelta);
 
-            float currentScale = CurrentScale;
+            float currentScale = _currentScale;
             transform.localScale = new Vector3(currentScale, currentScale, currentScale);
 
             // If we've tried to scale too far beyond the limit, then cancel the gesture
             // to snap back within the scale range.
-            if (m_CurrentScaleRatio < -k_ElasticRatioLimit
-                || m_CurrentScaleRatio > (1.0f + k_ElasticRatioLimit))
+            if (_currentScaleRatio < -_elasticRatioLimit
+                || _currentScaleRatio > (1.0f + _elasticRatioLimit))
             {
                 gesture.Cancel();
             }
@@ -147,36 +147,36 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnEndManipulation(PinchGesture gesture)
         {
-            m_IsScaling = false;
+            _isScaling = false;
         }
 
         private float ElasticDelta()
         {
             float overRatio = 0.0f;
-            if (m_CurrentScaleRatio > 1.0f)
+            if (_currentScaleRatio > 1.0f)
             {
-                overRatio = m_CurrentScaleRatio - 1.0f;
+                overRatio = _currentScaleRatio - 1.0f;
             }
-            else if (m_CurrentScaleRatio < 0.0f)
+            else if (_currentScaleRatio < 0.0f)
             {
-                overRatio = m_CurrentScaleRatio;
+                overRatio = _currentScaleRatio;
             }
             else
             {
                 return 0.0f;
             }
 
-            return (1.0f - (1.0f / ((Mathf.Abs(overRatio) * k_Elasticity) + 1.0f)))
+            return (1.0f - (1.0f / ((Mathf.Abs(overRatio) * _elasticity) + 1.0f)))
             * Mathf.Sign(overRatio);
         }
 
         private void LateUpdate()
         {
-            if (!m_IsScaling)
+            if (!_isScaling)
             {
-                m_CurrentScaleRatio =
-                    Mathf.Lerp(m_CurrentScaleRatio, ClampedScaleRatio, Time.deltaTime * 8.0f);
-                float currentScale = CurrentScale;
+                _currentScaleRatio =
+                    Mathf.Lerp(_currentScaleRatio, _clampedScaleRatio, Time.deltaTime * 8.0f);
+                float currentScale = _currentScale;
                 transform.localScale = new Vector3(currentScale, currentScale, currentScale);
             }
         }

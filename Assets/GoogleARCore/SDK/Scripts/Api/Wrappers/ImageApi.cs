@@ -33,11 +33,11 @@ namespace GoogleARCoreInternal
 
     internal class ImageApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public ImageApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public void GetImageBuffer(
@@ -80,21 +80,21 @@ namespace GoogleARCoreInternal
         public void GetPlaneData(IntPtr imageHandle, int planeIndex, ref IntPtr surfaceData,
             ref int dataLength)
         {
-            ExternApi.ArImage_getPlaneData(m_NativeSession.SessionHandle, imageHandle, planeIndex,
+            ExternApi.ArImage_getPlaneData(_nativeSession.SessionHandle, imageHandle, planeIndex,
                 ref surfaceData, ref dataLength);
         }
 
         public int GetWidth(IntPtr imageHandle)
         {
             int width = 0;
-            ExternApi.ArImage_getWidth(m_NativeSession.SessionHandle, imageHandle, out width);
+            ExternApi.ArImage_getWidth(_nativeSession.SessionHandle, imageHandle, out width);
             return width;
         }
 
         public int GetHeight(IntPtr imageHandle)
         {
             int height = 0;
-            ExternApi.ArImage_getHeight(m_NativeSession.SessionHandle, imageHandle, out height);
+            ExternApi.ArImage_getHeight(_nativeSession.SessionHandle, imageHandle, out height);
             return height;
         }
 

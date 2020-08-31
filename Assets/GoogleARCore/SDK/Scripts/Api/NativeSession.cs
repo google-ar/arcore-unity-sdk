@@ -28,21 +28,17 @@ namespace GoogleARCoreInternal
 
     internal class NativeSession
     {
-#pragma warning disable 414
-        private static bool s_ReportedEngineType = false;
-#pragma warning restore 414
+        private PointCloudManager _pointCloudManager = null;
 
-        private PointCloudManager m_PointCloudManager = null;
-
-        private TrackableManager m_TrackableManager = null;
+        private TrackableManager _trackableManager = null;
 
         public NativeSession(IntPtr sessionHandle, IntPtr frameHandle)
         {
             IsDestroyed = false;
             SessionHandle = sessionHandle;
             FrameHandle = frameHandle;
-            m_PointCloudManager = new PointCloudManager(this);
-            m_TrackableManager = new TrackableManager(this);
+            _pointCloudManager = new PointCloudManager(this);
+            _trackableManager = new TrackableManager(this);
 
             AnchorApi = new AnchorApi(this);
             AugmentedFaceApi = new AugmentedFaceApi(this);
@@ -67,11 +63,9 @@ namespace GoogleARCoreInternal
             TrackableListApi = new TrackableListApi(this);
 
 #if !UNITY_EDITOR
-            if (!s_ReportedEngineType)
-            {
-                SessionApi.ReportEngineType();
-                s_ReportedEngineType = true;
-            }
+            // Engine type is per session. Hence setting it for each
+            // native session.
+            SessionApi.ReportEngineType();
 #endif
         }
 
@@ -85,7 +79,7 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return m_PointCloudManager.PointCloudHandle;
+                return _pointCloudManager.PointCloudHandle;
             }
         }
 
@@ -93,7 +87,7 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return m_PointCloudManager.IsPointCloudNew;
+                return _pointCloudManager.IsPointCloudNew;
             }
         }
 
@@ -141,19 +135,19 @@ namespace GoogleARCoreInternal
 
         public Trackable TrackableFactory(IntPtr nativeHandle)
         {
-            return m_TrackableManager.TrackableFactory(nativeHandle);
+            return _trackableManager.TrackableFactory(nativeHandle);
         }
 
         public void GetTrackables<T>(List<T> trackables, TrackableQueryFilter filter)
             where T : Trackable
         {
-            m_TrackableManager.GetTrackables<T>(trackables, filter);
+            _trackableManager.GetTrackables<T>(trackables, filter);
         }
 
         public void OnUpdate(IntPtr frameHandle)
         {
             FrameHandle = frameHandle;
-            m_PointCloudManager.OnUpdate();
+            _pointCloudManager.OnUpdate();
         }
 
         public void MarkDestroyed()

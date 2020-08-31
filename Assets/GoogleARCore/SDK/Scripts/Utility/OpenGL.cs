@@ -40,6 +40,8 @@ namespace GoogleARCoreInternal
     [SuppressMessage("StyleCop.CSharp.DocumentationRules",
                      "SA1602:EnumerationItemsMustBeDocumented",
                      Justification = "OpenGL API")]
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1113:MethodsMustBeUpperCamelCase",
+     Justification = "OpenGL API.")]
     public static class OpenGL
     {
         public enum Target

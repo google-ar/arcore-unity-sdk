@@ -35,25 +35,25 @@ namespace GoogleARCoreInternal
 
     internal class CameraConfigFilterApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public CameraConfigFilterApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public IntPtr Create(ARCoreCameraConfigFilter filter)
         {
             IntPtr cameraConfigFilterHandle = IntPtr.Zero;
             ExternApi.ArCameraConfigFilter_create(
-                m_NativeSession.SessionHandle, ref cameraConfigFilterHandle);
+                _nativeSession.SessionHandle, ref cameraConfigFilterHandle);
 
             if (filter != null)
             {
-                ExternApi.ArCameraConfigFilter_setTargetFps(m_NativeSession.SessionHandle,
-                    cameraConfigFilterHandle, _ConvertToFpsFilter(filter.TargetCameraFramerate));
-                ExternApi.ArCameraConfigFilter_setDepthSensorUsage(m_NativeSession.SessionHandle,
-                    cameraConfigFilterHandle, _ConvertToDepthFilter(filter.DepthSensorUsage));
+                ExternApi.ArCameraConfigFilter_setTargetFps(_nativeSession.SessionHandle,
+                    cameraConfigFilterHandle, ConvertToFpsFilter(filter.TargetCameraFramerate));
+                ExternApi.ArCameraConfigFilter_setDepthSensorUsage(_nativeSession.SessionHandle,
+                    cameraConfigFilterHandle, ConvertToDepthFilter(filter.DepthSensorUsage));
             }
 
             return cameraConfigFilterHandle;
@@ -64,7 +64,7 @@ namespace GoogleARCoreInternal
             ExternApi.ArCameraConfigFilter_destroy(cameraConfigListHandle);
         }
 
-        private int _ConvertToFpsFilter(
+        private int ConvertToFpsFilter(
             ARCoreCameraConfigFilter.TargetCameraFramerateFilter targetCameraFramerate)
         {
             int fpsFilter = 0;
@@ -81,7 +81,7 @@ namespace GoogleARCoreInternal
             return fpsFilter;
         }
 
-        private int _ConvertToDepthFilter(
+        private int ConvertToDepthFilter(
             ARCoreCameraConfigFilter.DepthSensorUsageFilter depthSensorUsage)
         {
             int depthFilter = 0;

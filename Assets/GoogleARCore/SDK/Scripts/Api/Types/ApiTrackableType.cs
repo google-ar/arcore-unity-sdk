@@ -28,5 +28,6 @@ namespace GoogleARCoreInternal
         Point = 0x41520102,
         AugmentedImage = 0x41520104,
         AugmentedFace = 0x41520105,
+        InstantPlacementPoint = 0x41520112,
     }
 }

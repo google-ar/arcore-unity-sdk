@@ -35,7 +35,7 @@ namespace GoogleARCore
         /// <summary>
         /// A collection of actons to perform on the main Unity thread after the task is complete.
         /// </summary>
-        private List<Action<T>> m_ActionsUponTaskCompletion;
+        private List<Action<T>> _actionsUponTaskCompletion;
 
         /// <summary>
         /// Constructor for AsyncTask.
@@ -55,13 +55,13 @@ namespace GoogleARCore
             {
                 this.Result = result;
                 IsComplete = true;
-                if (m_ActionsUponTaskCompletion != null)
+                if (_actionsUponTaskCompletion != null)
                 {
                     AsyncTask.PerformActionInUpdate(() =>
                     {
-                        for (int i = 0; i < m_ActionsUponTaskCompletion.Count; i++)
+                        for (int i = 0; i < _actionsUponTaskCompletion.Count; i++)
                         {
-                            m_ActionsUponTaskCompletion[i](result);
+                            _actionsUponTaskCompletion[i](result);
                         }
                     });
                 }
@@ -117,12 +117,12 @@ namespace GoogleARCore
             }
 
             // Allocate list if needed (avoids allocation if then is not used).
-            if (m_ActionsUponTaskCompletion == null)
+            if (_actionsUponTaskCompletion == null)
             {
-                m_ActionsUponTaskCompletion = new List<Action<T>>();
+                _actionsUponTaskCompletion = new List<Action<T>>();
             }
 
-            m_ActionsUponTaskCompletion.Add(doAfterTaskComplete);
+            _actionsUponTaskCompletion.Add(doAfterTaskComplete);
             return this;
         }
     }
@@ -132,8 +132,8 @@ namespace GoogleARCore
     /// </summary>
     internal class AsyncTask
     {
-        private static Queue<Action> s_UpdateActionQueue = new Queue<Action>();
-        private static object s_LockObject = new object();
+        private static Queue<Action> _updateActionQueue = new Queue<Action>();
+        private static object _lockObject = new object();
 
         public static bool IsInitialized { get; private set; }
 
@@ -143,9 +143,9 @@ namespace GoogleARCore
         /// <param name="action">The action to perform.</param>
         public static void PerformActionInUpdate(Action action)
         {
-            lock (s_LockObject)
+            lock (_lockObject)
             {
-                s_UpdateActionQueue.Enqueue(action);
+                _updateActionQueue.Enqueue(action);
             }
         }
 
@@ -154,11 +154,11 @@ namespace GoogleARCore
         /// </summary>
         public static void OnUpdate()
         {
-            lock (s_LockObject)
+            lock (_lockObject)
             {
-                while (s_UpdateActionQueue.Count > 0)
+                while (_updateActionQueue.Count > 0)
                 {
-                    Action action = s_UpdateActionQueue.Dequeue();
+                    Action action = _updateActionQueue.Dequeue();
                     action();
                 }
             }

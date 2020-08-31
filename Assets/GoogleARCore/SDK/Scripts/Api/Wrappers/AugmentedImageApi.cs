@@ -38,28 +38,28 @@ namespace GoogleARCoreInternal
 
     internal class AugmentedImageApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public AugmentedImageApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public int GetDatabaseIndex(IntPtr augmentedImageHandle)
         {
             int outIndex = -1;
-            ExternApi.ArAugmentedImage_getIndex(m_NativeSession.SessionHandle, augmentedImageHandle,
+            ExternApi.ArAugmentedImage_getIndex(_nativeSession.SessionHandle, augmentedImageHandle,
                 ref outIndex);
             return outIndex;
         }
 
         public Pose GetCenterPose(IntPtr augmentedImageHandle)
         {
-            IntPtr poseHandle = m_NativeSession.PoseApi.Create();
+            IntPtr poseHandle = _nativeSession.PoseApi.Create();
             ExternApi.ArAugmentedImage_getCenterPose(
-                m_NativeSession.SessionHandle, augmentedImageHandle, poseHandle);
-            Pose result = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+                _nativeSession.SessionHandle, augmentedImageHandle, poseHandle);
+            Pose result = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return result;
         }
 
@@ -67,7 +67,7 @@ namespace GoogleARCoreInternal
         {
             float outExtentX = 0f;
             ExternApi.ArAugmentedImage_getExtentX(
-                m_NativeSession.SessionHandle, augmentedImageHandle, ref outExtentX);
+                _nativeSession.SessionHandle, augmentedImageHandle, ref outExtentX);
             return outExtentX;
         }
 
@@ -75,7 +75,7 @@ namespace GoogleARCoreInternal
         {
             float outExtentZ = 0f;
             ExternApi.ArAugmentedImage_getExtentZ(
-                m_NativeSession.SessionHandle, augmentedImageHandle, ref outExtentZ);
+                _nativeSession.SessionHandle, augmentedImageHandle, ref outExtentZ);
             return outExtentZ;
         }
 
@@ -83,7 +83,7 @@ namespace GoogleARCoreInternal
         {
             IntPtr outName = IntPtr.Zero;
             ExternApi.ArAugmentedImage_acquireName(
-                m_NativeSession.SessionHandle, augmentedImageHandle, ref outName);
+                _nativeSession.SessionHandle, augmentedImageHandle, ref outName);
             string name = Marshal.PtrToStringAnsi(outName);
             ExternApi.ArString_release(outName);
             return name;
@@ -93,7 +93,7 @@ namespace GoogleARCoreInternal
         {
             AugmentedImageTrackingMethod trackingMethod = AugmentedImageTrackingMethod.NotTracking;
             ExternApi.ArAugmentedImage_getTrackingMethod(
-                m_NativeSession.SessionHandle, augmentedImageHandle, ref trackingMethod);
+                _nativeSession.SessionHandle, augmentedImageHandle, ref trackingMethod);
             return trackingMethod;
         }
 

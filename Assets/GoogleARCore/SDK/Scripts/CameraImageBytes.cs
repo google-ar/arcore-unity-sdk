@@ -30,18 +30,18 @@ namespace GoogleARCore
     /// </summary>
     public struct CameraImageBytes : IDisposable
     {
-        private IntPtr m_ImageHandle;
+        private IntPtr _imageHandle;
 
         internal CameraImageBytes(IntPtr imageHandle) : this()
         {
-            m_ImageHandle = imageHandle;
-            if (m_ImageHandle != IntPtr.Zero)
+            _imageHandle = imageHandle;
+            if (_imageHandle != IntPtr.Zero)
             {
                 int width, height;
                 IntPtr y, u, v;
                 int yRowStride, uvPixelStride, uvRowStride;
                 LifecycleManager.Instance.NativeSession.ImageApi.GetImageBuffer(
-                    m_ImageHandle, out width, out height, out y, out u, out v, out yRowStride,
+                    _imageHandle, out width, out height, out y, out u, out v, out yRowStride,
                     out uvPixelStride, out uvRowStride);
 
                 IsAvailable = true;
@@ -118,10 +118,10 @@ namespace GoogleARCore
         /// </summary>
         public void Release()
         {
-            if (m_ImageHandle != IntPtr.Zero)
+            if (_imageHandle != IntPtr.Zero)
             {
-                LifecycleManager.Instance.NativeSession.ImageApi.Release(m_ImageHandle);
-                m_ImageHandle = IntPtr.Zero;
+                LifecycleManager.Instance.NativeSession.ImageApi.Release(_imageHandle);
+                _imageHandle = IntPtr.Zero;
             }
         }
 

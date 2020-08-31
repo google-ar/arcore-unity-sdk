@@ -27,8 +27,8 @@ namespace GoogleARCore.Examples.ComputerVision
     /// </summary>
     public class EdgeDetector
     {
-        private static byte[] s_ImageBuffer = new byte[0];
-        private static int s_ImageBufferSize = 0;
+        private static byte[] _imageBuffer = new byte[0];
+        private static int _imageBufferSize = 0;
 
         /// <summary>
         /// Detects edges from input grayscale image.
@@ -58,14 +58,14 @@ namespace GoogleARCore.Examples.ComputerVision
         {
             // Adjust buffer size if necessary.
             int bufferSize = rowStride * height;
-            if (bufferSize != s_ImageBufferSize || s_ImageBuffer.Length == 0)
+            if (bufferSize != _imageBufferSize || _imageBuffer.Length == 0)
             {
-                s_ImageBufferSize = bufferSize;
-                s_ImageBuffer = new byte[bufferSize];
+                _imageBufferSize = bufferSize;
+                _imageBuffer = new byte[bufferSize];
             }
 
             // Move raw data into managed buffer.
-            System.Runtime.InteropServices.Marshal.Copy(inputImage, s_ImageBuffer, 0, bufferSize);
+            System.Runtime.InteropServices.Marshal.Copy(inputImage, _imageBuffer, 0, bufferSize);
 
             // Detect edges.
             int threshold = 128 * 128;
@@ -78,14 +78,14 @@ namespace GoogleARCore.Examples.ComputerVision
                     int offset = (j * rowStride) + i;
 
                     // Neighbour pixels around the pixel at [i, j].
-                    int a00 = s_ImageBuffer[offset - rowStride - 1];
-                    int a01 = s_ImageBuffer[offset - rowStride];
-                    int a02 = s_ImageBuffer[offset - rowStride + 1];
-                    int a10 = s_ImageBuffer[offset - 1];
-                    int a12 = s_ImageBuffer[offset + 1];
-                    int a20 = s_ImageBuffer[offset + rowStride - 1];
-                    int a21 = s_ImageBuffer[offset + rowStride];
-                    int a22 = s_ImageBuffer[offset + rowStride + 1];
+                    int a00 = _imageBuffer[offset - rowStride - 1];
+                    int a01 = _imageBuffer[offset - rowStride];
+                    int a02 = _imageBuffer[offset - rowStride + 1];
+                    int a10 = _imageBuffer[offset - 1];
+                    int a12 = _imageBuffer[offset + 1];
+                    int a20 = _imageBuffer[offset + rowStride - 1];
+                    int a21 = _imageBuffer[offset + rowStride];
+                    int a22 = _imageBuffer[offset + rowStride + 1];
 
                     // Sobel X filter:
                     //   -1, 0, 1,

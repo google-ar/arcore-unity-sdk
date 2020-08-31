@@ -22,6 +22,7 @@ namespace GoogleARCore.Examples.Common
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// Visualizes the feature points for spatial mapping, showing a pop animation when they appear.
@@ -58,91 +59,97 @@ namespace GoogleARCore.Examples.Common
         /// The maximum number of points to show on the screen.
         /// </summary>
         [Tooltip("The maximum number of points to show on the screen.")]
-        [SerializeField] private int m_MaxPointCount = 1000;
+        [FormerlySerializedAs("m_MaxPointCount")]
+        [SerializeField]
+        private int _maxPointCount = 1000;
 
         /// <summary>
         /// The default size of the points.
         /// </summary>
         [Tooltip("The default size of the points.")]
-        [SerializeField] private int m_DefaultSize = 10;
+        [FormerlySerializedAs("m_DefaultSize")]
+        [SerializeField]
+        private int _defaultSize = 10;
 
         /// <summary>
         /// The maximum size that the points will have when they pop.
         /// </summary>
         [Tooltip("The maximum size that the points will have when they pop.")]
-        [SerializeField] private int m_PopSize = 50;
+        [FormerlySerializedAs("m_PopSize")]
+        [SerializeField]
+        private int _popSize = 50;
 
         /// <summary>
         /// The mesh.
         /// </summary>
-        private Mesh m_Mesh;
+        private Mesh _mesh;
 
         /// <summary>
         /// The mesh renderer.
         /// </summary>
-        private MeshRenderer m_MeshRenderer;
+        private MeshRenderer _meshRenderer;
 
         /// <summary>
         /// The unique identifier for the shader _ScreenWidth property.
         /// </summary>
-        private int m_ScreenWidthId;
+        private int _screenWidthId;
 
         /// <summary>
         /// The unique identifier for the shader _ScreenHeight property.
         /// </summary>
-        private int m_ScreenHeightId;
+        private int _screenHeightId;
 
         /// <summary>
         /// The unique identifier for the shader _Color property.
         /// </summary>
-        private int m_ColorId;
+        private int _colorId;
 
         /// <summary>
         /// The property block.
         /// </summary>
-        private MaterialPropertyBlock m_PropertyBlock;
+        private MaterialPropertyBlock _propertyBlock;
 
         /// <summary>
         /// The cached resolution of the screen.
         /// </summary>
-        private Resolution m_CachedResolution;
+        private Resolution _cachedResolution;
 
         /// <summary>
         /// The cached color of the points.
         /// </summary>
-        private Color m_CachedColor;
+        private Color _cachedColor;
 
         /// <summary>
         /// The cached feature points.
         /// </summary>
-        private LinkedList<PointInfo> m_CachedPoints;
+        private LinkedList<PointInfo> _cachedPoints;
 
         /// <summary>
         /// The Unity Start() method.
         /// </summary>
         public void Start()
         {
-            m_MeshRenderer = GetComponent<MeshRenderer>();
-            m_Mesh = GetComponent<MeshFilter>().mesh;
-            if (m_Mesh == null)
+            _meshRenderer = GetComponent<MeshRenderer>();
+            _mesh = GetComponent<MeshFilter>().mesh;
+            if (_mesh == null)
             {
-                m_Mesh = new Mesh();
+                _mesh = new Mesh();
             }
 
-            m_Mesh.Clear();
+            _mesh.Clear();
 
-            m_CachedColor = PointColor;
+            _cachedColor = PointColor;
 
-            m_ScreenWidthId = Shader.PropertyToID("_ScreenWidth");
-            m_ScreenHeightId = Shader.PropertyToID("_ScreenHeight");
-            m_ColorId = Shader.PropertyToID("_Color");
+            _screenWidthId = Shader.PropertyToID("_ScreenWidth");
+            _screenHeightId = Shader.PropertyToID("_ScreenHeight");
+            _colorId = Shader.PropertyToID("_Color");
 
-            m_PropertyBlock = new MaterialPropertyBlock();
-            m_MeshRenderer.GetPropertyBlock(m_PropertyBlock);
-            m_PropertyBlock.SetColor(m_ColorId, m_CachedColor);
-            m_MeshRenderer.SetPropertyBlock(m_PropertyBlock);
+            _propertyBlock = new MaterialPropertyBlock();
+            _meshRenderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor(_colorId, _cachedColor);
+            _meshRenderer.SetPropertyBlock(_propertyBlock);
 
-            m_CachedPoints = new LinkedList<PointInfo>();
+            _cachedPoints = new LinkedList<PointInfo>();
         }
 
         /// <summary>
@@ -150,7 +157,7 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnDisable()
         {
-            _ClearCachedPoints();
+            ClearCachedPoints();
         }
 
         /// <summary>
@@ -161,73 +168,73 @@ namespace GoogleARCore.Examples.Common
             // If ARCore is not tracking, clear the caches and don't update.
             if (Session.Status != SessionStatus.Tracking)
             {
-                _ClearCachedPoints();
+                ClearCachedPoints();
                 return;
             }
 
-            if (Screen.currentResolution.height != m_CachedResolution.height
-                || Screen.currentResolution.width != m_CachedResolution.width)
+            if (Screen.currentResolution.height != _cachedResolution.height
+                || Screen.currentResolution.width != _cachedResolution.width)
             {
-                _UpdateResolution();
+                UpdateResolution();
             }
 
-            if (m_CachedColor != PointColor)
+            if (_cachedColor != PointColor)
             {
-                _UpdateColor();
+                UpdateColor();
             }
 
             if (EnablePopAnimation)
             {
-                _AddPointsIncrementallyToCache();
-                _UpdatePointSize();
+                AddPointsIncrementallyToCache();
+                UpdatePointSize();
             }
             else
             {
-                _AddAllPointsToCache();
+                AddAllPointsToCache();
             }
 
-            _UpdateMesh();
+            UpdateMesh();
         }
 
         /// <summary>
         /// Clears all cached feature points.
         /// </summary>
-        private void _ClearCachedPoints()
+        private void ClearCachedPoints()
         {
-            m_CachedPoints.Clear();
-            m_Mesh.Clear();
+            _cachedPoints.Clear();
+            _mesh.Clear();
         }
 
         /// <summary>
         /// Updates the screen resolution.
         /// </summary>
-        private void _UpdateResolution()
+        private void UpdateResolution()
         {
-            m_CachedResolution = Screen.currentResolution;
-            if (m_MeshRenderer != null)
+            _cachedResolution = Screen.currentResolution;
+            if (_meshRenderer != null)
             {
-                m_MeshRenderer.GetPropertyBlock(m_PropertyBlock);
-                m_PropertyBlock.SetFloat(m_ScreenWidthId, m_CachedResolution.width);
-                m_PropertyBlock.SetFloat(m_ScreenHeightId, m_CachedResolution.height);
-                m_MeshRenderer.SetPropertyBlock(m_PropertyBlock);
+                _meshRenderer.GetPropertyBlock(_propertyBlock);
+                _propertyBlock.SetFloat(_screenWidthId, _cachedResolution.width);
+                _propertyBlock.SetFloat(_screenHeightId, _cachedResolution.height);
+                _meshRenderer.SetPropertyBlock(_propertyBlock);
             }
         }
 
         /// <summary>
         /// Updates the color of the feature points.
         /// </summary>
-        private void _UpdateColor()
+        private void UpdateColor()
         {
-            m_CachedColor = PointColor;
-            m_MeshRenderer.GetPropertyBlock(m_PropertyBlock);
-            m_PropertyBlock.SetColor("_Color", m_CachedColor);
-            m_MeshRenderer.SetPropertyBlock(m_PropertyBlock);
+            _cachedColor = PointColor;
+            _meshRenderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor("_Color", _cachedColor);
+            _meshRenderer.SetPropertyBlock(_propertyBlock);
         }
 
         /// <summary>
         /// Adds points incrementally to the cache, by selecting points at random each frame.
         /// </summary>
-        private void _AddPointsIncrementallyToCache()
+        private void AddPointsIncrementallyToCache()
         {
             if (Frame.PointCloud.PointCount > 0 && Frame.PointCloud.IsUpdatedThisFrame)
             {
@@ -237,7 +244,7 @@ namespace GoogleARCore.Examples.Common
                     Vector3 point = Frame.PointCloud.GetPointAsStruct(
                         Random.Range(0, Frame.PointCloud.PointCount - 1));
 
-                    _AddPointToCache(point);
+                    AddPointToCache(point);
                 }
             }
         }
@@ -245,13 +252,13 @@ namespace GoogleARCore.Examples.Common
         /// <summary>
         /// Adds all points from this frame's pointcloud to the cache.
         /// </summary>
-        private void _AddAllPointsToCache()
+        private void AddAllPointsToCache()
         {
             if (Frame.PointCloud.IsUpdatedThisFrame)
             {
                 for (int i = 0; i < Frame.PointCloud.PointCount; i++)
                 {
-                    _AddPointToCache(Frame.PointCloud.GetPointAsStruct(i));
+                    AddPointToCache(Frame.PointCloud.GetPointAsStruct(i));
                 }
             }
         }
@@ -260,14 +267,14 @@ namespace GoogleARCore.Examples.Common
         /// Adds the specified point to cache.
         /// </summary>
         /// <param name="point">A feature point to be added.</param>
-        private void _AddPointToCache(Vector3 point)
+        private void AddPointToCache(Vector3 point)
         {
-            if (m_CachedPoints.Count >= m_MaxPointCount)
+            if (_cachedPoints.Count >= _maxPointCount)
             {
-                m_CachedPoints.RemoveFirst();
+                _cachedPoints.RemoveFirst();
             }
 
-            m_CachedPoints.AddLast(new PointInfo(point, new Vector2(m_DefaultSize, m_DefaultSize),
+            _cachedPoints.AddLast(new PointInfo(point, new Vector2(_defaultSize, _defaultSize),
                                                  Time.time));
         }
 
@@ -275,16 +282,16 @@ namespace GoogleARCore.Examples.Common
         /// Updates the size of the feature points, producing a pop animation where the size
         /// increases to a maximum size and then goes back to the original size.
         /// </summary>
-        private void _UpdatePointSize()
+        private void UpdatePointSize()
         {
-            if (m_CachedPoints.Count <= 0 || !EnablePopAnimation)
+            if (_cachedPoints.Count <= 0 || !EnablePopAnimation)
             {
                 return;
             }
 
             LinkedListNode<PointInfo> pointNode;
 
-            for (pointNode = m_CachedPoints.First; pointNode != null; pointNode = pointNode.Next)
+            for (pointNode = _cachedPoints.First; pointNode != null; pointNode = pointNode.Next)
             {
                 float timeSinceAdded = Time.time - pointNode.Value.CreationTime;
                 if (timeSinceAdded >= AnimationDuration)
@@ -297,11 +304,11 @@ namespace GoogleARCore.Examples.Common
 
                 if (value < 0.5f)
                 {
-                    size = Mathf.Lerp(m_DefaultSize, m_PopSize, value * 2f);
+                    size = Mathf.Lerp(_defaultSize, _popSize, value * 2f);
                 }
                 else
                 {
-                    size = Mathf.Lerp(m_PopSize, m_DefaultSize, (value - 0.5f) * 2f);
+                    size = Mathf.Lerp(_popSize, _defaultSize, (value - 0.5f) * 2f);
                 }
 
                 pointNode.Value = new PointInfo(pointNode.Value.Position, new Vector2(size, size),
@@ -312,12 +319,12 @@ namespace GoogleARCore.Examples.Common
         /// <summary>
         /// Updates the mesh, adding the feature points.
         /// </summary>
-        private void _UpdateMesh()
+        private void UpdateMesh()
         {
-            m_Mesh.Clear();
-            m_Mesh.vertices = m_CachedPoints.Select(p => p.Position).ToArray();
-            m_Mesh.uv = m_CachedPoints.Select(p => p.Size).ToArray();
-            m_Mesh.SetIndices(Enumerable.Range(0, m_CachedPoints.Count).ToArray(),
+            _mesh.Clear();
+            _mesh.vertices = _cachedPoints.Select(p => p.Position).ToArray();
+            _mesh.uv = _cachedPoints.Select(p => p.Size).ToArray();
+            _mesh.SetIndices(Enumerable.Range(0, _cachedPoints.Count).ToArray(),
                               MeshTopology.Points, 0);
         }
 

@@ -65,13 +65,13 @@ namespace GoogleARCore.Examples.HelloAR
         /// <summary>
         /// The rotation in degrees need to apply to prefab when it is placed.
         /// </summary>
-        private const float k_PrefabRotation = 180.0f;
+        private const float _prefabRotation = 180.0f;
 
         /// <summary>
         /// True if the app is in the process of quitting due to an ARCore connection error,
         /// otherwise false.
         /// </summary>
-        private bool m_IsQuitting = false;
+        private bool _isQuitting = false;
 
         /// <summary>
         /// The Unity Awake() method.
@@ -88,7 +88,7 @@ namespace GoogleARCore.Examples.HelloAR
         /// </summary>
         public void Update()
         {
-            _UpdateApplicationLifecycle();
+            UpdateApplicationLifecycle();
 
             if (DepthMenu != null && !DepthMenu.CanPlaceAsset())
             {
@@ -113,6 +113,21 @@ namespace GoogleARCore.Examples.HelloAR
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
                 TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
+            // To use Instant Placement, which supports frame by frame 2D tracking and
+            // automatically switches to 6DOF tracking once it's available, follow these steps:
+            // 1. Use InstantPlacementMode.LocalYUp in ARCoreSessionConfig.
+            // 2. Use Frame.RaycastInstantPlacement(float, float, float, out TrackableHit) method
+            // with an approximate distance in meters.
+            // 3. Create anchor with the hit result from previous step by:
+            // hit.Trackable.CreateAnchor(hit.Pose).
+            //
+            // An anchor will be created at the approximate pose if there has been no Trackable
+            // detected yet, and updates its pose to attach to the real world.
+            // Note: there may be a noticeable jump in position during this tracking method change.
+            // Use InstantPlacementPoint.TrackingMethod to customize pose update logic.
+            //
+            // See the Instant Placement Developer's Guide at:
+            // https://developers.google.com/ar/develop/unity/instant-placement.
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
                 // Use hit pose and camera pose to check if hittest is from the
@@ -159,7 +174,7 @@ namespace GoogleARCore.Examples.HelloAR
 
                     // Compensate for the hitPose rotation facing away from the raycast (i.e.
                     // camera).
-                    gameObject.transform.Rotate(0, k_PrefabRotation, 0, Space.Self);
+                    gameObject.transform.Rotate(0, _prefabRotation, 0, Space.Self);
 
                     // Create an anchor to allow ARCore to track the hitpoint as understanding of
                     // the physical world evolves.
@@ -174,7 +189,7 @@ namespace GoogleARCore.Examples.HelloAR
         /// <summary>
         /// Check and update the application lifecycle.
         /// </summary>
-        private void _UpdateApplicationLifecycle()
+        private void UpdateApplicationLifecycle()
         {
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
@@ -192,7 +207,7 @@ namespace GoogleARCore.Examples.HelloAR
                 Screen.sleepTimeout = SleepTimeout.NeverSleep;
             }
 
-            if (m_IsQuitting)
+            if (_isQuitting)
             {
                 return;
             }
@@ -201,23 +216,23 @@ namespace GoogleARCore.Examples.HelloAR
             // appear.
             if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
             {
-                _ShowAndroidToastMessage("Camera permission is needed to run this application.");
-                m_IsQuitting = true;
-                Invoke("_DoQuit", 0.5f);
+                ShowAndroidToastMessage("Camera permission is needed to run this application.");
+                _isQuitting = true;
+                Invoke("DoQuit", 0.5f);
             }
             else if (Session.Status.IsError())
             {
-                _ShowAndroidToastMessage(
+                ShowAndroidToastMessage(
                     "ARCore encountered a problem connecting.  Please start the app again.");
-                m_IsQuitting = true;
-                Invoke("_DoQuit", 0.5f);
+                _isQuitting = true;
+                Invoke("DoQuit", 0.5f);
             }
         }
 
         /// <summary>
         /// Actually quit the application.
         /// </summary>
-        private void _DoQuit()
+        private void DoQuit()
         {
             Application.Quit();
         }
@@ -226,7 +241,7 @@ namespace GoogleARCore.Examples.HelloAR
         /// Show an Android toast message.
         /// </summary>
         /// <param name="message">Message string to show in the toast.</param>
-        private void _ShowAndroidToastMessage(string message)
+        private void ShowAndroidToastMessage(string message)
         {
             AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             AndroidJavaObject unityActivity =

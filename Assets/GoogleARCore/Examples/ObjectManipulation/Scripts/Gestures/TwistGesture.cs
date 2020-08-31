@@ -28,8 +28,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class TwistGesture : Gesture<TwistGesture>
     {
-        private Vector2 m_PreviousPosition1;
-        private Vector2 m_PreviousPosition2;
+        private Vector2 _previousPosition1;
+        private Vector2 _previousPosition2;
 
         /// <summary>
         /// Constructs a PinchGesture gesture.
@@ -101,11 +101,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return false;
             }
 
-            TwistGestureRecognizer twistRecognizer = Recognizer as TwistGestureRecognizer;
-
             float rotation = CalculateDeltaRotation(
                 touch1.position, touch2.position, StartPosition1, StartPosition2);
-            if (Mathf.Abs(rotation) < twistRecognizer.SlopRotation)
+            if (Mathf.Abs(rotation) < TwistGestureRecognizer._slopRotation)
             {
                 return false;
             }
@@ -124,8 +122,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
             Touch touch1, touch2;
             GestureTouchesUtility.TryFindTouch(FingerId1, out touch1);
             GestureTouchesUtility.TryFindTouch(FingerId2, out touch2);
-            m_PreviousPosition1 = touch1.position;
-            m_PreviousPosition2 = touch2.position;
+            _previousPosition1 = touch1.position;
+            _previousPosition2 = touch2.position;
         }
 
         /// <summary>
@@ -162,17 +160,17 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 float rotation = CalculateDeltaRotation(
                                      touch1.position,
                                      touch2.position,
-                                     m_PreviousPosition1,
-                                     m_PreviousPosition2);
+                                     _previousPosition1,
+                                     _previousPosition2);
 
                 DeltaRotation = rotation;
-                m_PreviousPosition1 = touch1.position;
-                m_PreviousPosition2 = touch2.position;
+                _previousPosition1 = touch1.position;
+                _previousPosition2 = touch2.position;
                 return true;
             }
 
-            m_PreviousPosition1 = touch1.position;
-            m_PreviousPosition2 = touch2.position;
+            _previousPosition1 = touch1.position;
+            _previousPosition2 = touch2.position;
             DeltaRotation = 0.0f;
             return false;
         }

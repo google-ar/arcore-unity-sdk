@@ -29,43 +29,43 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public class BackgroundJobExecutor
     {
-        private AutoResetEvent m_Event = new AutoResetEvent(false);
-        private Queue<Action> m_JobsQueue = new Queue<Action>();
-        private Thread m_Thread;
-        private bool m_Running = false;
+        private AutoResetEvent _event = new AutoResetEvent(false);
+        private Queue<Action> _jobsQueue = new Queue<Action>();
+        private Thread _thread;
+        private bool _running = false;
 
         public BackgroundJobExecutor()
         {
-            m_Thread = new Thread(Run);
-            m_Thread.Start();
+            _thread = new Thread(Run);
+            _thread.Start();
         }
 
         public int PendingJobsCount
         {
             get
             {
-                lock (m_JobsQueue)
+                lock (_jobsQueue)
                 {
-                    return m_JobsQueue.Count + (m_Running ? 1 : 0);
+                    return _jobsQueue.Count + (_running ? 1 : 0);
                 }
             }
         }
 
         public void PushJob(Action job)
         {
-            lock (m_JobsQueue)
+            lock (_jobsQueue)
             {
-                m_JobsQueue.Enqueue(job);
+                _jobsQueue.Enqueue(job);
             }
 
-            m_Event.Set();
+            _event.Set();
         }
 
         public void RemoveAllPendingJobs()
         {
-            lock (m_JobsQueue)
+            lock (_jobsQueue)
             {
-                m_JobsQueue.Clear();
+                _jobsQueue.Clear();
             }
         }
 
@@ -75,25 +75,25 @@ namespace GoogleARCoreInternal
             {
                 if (PendingJobsCount == 0)
                 {
-                    m_Event.WaitOne();
+                    _event.WaitOne();
                 }
 
                 Action job = null;
-                lock (m_JobsQueue)
+                lock (_jobsQueue)
                 {
-                    if (m_JobsQueue.Count == 0)
+                    if (_jobsQueue.Count == 0)
                     {
                         continue;
                     }
 
-                    job = m_JobsQueue.Dequeue();
-                    m_Running = true;
+                    job = _jobsQueue.Dequeue();
+                    _running = true;
                 }
 
                 job();
-                lock (m_JobsQueue)
+                lock (_jobsQueue)
                 {
-                    m_Running = false;
+                    _running = false;
                 }
             }
         }

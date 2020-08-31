@@ -34,17 +34,17 @@ namespace GoogleARCoreInternal
 
     internal class CameraApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public CameraApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public TrackingState GetTrackingState(IntPtr cameraHandle)
         {
             ApiTrackingState apiTrackingState = ApiTrackingState.Stopped;
-            ExternApi.ArCamera_getTrackingState(m_NativeSession.SessionHandle,
+            ExternApi.ArCamera_getTrackingState(_nativeSession.SessionHandle,
                 cameraHandle, ref apiTrackingState);
             return apiTrackingState.ToTrackingState();
         }
@@ -59,7 +59,7 @@ namespace GoogleARCoreInternal
             }
 
             ApiTrackingFailureReason apiTrackingFailureReason = ApiTrackingFailureReason.None;
-            ExternApi.ArCamera_getTrackingFailureReason(m_NativeSession.SessionHandle,
+            ExternApi.ArCamera_getTrackingFailureReason(_nativeSession.SessionHandle,
                 cameraHandle, ref apiTrackingFailureReason);
             return apiTrackingFailureReason.ToLostTrackingReason();
         }
@@ -71,18 +71,18 @@ namespace GoogleARCoreInternal
                 return Pose.identity;
             }
 
-            IntPtr poseHandle = m_NativeSession.PoseApi.Create();
-            ExternApi.ArCamera_getDisplayOrientedPose(m_NativeSession.SessionHandle, cameraHandle,
+            IntPtr poseHandle = _nativeSession.PoseApi.Create();
+            ExternApi.ArCamera_getDisplayOrientedPose(_nativeSession.SessionHandle, cameraHandle,
                 poseHandle);
-            Pose resultPose = m_NativeSession.PoseApi.ExtractPoseValue(poseHandle);
-            m_NativeSession.PoseApi.Destroy(poseHandle);
+            Pose resultPose = _nativeSession.PoseApi.ExtractPoseValue(poseHandle);
+            _nativeSession.PoseApi.Destroy(poseHandle);
             return resultPose;
         }
 
         public Matrix4x4 GetProjectionMatrix(IntPtr cameraHandle, float near, float far)
         {
             Matrix4x4 matrix = Matrix4x4.identity;
-            ExternApi.ArCamera_getProjectionMatrix(m_NativeSession.SessionHandle, cameraHandle,
+            ExternApi.ArCamera_getProjectionMatrix(_nativeSession.SessionHandle, cameraHandle,
                 near, far, ref matrix);
             return matrix;
         }
@@ -98,13 +98,13 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraIntrinsics_create(
-                m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
+                _nativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 
             ExternApi.ArCamera_getTextureIntrinsics(
-                m_NativeSession.SessionHandle, cameraHandle, cameraIntrinsicsHandle);
+                _nativeSession.SessionHandle, cameraHandle, cameraIntrinsicsHandle);
 
             CameraIntrinsics textureIntrinsics =
-                _GetCameraIntrinsicsFromHandle(cameraIntrinsicsHandle);
+                GetCameraIntrinsicsFromHandle(cameraIntrinsicsHandle);
             ExternApi.ArCameraIntrinsics_destroy(cameraIntrinsicsHandle);
 
             return textureIntrinsics;
@@ -121,13 +121,13 @@ namespace GoogleARCoreInternal
             }
 
             ExternApi.ArCameraIntrinsics_create(
-                m_NativeSession.SessionHandle, ref cameraIntrinsicsHandle);
+                _nativeSession.SessionHandle, ref cameraIntrinsicsHandle);
 
             ExternApi.ArCamera_getImageIntrinsics(
-                m_NativeSession.SessionHandle, cameraHandle, cameraIntrinsicsHandle);
+                _nativeSession.SessionHandle, cameraHandle, cameraIntrinsicsHandle);
 
             CameraIntrinsics textureIntrinsics =
-                _GetCameraIntrinsicsFromHandle(cameraIntrinsicsHandle);
+                GetCameraIntrinsicsFromHandle(cameraIntrinsicsHandle);
             ExternApi.ArCameraIntrinsics_destroy(cameraIntrinsicsHandle);
 
             return textureIntrinsics;
@@ -138,7 +138,7 @@ namespace GoogleARCoreInternal
             ExternApi.ArCamera_release(cameraHandle);
         }
 
-        private CameraIntrinsics _GetCameraIntrinsicsFromHandle(IntPtr intrinsicsHandle)
+        private CameraIntrinsics GetCameraIntrinsicsFromHandle(IntPtr intrinsicsHandle)
         {
             float fx, fy, px, py;
             fx = fy = px = py = 0;
@@ -146,11 +146,11 @@ namespace GoogleARCoreInternal
             width = height = 0;
 
             ExternApi.ArCameraIntrinsics_getFocalLength(
-                m_NativeSession.SessionHandle, intrinsicsHandle, ref fx, ref fy);
+                _nativeSession.SessionHandle, intrinsicsHandle, ref fx, ref fy);
             ExternApi.ArCameraIntrinsics_getPrincipalPoint(
-                m_NativeSession.SessionHandle, intrinsicsHandle, ref px, ref py);
+                _nativeSession.SessionHandle, intrinsicsHandle, ref px, ref py);
             ExternApi.ArCameraIntrinsics_getImageDimensions(
-                m_NativeSession.SessionHandle, intrinsicsHandle, ref width, ref height);
+                _nativeSession.SessionHandle, intrinsicsHandle, ref width, ref height);
 
             return new CameraIntrinsics(
                 new Vector2(fx, fy), new Vector2(px, py), new Vector2Int(width, height));

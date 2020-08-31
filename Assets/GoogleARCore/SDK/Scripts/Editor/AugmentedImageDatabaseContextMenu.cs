@@ -32,14 +32,14 @@ namespace GoogleARCoreInternal
      Justification = "Internal")]
     public static class AugmentedImageDatabaseContextMenu
     {
-        private const string k_SupportedImageFormatListMessage = "PNG and JPEG";
+        private const string _supportedImageFormatListMessage = "PNG and JPEG";
 
-        private static readonly List<string> k_SupportedImageExtensions = new List<string>()
+        private static readonly List<string> _supportedImageExtensions = new List<string>()
         {
             ".png", ".jpg", ".jpeg"
         };
 
-        private static readonly List<string> k_UnsupportedImageExtensions = new List<string>()
+        private static readonly List<string> _unsupportedImageExtensions = new List<string>()
         {
             ".psd", ".tiff", ".tga", ".gif", ".bmp", ".iff", ".pict"
         };
@@ -50,14 +50,14 @@ namespace GoogleARCoreInternal
             var selectedImagePaths = new List<string>();
             bool unsupportedImagesSelected = false;
 
-            selectedImagePaths = _GetSelectedImagePaths(out unsupportedImagesSelected);
+            selectedImagePaths = GetSelectedImagePaths(out unsupportedImagesSelected);
             if (unsupportedImagesSelected)
             {
                 var message = string.Format(
                     "One or more selected images could not be added to the " +
                     "AugmentedImageDatabase because they are not in a supported format. " +
                     "Supported image formats are: {0}",
-                    k_SupportedImageFormatListMessage);
+                    _supportedImageFormatListMessage);
                 Debug.LogWarningFormat(message);
                 EditorUtility.DisplayDialog("Unsupported Images Selected", message, "Ok");
             }
@@ -108,7 +108,7 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private static List<string> _GetSelectedImagePaths(out bool unsupportedImagesSelected)
+        private static List<string> GetSelectedImagePaths(out bool unsupportedImagesSelected)
         {
             var selectedImagePaths = new List<string>();
 
@@ -118,11 +118,11 @@ namespace GoogleARCoreInternal
                 var path = AssetDatabase.GUIDToAssetPath(GUID);
                 var extension = Path.GetExtension(path).ToLower();
 
-                if (k_SupportedImageExtensions.Contains(extension))
+                if (_supportedImageExtensions.Contains(extension))
                 {
                     selectedImagePaths.Add(AssetDatabase.GUIDToAssetPath(GUID));
                 }
-                else if (k_UnsupportedImageExtensions.Contains(extension))
+                else if (_unsupportedImageExtensions.Contains(extension))
                 {
                     unsupportedImagesSelected = true;
                 }

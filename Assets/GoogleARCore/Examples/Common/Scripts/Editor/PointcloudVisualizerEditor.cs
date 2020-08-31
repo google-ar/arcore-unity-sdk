@@ -31,28 +31,28 @@ namespace GoogleARCore.Examples.Common
     [CanEditMultipleObjects]
     public class PointcloudVisualizerEditor : Editor
     {
-        private SerializedProperty m_Script;
-        private SerializedProperty m_PointColor;
-        private SerializedProperty m_DefaultSize;
-        private SerializedProperty m_MaxPointCount;
-        private SerializedProperty m_EnablePopAnimation;
-        private SerializedProperty m_MaxPointsToAddPerFrame;
-        private SerializedProperty m_AnimationDuration;
-        private SerializedProperty m_PopSize;
+        private SerializedProperty _script;
+        private SerializedProperty _pointColor;
+        private SerializedProperty _defaultSize;
+        private SerializedProperty _maxPointCount;
+        private SerializedProperty _enablePopAnimation;
+        private SerializedProperty _maxPointsToAddPerFrame;
+        private SerializedProperty _animationDuration;
+        private SerializedProperty _popSize;
 
         /// <summary>
         /// The Unity OnEnable() method.
         /// </summary>
         public void OnEnable()
         {
-            m_Script = serializedObject.FindProperty("m_Script");
-            m_PointColor = serializedObject.FindProperty("PointColor");
-            m_DefaultSize = serializedObject.FindProperty("m_DefaultSize");
-            m_MaxPointCount = serializedObject.FindProperty("m_MaxPointCount");
-            m_EnablePopAnimation = serializedObject.FindProperty("EnablePopAnimation");
-            m_MaxPointsToAddPerFrame = serializedObject.FindProperty("MaxPointsToAddPerFrame");
-            m_AnimationDuration = serializedObject.FindProperty("AnimationDuration");
-            m_PopSize = serializedObject.FindProperty("m_PopSize");
+            _script = serializedObject.FindProperty("_script");
+            _pointColor = serializedObject.FindProperty("PointColor");
+            _defaultSize = serializedObject.FindProperty("_defaultSize");
+            _maxPointCount = serializedObject.FindProperty("_maxPointCount");
+            _enablePopAnimation = serializedObject.FindProperty("EnablePopAnimation");
+            _maxPointsToAddPerFrame = serializedObject.FindProperty("MaxPointsToAddPerFrame");
+            _animationDuration = serializedObject.FindProperty("AnimationDuration");
+            _popSize = serializedObject.FindProperty("_popSize");
         }
 
         /// <summary>
@@ -63,34 +63,34 @@ namespace GoogleARCore.Examples.Common
             serializedObject.Update();
 
             GUI.enabled = false;
-            EditorGUILayout.PropertyField(m_Script, true, new GUILayoutOption[0]);
+            EditorGUILayout.PropertyField(_script, true, new GUILayoutOption[0]);
             GUI.enabled = true;
 
             var pointcloudVisualizerScript = target as PointcloudVisualizer;
 
             EditorGUILayout.PropertyField(
-                m_PointColor,
+                _pointColor,
                 new GUIContent(
                     "Point Color",
-                    _GetTooltip(pointcloudVisualizerScript, "PointColor")));
+                    GetTooltip(pointcloudVisualizerScript, "PointColor")));
 
             EditorGUILayout.PropertyField(
-                m_DefaultSize,
+                _defaultSize,
                 new GUIContent(
                     "Default Size",
-                    _GetTooltip(pointcloudVisualizerScript, "m_DefaultSize")));
+                    GetTooltip(pointcloudVisualizerScript, "_defaultSize")));
 
             EditorGUILayout.PropertyField(
-                m_MaxPointCount,
+                _maxPointCount,
                 new GUIContent(
                     "Max Point Count",
-                    _GetTooltip(pointcloudVisualizerScript, "m_MaxPointCount")));
+                    GetTooltip(pointcloudVisualizerScript, "_maxPointCount")));
 
             EditorGUILayout.PropertyField(
-                m_EnablePopAnimation,
+                _enablePopAnimation,
                 new GUIContent(
                     "Enable Pop Animation",
-                    _GetTooltip(pointcloudVisualizerScript, "EnablePopAnimation")));
+                    GetTooltip(pointcloudVisualizerScript, "EnablePopAnimation")));
 
             // Hide animation related fields if the pop animation is disabled.
             using (var group = new EditorGUILayout.FadeGroupScope(
@@ -101,22 +101,22 @@ namespace GoogleARCore.Examples.Common
                     EditorGUI.indentLevel++;
 
                     EditorGUILayout.PropertyField(
-                        m_MaxPointsToAddPerFrame,
+                        _maxPointsToAddPerFrame,
                         new GUIContent(
                             "Max Points To Add Per Frame",
-                            _GetTooltip(pointcloudVisualizerScript, "MaxPointsToAddPerFrame")));
+                            GetTooltip(pointcloudVisualizerScript, "MaxPointsToAddPerFrame")));
 
                     EditorGUILayout.PropertyField(
-                        m_AnimationDuration,
+                        _animationDuration,
                         new GUIContent(
                             "Animation Duration",
-                            _GetTooltip(pointcloudVisualizerScript, "AnimationDuration")));
+                            GetTooltip(pointcloudVisualizerScript, "AnimationDuration")));
 
                     EditorGUILayout.PropertyField(
-                        m_PopSize,
+                        _popSize,
                         new GUIContent(
                             "Pop Size",
-                            _GetTooltip(pointcloudVisualizerScript, "m_PopSize")));
+                            GetTooltip(pointcloudVisualizerScript, "_popSize")));
 
                     EditorGUI.indentLevel--;
                 }
@@ -131,7 +131,7 @@ namespace GoogleARCore.Examples.Common
         /// <returns>The string of the tooltip attribute.</returns>
         /// <param name="obj">The object containing the field.</param>
         /// <param name="fieldName">The field name.</param>
-        private string _GetTooltip(object obj, string fieldName)
+        private string GetTooltip(object obj, string fieldName)
         {
             FieldInfo field =
                 obj.GetType().GetField(

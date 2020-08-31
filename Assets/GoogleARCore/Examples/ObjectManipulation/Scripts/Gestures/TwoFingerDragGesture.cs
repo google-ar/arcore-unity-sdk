@@ -109,20 +109,17 @@ namespace GoogleARCore.Examples.ObjectManipulation
             float diff1 = (pos1 - StartPosition1).magnitude;
             Vector2 pos2 = touch2.position;
             float diff2 = (pos2 - StartPosition2).magnitude;
-            float slopInches = (Recognizer as TwoFingerDragGestureRecognizer).SlopInches;
+            float slopInches = TwoFingerDragGestureRecognizer._slopInches;
             if (GestureTouchesUtility.PixelsToInches(diff1) < slopInches ||
                 GestureTouchesUtility.PixelsToInches(diff2) < slopInches)
             {
                 return false;
             }
 
-            TwoFingerDragGestureRecognizer recognizer =
-                Recognizer as TwoFingerDragGestureRecognizer;
-
             // Check both fingers move in the same direction.
             float dot =
                 Vector3.Dot(touch1.deltaPosition.normalized, touch2.deltaPosition.normalized);
-            if (dot < Mathf.Cos(recognizer.AngleThresholdRadians))
+            if (dot < Mathf.Cos(TwoFingerDragGestureRecognizer._angleThresholdRadians))
             {
                 return false;
             }

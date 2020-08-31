@@ -28,13 +28,13 @@ namespace GoogleARCoreInternal
 
     internal class ExampleBuildHelper : PreprocessBuildBase
     {
-        private List<ExampleScene> m_ExampleScenes = new List<ExampleScene>();
+        private List<ExampleScene> _exampleScenes = new List<ExampleScene>();
 
-        internal List<ExampleScene> AllExampleScenes
+        internal List<ExampleScene> _allExampleScenes
         {
             get
             {
-                return m_ExampleScenes;
+                return _exampleScenes;
             }
         }
 
@@ -42,12 +42,12 @@ namespace GoogleARCoreInternal
         {
         }
 
-        protected void _AddExampleScene(ExampleScene scene)
+        protected void AddExampleScene(ExampleScene scene)
         {
-            m_ExampleScenes.Add(scene);
+            _exampleScenes.Add(scene);
         }
 
-        protected void _DoPreprocessBuild(BuildTarget target, string path)
+        protected void DoPreprocessBuild(BuildTarget target, string path)
         {
             BuildTargetGroup buildTargetGroup;
             if (target == BuildTarget.Android)
@@ -83,7 +83,7 @@ namespace GoogleARCoreInternal
 
             List<Texture2D> exampleSceneIcons = new List<Texture2D>();
             List<string> exampleProductNames = new List<string>();
-            foreach (var exampleScene in m_ExampleScenes)
+            foreach (var exampleScene in _exampleScenes)
             {
                 exampleSceneIcons.Add(AssetDatabase.LoadAssetAtPath<Texture2D>(
                     AssetDatabase.GUIDToAssetPath(exampleScene.IconGuid)));
@@ -109,7 +109,7 @@ namespace GoogleARCoreInternal
                 }
             }
 
-            foreach (var exampleScene in m_ExampleScenes)
+            foreach (var exampleScene in _exampleScenes)
             {
                 if (enabledBuildScene.guid.ToString() == exampleScene.SceneGuid)
                 {

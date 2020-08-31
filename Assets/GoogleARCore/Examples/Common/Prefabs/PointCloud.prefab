@@ -98,6 +98,6 @@ MonoBehaviour:
   EnablePopAnimation: 0
   MaxPointsToAddPerFrame: 5
   AnimationDuration: 0.3
-  m_MaxPointCount: 1000
-  m_DefaultSize: 5
-  m_PopSize: 20
+  _maxPointCount: 1000
+  _defaultSize: 5
+  _popSize: 20

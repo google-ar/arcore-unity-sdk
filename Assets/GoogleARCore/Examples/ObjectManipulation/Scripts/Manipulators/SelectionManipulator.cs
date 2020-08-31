@@ -32,7 +32,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// </summary>
         public GameObject SelectionVisualization;
 
-        private float m_ScaledElevation;
+        private float _scaledElevation;
 
         /// <summary>
         /// Should be called when the object elevation changes, to make sure that the Selection
@@ -42,7 +42,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="elevation">The current object's elevation.</param>
         public void OnElevationChanged(float elevation)
         {
-            m_ScaledElevation = elevation * transform.localScale.y;
+            _scaledElevation = elevation * transform.localScale.y;
             SelectionVisualization.transform.localPosition = new Vector3(0, -elevation, 0);
         }
 
@@ -55,7 +55,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// scale.</param>
         public void OnElevationChangedScaled(float scaledElevation)
         {
-            m_ScaledElevation = scaledElevation;
+            _scaledElevation = scaledElevation;
             SelectionVisualization.transform.localPosition =
                 new Vector3(0, -scaledElevation / transform.localScale.y, 0);
         }
@@ -68,7 +68,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
             base.Update();
             if (transform.hasChanged)
             {
-                float height = -m_ScaledElevation / transform.localScale.y;
+                float height = -_scaledElevation / transform.localScale.y;
                 SelectionVisualization.transform.localPosition = new Vector3(0, height, 0);
             }
         }

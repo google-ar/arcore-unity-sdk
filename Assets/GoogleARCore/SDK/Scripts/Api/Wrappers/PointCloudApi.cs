@@ -37,20 +37,20 @@ namespace GoogleARCoreInternal
 
     internal class PointCloudApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
-        private float[] m_CachedVector = new float[4];
+        private float[] _cachedVector = new float[4];
 
         public PointCloudApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public long GetTimestamp(IntPtr pointCloudHandle)
         {
             long timestamp = 0;
             ExternApi.ArPointCloud_getTimestamp(
-                m_NativeSession.SessionHandle, pointCloudHandle, ref timestamp);
+                _nativeSession.SessionHandle, pointCloudHandle, ref timestamp);
             return timestamp;
         }
 
@@ -58,7 +58,7 @@ namespace GoogleARCoreInternal
         {
             int pointCount = 0;
             ExternApi.ArPointCloud_getNumberOfPoints(
-                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCount);
+                _nativeSession.SessionHandle, pointCloudHandle, ref pointCount);
 
             return pointCount;
         }
@@ -69,17 +69,17 @@ namespace GoogleARCoreInternal
             // at index.
             IntPtr pointCloudDataHandle = IntPtr.Zero;
             ExternApi.ArPointCloud_getData(
-                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudDataHandle);
+                _nativeSession.SessionHandle, pointCloudHandle, ref pointCloudDataHandle);
             IntPtr pointDataHandle = new IntPtr(pointCloudDataHandle.ToInt64() +
                 (Marshal.SizeOf(typeof(Vector4)) * index));
-            Marshal.Copy(pointDataHandle, m_CachedVector, 0, 4);
+            Marshal.Copy(pointDataHandle, _cachedVector, 0, 4);
 
             // Negate z axis because points are returned in OpenGl space.
             Vector3 position = new Vector3(
-                m_CachedVector[0], m_CachedVector[1], -m_CachedVector[2]);
-            float confidence = m_CachedVector[3];
+                _cachedVector[0], _cachedVector[1], -_cachedVector[2]);
+            float confidence = _cachedVector[3];
 
-            return new PointCloudPoint(_GetPointId(pointCloudHandle, index), position, confidence);
+            return new PointCloudPoint(GetPointId(pointCloudHandle, index), position, confidence);
         }
 
         public void Release(IntPtr pointCloudHandle)
@@ -88,17 +88,17 @@ namespace GoogleARCoreInternal
         }
 
 #if !UNITY_EDITOR
-        private int _GetPointId(IntPtr pointCloudHandle, int index)
+        private int GetPointId(IntPtr pointCloudHandle, int index)
         {
             IntPtr pointCloudIdsHandle = IntPtr.Zero;
             ExternApi.ArPointCloud_getPointIds(
-                m_NativeSession.SessionHandle, pointCloudHandle, ref pointCloudIdsHandle);
+                _nativeSession.SessionHandle, pointCloudHandle, ref pointCloudIdsHandle);
             IntPtr pointIdHandle =
                 new IntPtr(pointCloudIdsHandle.ToInt64() + (Marshal.SizeOf(typeof(int)) * index));
             return Marshal.ReadInt32(pointIdHandle);
         }
 #else
-        private int _GetPointId(IntPtr pointCloudHandle, int index)
+        private int GetPointId(IntPtr pointCloudHandle, int index)
         {
             return 0;
         }

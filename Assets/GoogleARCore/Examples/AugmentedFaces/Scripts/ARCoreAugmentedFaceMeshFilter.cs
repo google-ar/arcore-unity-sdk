@@ -35,16 +35,16 @@ namespace GoogleARCore.Examples.AugmentedFaces
         /// </summary>
         public bool AutoBind = false;
 
-        private AugmentedFace m_AugmentedFace = null;
-        private List<AugmentedFace> m_AugmentedFaceList = null;
+        private AugmentedFace _augmentedFace = null;
+        private List<AugmentedFace> _augmentedFaceList = null;
 
         // Keep previous frame's mesh polygon to avoid mesh update every frame.
-        private List<Vector3> m_MeshVertices = new List<Vector3>();
-        private List<Vector3> m_MeshNormals = new List<Vector3>();
-        private List<Vector2> m_MeshUVs = new List<Vector2>();
-        private List<int> m_MeshIndices = new List<int>();
-        private Mesh m_Mesh = null;
-        private bool m_MeshInitialized = false;
+        private List<Vector3> _meshVertices = new List<Vector3>();
+        private List<Vector3> _meshNormals = new List<Vector3>();
+        private List<Vector2> _meshUVs = new List<Vector2>();
+        private List<int> _meshIndices = new List<int>();
+        private Mesh _mesh = null;
+        private bool _meshInitialized = false;
 
         /// <summary>
         /// Gets or sets the ARCore AugmentedFace object that will be used to update the face mesh data.
@@ -53,12 +53,12 @@ namespace GoogleARCore.Examples.AugmentedFaces
         {
             get
             {
-                return m_AugmentedFace;
+                return _augmentedFace;
             }
 
             set
             {
-                m_AugmentedFace = value;
+                _augmentedFace = value;
                 Update();
             }
         }
@@ -68,9 +68,9 @@ namespace GoogleARCore.Examples.AugmentedFaces
         /// </summary>
         public void Awake()
         {
-            m_Mesh = new Mesh();
-            GetComponent<MeshFilter>().mesh = m_Mesh;
-            m_AugmentedFaceList = new List<AugmentedFace>();
+            _mesh = new Mesh();
+            GetComponent<MeshFilter>().mesh = _mesh;
+            _augmentedFaceList = new List<AugmentedFace>();
         }
 
         /// <summary>
@@ -80,50 +80,50 @@ namespace GoogleARCore.Examples.AugmentedFaces
         {
             if (AutoBind)
             {
-                m_AugmentedFaceList.Clear();
-                Session.GetTrackables<AugmentedFace>(m_AugmentedFaceList, TrackableQueryFilter.All);
-                if (m_AugmentedFaceList.Count != 0)
+                _augmentedFaceList.Clear();
+                Session.GetTrackables<AugmentedFace>(_augmentedFaceList, TrackableQueryFilter.All);
+                if (_augmentedFaceList.Count != 0)
                 {
-                    m_AugmentedFace = m_AugmentedFaceList[0];
+                    _augmentedFace = _augmentedFaceList[0];
                 }
             }
 
-            if (m_AugmentedFace == null)
+            if (_augmentedFace == null)
             {
                 return;
             }
 
             // Update game object position;
-            transform.position = m_AugmentedFace.CenterPose.position;
-            transform.rotation = m_AugmentedFace.CenterPose.rotation;
+            transform.position = _augmentedFace.CenterPose.position;
+            transform.rotation = _augmentedFace.CenterPose.rotation;
 
-            _UpdateMesh();
+            UpdateMesh();
         }
 
         /// <summary>
         /// Update mesh with a face mesh vertices, texture coordinates and indices.
         /// </summary>
-        private void _UpdateMesh()
+        private void UpdateMesh()
         {
-            m_AugmentedFace.GetVertices(m_MeshVertices);
-            m_AugmentedFace.GetNormals(m_MeshNormals);
+            _augmentedFace.GetVertices(_meshVertices);
+            _augmentedFace.GetNormals(_meshNormals);
 
-            if (!m_MeshInitialized)
+            if (!_meshInitialized)
             {
-                m_AugmentedFace.GetTextureCoordinates(m_MeshUVs);
-                m_AugmentedFace.GetTriangleIndices(m_MeshIndices);
+                _augmentedFace.GetTextureCoordinates(_meshUVs);
+                _augmentedFace.GetTriangleIndices(_meshIndices);
 
                 // Only update mesh indices and uvs once as they don't change every frame.
-                m_MeshInitialized = true;
+                _meshInitialized = true;
             }
 
-            m_Mesh.Clear();
-            m_Mesh.SetVertices(m_MeshVertices);
-            m_Mesh.SetNormals(m_MeshNormals);
-            m_Mesh.SetTriangles(m_MeshIndices, 0);
-            m_Mesh.SetUVs(0, m_MeshUVs);
+            _mesh.Clear();
+            _mesh.SetVertices(_meshVertices);
+            _mesh.SetNormals(_meshNormals);
+            _mesh.SetTriangles(_meshIndices, 0);
+            _mesh.SetUVs(0, _meshUVs);
 
-            m_Mesh.RecalculateBounds();
+            _mesh.RecalculateBounds();
         }
     }
 }

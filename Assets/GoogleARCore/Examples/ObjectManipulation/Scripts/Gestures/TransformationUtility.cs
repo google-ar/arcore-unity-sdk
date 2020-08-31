@@ -32,20 +32,20 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// Slight offset of the down ray used in GetBestPlacementPosition to ensure that the
         /// current groundingPlane is included in the hit results.
         /// </summary>
-        private const float k_DownRayOffset = 0.01f;
+        private const float _downRayOffset = 0.01f;
 
         /// <summary>
         /// Max amount (inches) to offset the screen touch in GetBestPlacementPosition.
         /// The actual amount if dependent on the angle of the camera relative.
         /// The further downward the camera is angled, the more the screen touch is offset.
         /// </summary>
-        private const float k_MaxScreenTouchOffset = 0.4f;
+        private const float _maxScreenTouchOffset = 0.4f;
 
         /// <summary>
         /// In GetBestPlacementPosition, when the camera is closer than this value to the object,
         /// reduce how much the object hovers.
         /// </summary>
-        private const float k_HoverDistanceThreshold = 1.0f;
+        private const float _hoverDistanceThreshold = 1.0f;
 
         /// <summary>
         /// Translation mode.
@@ -108,14 +108,14 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
             angle = 90.0f - angle;
 
             float touchOffsetRatio = Mathf.Clamp01(angle / 90.0f);
-            float screenTouchOffset = touchOffsetRatio * k_MaxScreenTouchOffset;
+            float screenTouchOffset = touchOffsetRatio * _maxScreenTouchOffset;
             screenPos.y += GestureTouchesUtility.InchesToPixels(screenTouchOffset);
 
             float hoverRatio = Mathf.Clamp01(angle / 45.0f);
             hoverOffset *= hoverRatio;
 
             float distance = (Camera.main.transform.position - currentAnchorPosition).magnitude;
-            float distanceHoverRatio = Mathf.Clamp01(distance / k_HoverDistanceThreshold);
+            float distanceHoverRatio = Mathf.Clamp01(distance / _hoverDistanceThreshold);
             hoverOffset *= distanceHoverRatio;
 
             // The best estimate of the point in the plane where the object will be placed:
@@ -236,7 +236,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
 
             // Cast straight down onto AR planes that are lower than the current grounding plane.
             if (Frame.Raycast(
-                    groundingPoint + (Vector3.up * k_DownRayOffset), Vector3.down,
+                    groundingPoint + (Vector3.up * _downRayOffset), Vector3.down,
                     out hit, Mathf.Infinity, TrackableHitFlags.PlaneWithinBounds))
             {
                 result.PlacementPosition = hit.Pose.position;

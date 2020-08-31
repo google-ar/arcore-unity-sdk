@@ -35,7 +35,7 @@ namespace GoogleARCore.Examples.AugmentedFaces
         /// </summary>
         public bool AutoBind = false;
 
-        private static readonly Dictionary<AugmentedFaceRegion, string> k_RegionTransformNames =
+        private static readonly Dictionary<AugmentedFaceRegion, string> _regionTransformNames =
             new Dictionary<AugmentedFaceRegion, string>()
             {
                 { AugmentedFaceRegion.NoseTip, "NOSE_TIP" },
@@ -43,9 +43,9 @@ namespace GoogleARCore.Examples.AugmentedFaces
                 { AugmentedFaceRegion.ForeheadRight, "FOREHEAD_RIGHT" }
             };
 
-        private AugmentedFace m_AugmentedFace;
-        private List<AugmentedFace> m_AugmentedFaceList = new List<AugmentedFace>();
-        private Dictionary<AugmentedFaceRegion, Transform> m_RegionGameObjects =
+        private AugmentedFace _augmentedFace;
+        private List<AugmentedFace> _augmentedFaceList = new List<AugmentedFace>();
+        private Dictionary<AugmentedFaceRegion, Transform> _regionGameObjects =
             new Dictionary<AugmentedFaceRegion, Transform>();
 
         /// <summary>
@@ -55,12 +55,12 @@ namespace GoogleARCore.Examples.AugmentedFaces
         {
             get
             {
-                return m_AugmentedFace;
+                return _augmentedFace;
             }
 
             set
             {
-                m_AugmentedFace = value;
+                _augmentedFace = value;
                 Update();
             }
         }
@@ -70,8 +70,8 @@ namespace GoogleARCore.Examples.AugmentedFaces
         /// </summary>
         public void Awake()
         {
-            m_AugmentedFaceList = new List<AugmentedFace>();
-            _InitializeFaceRegions();
+            _augmentedFaceList = new List<AugmentedFace>();
+            InitializeFaceRegions();
         }
 
         /// <summary>
@@ -86,31 +86,31 @@ namespace GoogleARCore.Examples.AugmentedFaces
 
             if (AutoBind)
             {
-                m_AugmentedFaceList.Clear();
-                Session.GetTrackables<AugmentedFace>(m_AugmentedFaceList, TrackableQueryFilter.All);
-                if (m_AugmentedFaceList.Count != 0)
+                _augmentedFaceList.Clear();
+                Session.GetTrackables<AugmentedFace>(_augmentedFaceList, TrackableQueryFilter.All);
+                if (_augmentedFaceList.Count != 0)
                 {
-                    m_AugmentedFace = m_AugmentedFaceList[0];
+                    _augmentedFace = _augmentedFaceList[0];
                 }
             }
 
-            if (m_AugmentedFace == null)
+            if (_augmentedFace == null)
             {
                 return;
             }
 
-            _UpdateRegions();
+            UpdateRegions();
         }
 
         /// <summary>
         /// Method to initialize face region gameobject if not present.
         /// </summary>
-        private void _InitializeFaceRegions()
+        private void InitializeFaceRegions()
         {
-            foreach (AugmentedFaceRegion region in k_RegionTransformNames.Keys)
+            foreach (AugmentedFaceRegion region in _regionTransformNames.Keys)
             {
-                string name = k_RegionTransformNames[region];
-                Transform regionTransform = _FindChildTransformRecursive(transform, name);
+                string name = _regionTransformNames[region];
+                Transform regionTransform = FindChildTransformRecursive(transform, name);
                 if (regionTransform == null)
                 {
                     GameObject newRegionObject = new GameObject(name);
@@ -118,11 +118,11 @@ namespace GoogleARCore.Examples.AugmentedFaces
                     regionTransform = newRegionObject.transform;
                 }
 
-                m_RegionGameObjects[region] = regionTransform;
+                _regionGameObjects[region] = regionTransform;
             }
         }
 
-        private Transform _FindChildTransformRecursive(Transform target, string name)
+        private Transform FindChildTransformRecursive(Transform target, string name)
         {
             if (target.name == name)
             {
@@ -136,7 +136,7 @@ namespace GoogleARCore.Examples.AugmentedFaces
                     return child;
                 }
 
-                Transform result = _FindChildTransformRecursive(child, name);
+                Transform result = FindChildTransformRecursive(child, name);
                 if (result != null)
                 {
                     return result;
@@ -149,24 +149,24 @@ namespace GoogleARCore.Examples.AugmentedFaces
         /// <summary>
         /// Update all face regions associated with the mesh.
         /// </summary>
-        private void _UpdateRegions()
+        private void UpdateRegions()
         {
-            bool isTracking = m_AugmentedFace.TrackingState == TrackingState.Tracking;
+            bool isTracking = _augmentedFace.TrackingState == TrackingState.Tracking;
 
             if (isTracking)
             {
                 // Update the root transform;
-                transform.position = m_AugmentedFace.CenterPose.position;
-                transform.rotation = m_AugmentedFace.CenterPose.rotation;
+                transform.position = _augmentedFace.CenterPose.position;
+                transform.rotation = _augmentedFace.CenterPose.rotation;
             }
 
-            foreach (AugmentedFaceRegion region in m_RegionGameObjects.Keys)
+            foreach (AugmentedFaceRegion region in _regionGameObjects.Keys)
             {
-                Transform regionTransform = m_RegionGameObjects[region];
+                Transform regionTransform = _regionGameObjects[region];
                 regionTransform.gameObject.SetActive(isTracking);
                 if (isTracking)
                 {
-                    Pose regionPose = m_AugmentedFace.GetRegionPose(region);
+                    Pose regionPose = _augmentedFace.GetRegionPose(region);
                     regionTransform.position = regionPose.position;
                     regionTransform.rotation = regionPose.rotation;
                 }

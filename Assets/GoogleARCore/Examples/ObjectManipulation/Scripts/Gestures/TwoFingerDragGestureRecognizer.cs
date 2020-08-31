@@ -28,24 +28,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
     /// </summary>
     public class TwoFingerDragGestureRecognizer : GestureRecognizer<TwoFingerDragGesture>
     {
-        private const float k_SlopInches = 0.1f;
-        private const float k_AngleThresholdRadians = Mathf.PI / 6;
-
-        internal float SlopInches
-        {
-            get
-            {
-                return k_SlopInches;
-            }
-        }
-
-        internal float AngleThresholdRadians
-        {
-            get
-            {
-                return k_AngleThresholdRadians;
-            }
-        }
+        internal const float _slopInches = 0.1f;
+        internal const float _angleThresholdRadians = Mathf.PI / 6;
 
         /// <summary>
         /// Creates a two finger drag gesture with the given touches.

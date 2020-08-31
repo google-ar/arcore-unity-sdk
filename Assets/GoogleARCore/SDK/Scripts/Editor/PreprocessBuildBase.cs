@@ -36,8 +36,8 @@ namespace GoogleARCoreInternal
     internal class PreprocessBuildBase : IPreprocessBuild
 #endif
     {
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overriden property.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overriden property.")]
         public int callbackOrder
         {
             get

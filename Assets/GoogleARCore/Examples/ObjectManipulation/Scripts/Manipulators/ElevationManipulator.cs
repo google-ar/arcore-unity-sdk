@@ -35,7 +35,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// </summary>
         public LineRenderer LineRenderer;
 
-        private Vector3 m_Origin;
+        private Vector3 _origin;
 
         /// <summary>
         /// Returns true if the transformation can be started for the given gesture.
@@ -69,10 +69,10 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnStartManipulation(TwoFingerDragGesture gesture)
         {
-            m_Origin = transform.localPosition;
-            m_Origin.y = transform.InverseTransformPoint(transform.parent.position).y;
-            m_Origin = transform.TransformPoint(m_Origin);
-            OnStartElevationVisualization(m_Origin, transform.position);
+            _origin = transform.localPosition;
+            _origin.y = transform.InverseTransformPoint(transform.parent.position).y;
+            _origin = transform.TransformPoint(_origin);
+            OnStartElevationVisualization(_origin, transform.position);
         }
 
         /// <summary>
@@ -90,17 +90,17 @@ namespace GoogleARCore.Examples.ObjectManipulation
             transform.Translate(0.0f, elevationAmount, 0.0f);
 
             // We cannot move it below the original position.
-            if (transform.localPosition.y < transform.parent.InverseTransformPoint(m_Origin).y)
+            if (transform.localPosition.y < transform.parent.InverseTransformPoint(_origin).y)
             {
                 transform.position = transform.parent.TransformPoint(
                     new Vector3(
                         transform.localPosition.x,
-                        transform.parent.InverseTransformPoint(m_Origin).y,
+                        transform.parent.InverseTransformPoint(_origin).y,
                         transform.localPosition.z));
             }
 
             GetComponent<SelectionManipulator>().OnElevationChangedScaled(
-                Mathf.Abs(transform.position.y - m_Origin.y));
+                Mathf.Abs(transform.position.y - _origin.y));
             OnContinueElevationVisualization(transform.position);
         }
 

@@ -36,7 +36,7 @@ namespace GoogleARCore.Examples.CloudAnchors
     public class ARKitHelper
     {
 #if ARCORE_IOS_SUPPORT
-        private List<ARHitTestResult> m_HitResultList = new List<ARHitTestResult>();
+        private List<ARHitTestResult> _hitResultList = new List<ARHitTestResult>();
 #endif
         /// <summary>
         /// Performs a Raycast against a plane.
@@ -59,23 +59,23 @@ namespace GoogleARCore.Examples.CloudAnchors
                 y = viewportPoint.y
             };
 
-            m_HitResultList = session.HitTest(arPoint, ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent);
-            if (m_HitResultList.Count > 0)
+            _hitResultList = session.HitTest(arPoint, ARHitTestResultType.ARHitTestResultTypeExistingPlaneUsingExtent);
+            if (_hitResultList.Count > 0)
             {
                 int minDistanceIndex = 0;
-                for (int i = 1; i < m_HitResultList.Count; i++)
+                for (int i = 1; i < _hitResultList.Count; i++)
                 {
-                    if (m_HitResultList[i].distance < m_HitResultList[minDistanceIndex].distance)
+                    if (_hitResultList[i].distance < _hitResultList[minDistanceIndex].distance)
                     {
                         minDistanceIndex = i;
                     }
                 }
 
-                hitPose.position = UnityARMatrixOps.GetPosition(m_HitResultList[minDistanceIndex].worldTransform);
+                hitPose.position = UnityARMatrixOps.GetPosition(_hitResultList[minDistanceIndex].worldTransform);
 
                 // Original ARKit hit pose is the plane rotation.
                 Quaternion planeRotation = UnityARMatrixOps.GetRotation(
-                    m_HitResultList[minDistanceIndex].worldTransform);
+                    _hitResultList[minDistanceIndex].worldTransform);
 
                 // Try to match the hit rotation to the one ARCore uses.
                 Vector3 planeNormal = planeRotation * Vector3.up;

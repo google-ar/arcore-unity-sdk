@@ -35,18 +35,18 @@ namespace GoogleARCoreInternal
 
     internal class CameraConfigListApi
     {
-        private NativeSession m_NativeSession;
+        private NativeSession _nativeSession;
 
         public CameraConfigListApi(NativeSession nativeSession)
         {
-            m_NativeSession = nativeSession;
+            _nativeSession = nativeSession;
         }
 
         public IntPtr Create()
         {
             IntPtr cameraConfigListHandle = IntPtr.Zero;
             ExternApi.ArCameraConfigList_create(
-                m_NativeSession.SessionHandle, ref cameraConfigListHandle);
+                _nativeSession.SessionHandle, ref cameraConfigListHandle);
             return cameraConfigListHandle;
         }
 
@@ -59,14 +59,14 @@ namespace GoogleARCoreInternal
         {
             int size = 0;
             ExternApi.ArCameraConfigList_getSize(
-                m_NativeSession.SessionHandle, cameraConfigListHandle, ref size);
+                _nativeSession.SessionHandle, cameraConfigListHandle, ref size);
             return size;
         }
 
         public void GetItemAt(IntPtr cameraConfigListHandle, int index, IntPtr cameraConfigHandle)
         {
             ExternApi.ArCameraConfigList_getItem(
-                m_NativeSession.SessionHandle, cameraConfigListHandle, index, cameraConfigHandle);
+                _nativeSession.SessionHandle, cameraConfigListHandle, index, cameraConfigHandle);
         }
 
         private struct ExternApi

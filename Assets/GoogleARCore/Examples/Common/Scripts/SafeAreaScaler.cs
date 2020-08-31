@@ -27,7 +27,7 @@ namespace GoogleARCore.Examples.Common
     /// </summary>
     public class SafeAreaScaler : MonoBehaviour
     {
-        private Rect m_ScreenSafeArea = new Rect(0, 0, 0, 0);
+        private Rect _screenSafeArea = new Rect(0, 0, 0, 0);
 
         /// <summary>
         /// Unity's Awake() method.
@@ -41,24 +41,24 @@ namespace GoogleARCore.Examples.Common
             safeArea = new Rect(0, 0, Screen.width, Screen.height);
 #endif
 
-            if (m_ScreenSafeArea != safeArea)
+            if (_screenSafeArea != safeArea)
             {
-                m_ScreenSafeArea = safeArea;
-                _MatchRectTransformToSafeArea();
+                _screenSafeArea = safeArea;
+                MatchRectTransformToSafeArea();
             }
         }
 
-        private void _MatchRectTransformToSafeArea()
+        private void MatchRectTransformToSafeArea()
         {
             RectTransform rectTransform = GetComponent<RectTransform>();
 
             // lower left corner offset
-            Vector2 offsetMin = new Vector2(m_ScreenSafeArea.xMin,
-                Screen.height - m_ScreenSafeArea.yMax);
+            Vector2 offsetMin = new Vector2(_screenSafeArea.xMin,
+                Screen.height - _screenSafeArea.yMax);
 
             // upper right corner offset
-            Vector2 offsetMax = new Vector2(m_ScreenSafeArea.xMax - Screen.width,
-                -m_ScreenSafeArea.yMin);
+            Vector2 offsetMax = new Vector2(_screenSafeArea.xMax - Screen.width,
+                -_screenSafeArea.yMin);
 
             rectTransform.offsetMin = offsetMin;
             rectTransform.offsetMax = offsetMax;

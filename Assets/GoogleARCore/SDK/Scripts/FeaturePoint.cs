@@ -21,8 +21,6 @@
 namespace GoogleARCore
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using GoogleARCoreInternal;
     using UnityEngine;
 
@@ -48,14 +46,14 @@ namespace GoogleARCore
         {
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "Pose:: Trying to access a session that has already been destroyed.");
                     return new Pose();
                 }
 
-                return m_NativeSession.PointApi.GetPose(m_TrackableNativeHandle);
+                return _nativeSession.PointApi.GetPose(_trackableNativeHandle);
             }
         }
 
@@ -68,7 +66,7 @@ namespace GoogleARCore
                 IsWarning = true, Reason = "Requires further investigation.")]
             get
             {
-                if (_IsSessionDestroyed())
+                if (IsSessionDestroyed())
                 {
                     Debug.LogError(
                         "OrientationMode:: Trying to access a session that has already been " +
@@ -76,7 +74,7 @@ namespace GoogleARCore
                     return FeaturePointOrientationMode.Identity;
                 }
 
-                return m_NativeSession.PointApi.GetOrientationMode(m_TrackableNativeHandle);
+                return _nativeSession.PointApi.GetOrientationMode(_trackableNativeHandle);
             }
         }
     }

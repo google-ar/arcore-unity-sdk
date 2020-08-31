@@ -53,7 +53,7 @@ namespace GoogleARCore
         [Tooltip("Configuration options to select the camera mode and features.")]
         public ARCoreCameraConfigFilter CameraConfigFilter;
 
-        private OnChooseCameraConfigurationDelegate m_OnChooseCameraConfiguration;
+        private OnChooseCameraConfigurationDelegate _onChooseCameraConfiguration;
 
         /// <summary>
         /// Selects a camera configuration for the ARCore session being resumed.
@@ -192,12 +192,12 @@ namespace GoogleARCore
         public void RegisterChooseCameraConfigurationCallback(
             OnChooseCameraConfigurationDelegate onChooseCameraConfiguration)
         {
-            m_OnChooseCameraConfiguration = onChooseCameraConfiguration;
+            _onChooseCameraConfiguration = onChooseCameraConfiguration;
         }
 
         internal OnChooseCameraConfigurationDelegate GetChooseCameraConfigurationCallback()
         {
-            return m_OnChooseCameraConfiguration;
+            return _onChooseCameraConfiguration;
         }
     }
 }

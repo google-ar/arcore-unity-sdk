@@ -24,6 +24,7 @@ namespace GoogleARCore.Examples.Common
     using GoogleARCore;
     using GoogleARCore.Examples.Common;
     using UnityEngine;
+    using UnityEngine.Serialization;
     using UnityEngine.UI;
 
     /// <summary>
@@ -35,82 +36,112 @@ namespace GoogleARCore.Examples.Common
         /// The plane discovery guide visuals that guide users to scan surroundings
         /// and discover planes.
         /// </summary>
-        [SerializeField] private PlaneDiscoveryGuide m_PlaneDiscoveryGuide = null;
+        [FormerlySerializedAs("m_PlaneDiscoveryGuide")]
+        [SerializeField]
+        private PlaneDiscoveryGuide _planeDiscoveryGuide = null;
 
         /// <summary>
         /// Scene object for visualizing depth data.
         /// </summary>
-        [SerializeField] private GameObject m_DebugVisualizer = null;
+        [FormerlySerializedAs("m_DebugVisualizer")]
+        [SerializeField]
+        private GameObject _debugVisualizer = null;
 
         /// <summary>
         /// The first-person camera being used to render the passthrough camera image (i.e. AR
         /// background).
         /// </summary>
-        [SerializeField] private Camera m_Camera = null;
+        [FormerlySerializedAs("m_Camera")]
+        [SerializeField]
+        private Camera _camera = null;
 
         /// <summary>
         /// The Menu Window shows the depth configurations.
         /// </summary>
-        [SerializeField] private GameObject m_MenuWindow = null;
+        [FormerlySerializedAs("m_MenuWindow")]
+        [SerializeField]
+        private GameObject _menuWindow = null;
 
         /// <summary>
         /// The Depth Card Window.
         /// </summary>
-        [SerializeField] private GameObject m_DepthCardWindow = null;
+        [FormerlySerializedAs("m_DepthCardWindow")]
+        [SerializeField]
+        private GameObject _depthCardWindow = null;
 
         /// <summary>
         /// The button to open the menu window.
         /// </summary>
-        [SerializeField] private Button m_MenuButton = null;
+        [FormerlySerializedAs("m_MenuButton")]
+        [SerializeField]
+        private Button _menuButton = null;
 
         /// <summary>
         /// The button to apply the config and close the menu window.
         /// </summary>
-        [SerializeField] private Button m_ApplyButton = null;
+        [FormerlySerializedAs("m_ApplyButton")]
+        [SerializeField]
+        private Button _applyButton = null;
 
         /// <summary>
         /// The button to cancel the changs and close the menu window.
         /// </summary>
-        [SerializeField] private Button m_CancelButton = null;
+        [FormerlySerializedAs("m_CancelButton")]
+        [SerializeField]
+        private Button _cancelButton = null;
 
         /// <summary>
         /// The button to enable depth.
         /// </summary>
-        [SerializeField] private Button m_EnableDepthButton = null;
+        [FormerlySerializedAs("m_EnableDepthButton")]
+        [SerializeField]
+        private Button _enableDepthButton = null;
 
         /// <summary>
         /// The button to disable depth.
         /// </summary>
-        [SerializeField] private Button m_DisableDepthButton = null;
+        [FormerlySerializedAs("m_DisableDepthButton")]
+        [SerializeField]
+        private Button _disableDepthButton = null;
 
         /// <summary>
         /// The menu text.
         /// </summary>
-        [SerializeField] private Text m_MenuText = null;
+        [FormerlySerializedAs("m_MenuText")]
+        [SerializeField]
+        private Text _menuText = null;
 
         /// <summary>
         /// The toggle to enable depth.
         /// </summary>
-        [SerializeField] private Toggle m_EnableDepthToggle = null;
+        [FormerlySerializedAs("m_EnableDepthToggle")]
+        [SerializeField]
+        private Toggle _enableDepthToggle = null;
 
         /// <summary>
-        /// The toggle label of m_EnableDepthToggle.
+        /// The toggle label of _enableDepthToggle.
         /// </summary>
-        [SerializeField] private Text m_EnableDepthToggleLabel = null;
+        [FormerlySerializedAs("m_EnableDepthToggleLabel")]
+        [SerializeField]
+        private Text _enableDepthToggleLabel = null;
 
         /// <summary>
         /// The toggle to switch to depth map.
         /// </summary>
-        [SerializeField] private Toggle m_DepthMapToggle = null;
+        [FormerlySerializedAs("m_DepthMapToggle")]
+        [SerializeField]
+        private Toggle _depthMapToggle = null;
 
         /// <summary>
-        /// The toggle label of m_DepthMapToggle.
+        /// The toggle label of _depthMapToggle.
         /// </summary>
-        [SerializeField] private Text m_DepthMapToggleLabel = null;
+        [FormerlySerializedAs("m_DepthMapToggleLabel")]
+        [SerializeField]
+        private Text _depthMapToggleLabel = null;
 
-        private bool m_DepthConfigured = false;
+        private bool _depthConfigured = false;
 
-        private DepthState m_DepthState = DepthState.DepthNotAvailable;
+        private DepthState _depthState = DepthState.DepthNotAvailable;
 
         /// <summary>
         /// Depth state of this sample.
@@ -143,16 +174,16 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void Start()
         {
-            m_MenuButton.onClick.AddListener(_OnMenuButtonClicked);
-            m_ApplyButton.onClick.AddListener(_OnApplyButtonClicked);
-            m_CancelButton.onClick.AddListener(_OnCancelButtonClicked);
-            m_EnableDepthButton.onClick.AddListener(_OnEnableDepthButtonClicked);
-            m_DisableDepthButton.onClick.AddListener(_OnDisableDepthButtonClicked);
-            m_EnableDepthToggle.onValueChanged.AddListener(_OnEnableDepthToggleValueChanged);
+            _menuButton.onClick.AddListener(OnMenuButtonClicked);
+            _applyButton.onClick.AddListener(OnApplyButtonClicked);
+            _cancelButton.onClick.AddListener(OnCancelButtonClicked);
+            _enableDepthButton.onClick.AddListener(OnEnableDepthButtonClicked);
+            _disableDepthButton.onClick.AddListener(OnDisableDepthButtonClicked);
+            _enableDepthToggle.onValueChanged.AddListener(OnEnableDepthToggleValueChanged);
 
-            m_MenuWindow.SetActive(false);
-            m_DepthCardWindow.SetActive(false);
-            m_DebugVisualizer.SetActive(false);
+            _menuWindow.SetActive(false);
+            _depthCardWindow.SetActive(false);
+            _debugVisualizer.SetActive(false);
         }
 
         /// <summary>
@@ -160,12 +191,12 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnDestroy()
         {
-            m_MenuButton.onClick.RemoveListener(_OnMenuButtonClicked);
-            m_ApplyButton.onClick.RemoveListener(_OnApplyButtonClicked);
-            m_CancelButton.onClick.RemoveListener(_OnCancelButtonClicked);
-            m_EnableDepthButton.onClick.RemoveListener(_OnEnableDepthButtonClicked);
-            m_DisableDepthButton.onClick.RemoveListener(_OnDisableDepthButtonClicked);
-            m_EnableDepthToggle.onValueChanged.RemoveListener(_OnEnableDepthToggleValueChanged);
+            _menuButton.onClick.RemoveListener(OnMenuButtonClicked);
+            _applyButton.onClick.RemoveListener(OnApplyButtonClicked);
+            _cancelButton.onClick.RemoveListener(OnCancelButtonClicked);
+            _enableDepthButton.onClick.RemoveListener(OnEnableDepthButtonClicked);
+            _disableDepthButton.onClick.RemoveListener(OnDisableDepthButtonClicked);
+            _enableDepthToggle.onValueChanged.RemoveListener(OnEnableDepthToggleValueChanged);
         }
 
         /// <summary>
@@ -173,18 +204,18 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void ConfigureDepthBeforePlacingFirstAsset()
         {
-            if (!m_DepthConfigured)
+            if (!_depthConfigured)
             {
                 // Session might not be initialized when GameOject is inializing.
                 // Hence, it would be better NOT to call `IsDepthModeSupported` in start().
                 if (Session.IsDepthModeSupported(DepthMode.Automatic))
                 {
-                    m_DepthCardWindow.SetActive(true);
-                    m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
+                    _depthCardWindow.SetActive(true);
+                    _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
                 }
                 else
                 {
-                    m_DepthConfigured = true;
+                    _depthConfigured = true;
                 }
             }
         }
@@ -195,7 +226,7 @@ namespace GoogleARCore.Examples.Common
         /// <returns>Whether the user could place asset.</returns>
         public bool CanPlaceAsset()
         {
-            return !m_DepthCardWindow.activeSelf & !m_MenuWindow.activeSelf;
+            return !_depthCardWindow.activeSelf & !_menuWindow.activeSelf;
         }
 
         /// <summary>
@@ -204,133 +235,133 @@ namespace GoogleARCore.Examples.Common
         /// <returns>Whether the depth is enabled.</returns>
         public bool IsDepthEnabled()
         {
-            return m_DepthState == DepthState.DepthEnabled
-                || m_DepthState == DepthState.DepthMap;
+            return _depthState == DepthState.DepthEnabled
+                || _depthState == DepthState.DepthMap;
         }
 
-        private void _OnMenuButtonClicked()
+        private void OnMenuButtonClicked()
         {
-            if (!m_DepthConfigured)
+            if (!_depthConfigured)
             {
                 // Session might not be initialized when GameOject is inializing.
                 // Hence, it would be better NOT to call `IsDepthModeSupported` in start().
                 if (Session.IsDepthModeSupported(DepthMode.Automatic))
                 {
-                    m_DepthState = DepthState.DepthDisabled;
-                    m_MenuText.text = "Your device supports depth.";
+                    _depthState = DepthState.DepthDisabled;
+                    _menuText.text = "Your device supports depth.";
                 }
                 else
                 {
-                    _ConfigureDepth(false);
-                    m_DepthState = DepthState.DepthNotAvailable;
-                    m_MenuText.text = "Your device doesn't support depth.";
+                    ConfigureDepth(false);
+                    _depthState = DepthState.DepthNotAvailable;
+                    _menuText.text = "Your device doesn't support depth.";
                 }
 
-                _ResetToggle();
+                ResetToggle();
             }
 
-            m_MenuWindow.SetActive(true);
-            m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
+            _menuWindow.SetActive(true);
+            _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
         }
 
-        private void _OnApplyButtonClicked()
+        private void OnApplyButtonClicked()
         {
-            _ConfigureDepth(m_EnableDepthToggle.isOn);
-            if (m_DepthMapToggle.isOn)
+            ConfigureDepth(_enableDepthToggle.isOn);
+            if (_depthMapToggle.isOn)
             {
-                m_DepthState = DepthState.DepthMap;
-                m_DebugVisualizer.SetActive(true);
+                _depthState = DepthState.DepthMap;
+                _debugVisualizer.SetActive(true);
             }
             else
             {
-                m_DebugVisualizer.SetActive(false);
+                _debugVisualizer.SetActive(false);
             }
 
-            m_MenuWindow.SetActive(false);
-            m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
+            _menuWindow.SetActive(false);
+            _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
-        private void _OnCancelButtonClicked()
+        private void OnCancelButtonClicked()
         {
-            _ResetToggle();
-            m_MenuWindow.SetActive(false);
-            m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
+            ResetToggle();
+            _menuWindow.SetActive(false);
+            _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
-        private void _OnEnableDepthButtonClicked()
+        private void OnEnableDepthButtonClicked()
         {
-            _ConfigureDepth(true);
-            _ResetToggle();
-            m_DepthCardWindow.SetActive(false);
-            m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
+            ConfigureDepth(true);
+            ResetToggle();
+            _depthCardWindow.SetActive(false);
+            _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
-        private void _OnDisableDepthButtonClicked()
+        private void OnDisableDepthButtonClicked()
         {
-            _ConfigureDepth(false);
-            _ResetToggle();
-            m_DepthCardWindow.SetActive(false);
-            m_PlaneDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
+            ConfigureDepth(false);
+            ResetToggle();
+            _depthCardWindow.SetActive(false);
+            _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
-        private void _OnEnableDepthToggleValueChanged(bool enabled)
+        private void OnEnableDepthToggleValueChanged(bool enabled)
         {
             if (enabled)
             {
-                m_DepthMapToggle.interactable = true;
-                m_DepthMapToggleLabel.color = Color.black;
+                _depthMapToggle.interactable = true;
+                _depthMapToggleLabel.color = Color.black;
             }
             else
             {
-                m_DepthMapToggle.interactable = false;
-                m_DepthMapToggle.isOn = false;
-                m_DepthMapToggleLabel.color = m_EnableDepthToggle.colors.disabledColor;
+                _depthMapToggle.interactable = false;
+                _depthMapToggle.isOn = false;
+                _depthMapToggleLabel.color = _enableDepthToggle.colors.disabledColor;
             }
         }
 
-        private void _ConfigureDepth(bool depthEnabled)
+        private void ConfigureDepth(bool depthEnabled)
         {
-            (m_Camera.GetComponent(typeof(DepthEffect)) as MonoBehaviour).enabled = depthEnabled;
-            m_DepthConfigured = true;
-            m_DepthState = depthEnabled ? DepthState.DepthEnabled : DepthState.DepthDisabled;
+            (_camera.GetComponent(typeof(DepthEffect)) as MonoBehaviour).enabled = depthEnabled;
+            _depthConfigured = true;
+            _depthState = depthEnabled ? DepthState.DepthEnabled : DepthState.DepthDisabled;
         }
 
-        private void _ResetToggle()
+        private void ResetToggle()
         {
-            switch (m_DepthState)
+            switch (_depthState)
             {
                 case DepthState.DepthEnabled:
-                    m_EnableDepthToggle.interactable = true;
-                    m_EnableDepthToggleLabel.color = Color.black;
-                    m_DepthMapToggle.interactable = true;
-                    m_DepthMapToggleLabel.color = Color.black;
-                    m_EnableDepthToggle.isOn = true;
-                    m_DepthMapToggle.isOn = false;
+                    _enableDepthToggle.interactable = true;
+                    _enableDepthToggleLabel.color = Color.black;
+                    _depthMapToggle.interactable = true;
+                    _depthMapToggleLabel.color = Color.black;
+                    _enableDepthToggle.isOn = true;
+                    _depthMapToggle.isOn = false;
                     break;
                 case DepthState.DepthDisabled:
-                    m_EnableDepthToggle.interactable = true;
-                    m_EnableDepthToggleLabel.color = Color.black;
-                    m_DepthMapToggle.interactable = false;
-                    m_DepthMapToggleLabel.color = m_EnableDepthToggle.colors.disabledColor;
-                    m_EnableDepthToggle.isOn = false;
-                    m_DepthMapToggle.isOn = false;
+                    _enableDepthToggle.interactable = true;
+                    _enableDepthToggleLabel.color = Color.black;
+                    _depthMapToggle.interactable = false;
+                    _depthMapToggleLabel.color = _enableDepthToggle.colors.disabledColor;
+                    _enableDepthToggle.isOn = false;
+                    _depthMapToggle.isOn = false;
                     break;
                 case DepthState.DepthMap:
-                    m_EnableDepthToggle.interactable = true;
-                    m_EnableDepthToggleLabel.color = Color.black;
-                    m_DepthMapToggle.interactable = true;
-                    m_DepthMapToggleLabel.color = Color.black;
-                    m_EnableDepthToggle.isOn = true;
-                    m_DepthMapToggle.isOn = true;
+                    _enableDepthToggle.interactable = true;
+                    _enableDepthToggleLabel.color = Color.black;
+                    _depthMapToggle.interactable = true;
+                    _depthMapToggleLabel.color = Color.black;
+                    _enableDepthToggle.isOn = true;
+                    _depthMapToggle.isOn = true;
                     break;
                 case DepthState.DepthNotAvailable:
                 default:
-                    m_EnableDepthToggle.interactable = false;
-                    m_EnableDepthToggleLabel.color = m_EnableDepthToggle.colors.disabledColor;
-                    m_DepthMapToggle.interactable = false;
-                    m_DepthMapToggleLabel.color = m_EnableDepthToggle.colors.disabledColor;
-                    m_EnableDepthToggle.isOn = false;
-                    m_DepthMapToggle.isOn = false;
+                    _enableDepthToggle.interactable = false;
+                    _enableDepthToggleLabel.color = _enableDepthToggle.colors.disabledColor;
+                    _depthMapToggle.interactable = false;
+                    _depthMapToggleLabel.color = _enableDepthToggle.colors.disabledColor;
+                    _enableDepthToggle.isOn = false;
+                    _depthMapToggle.isOn = false;
                     break;
             }
         }

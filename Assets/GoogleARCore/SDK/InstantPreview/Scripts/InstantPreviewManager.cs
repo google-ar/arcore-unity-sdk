@@ -56,33 +56,33 @@ namespace GoogleARCoreInternal
         public const string InstantPreviewNativeApi = "arcore_instant_preview_unity_plugin";
 
         // Guid is taken from meta file and should never change.
-        private const string k_ApkGuid = "cf7b10762fe921e40a18151a6c92a8a6";
-        private const string k_NoDevicesFoundAdbResult = "error: no devices/emulators found";
-        private const float k_MaxTolerableAspectRatioDifference = 0.1f;
-        private const string k_MismatchedAspectRatioWarningFormatString =
+        private const string _apkGuid = "cf7b10762fe921e40a18151a6c92a8a6";
+        private const string _noDevicesFoundAdbResult = "error: no devices/emulators found";
+        private const float _maxTolerableAspectRatioDifference = 0.1f;
+        private const string _mismatchedAspectRatioWarningFormatString =
             "Instant Preview camera texture aspect ratio ({0}) is different than Game view " +
             "aspect ratio ({1}).\n" +
             " To avoid distorted preview while using Instant Preview, set the Game view Aspect " +
             "to match the camera texture resolution ({2}x{3}).";
 
-        private const string k_InstantPreviewInputWarning =
+        private const string _instantPreviewInputWarning =
             "Touch ignored. Make sure your script contains `using Input = InstantPreviewInput;` " +
             "when using editor Play mode.\nTo learn more, see " +
             "https://developers.google.com/ar/develop/unity/instant-preview";
 
-        private const string k_WarningToastFormat = "Instant Preview is not able to {0}. See " +
+        private const string _warningToastFormat = "Instant Preview is not able to {0}. See " +
           "Unity console.";
 
-        private const int k_WarningThrottleTimeSeconds = 5;
+        private const int _warningThrottleTimeSeconds = 5;
 
-        private const float k_UnknownGameViewScale = (float)Single.MinValue;
+        private const float _unknownGameViewScale = (float)Single.MinValue;
 
-        private static readonly WaitForEndOfFrame k_WaitForEndOfFrame = new WaitForEndOfFrame();
+        private static readonly WaitForEndOfFrame _waitForEndOfFrame = new WaitForEndOfFrame();
 
-        private static Dictionary<string, DateTime> s_SentWarnings =
+        private static Dictionary<string, DateTime> _sentWarnings =
             new Dictionary<string, DateTime>();
 
-        private static HashSet<string> s_OneTimeWarnings = new HashSet<string>();
+        private static HashSet<string> _oneTimeWarnings = new HashSet<string>();
 
         /// <summary>
         /// Gets a value indicating whether Instant Preview is providing the ARCore platform for the
@@ -136,6 +136,12 @@ namespace GoogleARCoreInternal
                 isValid = false;
             }
 
+            if (config.InstantPlacementMode != InstantPlacementMode.Disabled)
+            {
+                LogLimitedSupportMessage("enable 'Instant Placement'", true);
+                isValid = false;
+            }
+
             return isValid;
         }
 
@@ -163,6 +169,7 @@ namespace GoogleARCoreInternal
             newConfig.LightEstimationMode = LightEstimationMode.Disabled;
             newConfig.AugmentedImageDatabase = null;
             newConfig.AugmentedFaceMode = AugmentedFaceMode.Disabled;
+            newConfig.InstantPlacementMode = InstantPlacementMode.Disabled;
             return newConfig;
         }
 
@@ -178,20 +185,20 @@ namespace GoogleARCoreInternal
                 "Attempted to {0} which is not yet supported by Instant Preview.\n" +
                 "Please build and run on device to use this feature.", featureName);
 
-            if (logOnce && !s_OneTimeWarnings.Contains(featureName))
+            if (logOnce && !_oneTimeWarnings.Contains(featureName))
             {
-                string warning = string.Format(k_WarningToastFormat, featureName);
+                string warning = string.Format(_warningToastFormat, featureName);
                 NativeApi.SendToast(warning);
-                s_OneTimeWarnings.Add(featureName);
+                _oneTimeWarnings.Add(featureName);
             }
 
-            if (!logOnce && (!s_SentWarnings.ContainsKey(featureName) ||
-                (DateTime.UtcNow - s_SentWarnings[featureName]).TotalSeconds >=
-                k_WarningThrottleTimeSeconds))
+            if (!logOnce && (!_sentWarnings.ContainsKey(featureName) ||
+                (DateTime.UtcNow - _sentWarnings[featureName]).TotalSeconds >=
+                _warningThrottleTimeSeconds))
             {
-                string warning = string.Format(k_WarningToastFormat, featureName);
+                string warning = string.Format(_warningToastFormat, featureName);
                 NativeApi.SendToast(warning);
-                s_SentWarnings[featureName] = DateTime.UtcNow;
+                _sentWarnings[featureName] = DateTime.UtcNow;
             }
         }
 
@@ -226,7 +233,7 @@ namespace GoogleARCoreInternal
                 float minGameViewScale = GetMinGameViewScaleOrUnknown();
                 if (minGameViewScale != 1.0)
                 {
-                    String viewScaleText = minGameViewScale == k_UnknownGameViewScale ?
+                    String viewScaleText = minGameViewScale == _unknownGameViewScale ?
                         "<unknown>" : string.Format("{0}x", minGameViewScale);
                     Debug.LogWarningFormat(
                         "Instant Preview disabled, {0} minimum Game view scale unsupported for " +
@@ -350,7 +357,7 @@ namespace GoogleARCoreInternal
 
             // Waits until the end of the first frame until capturing the screen size,
             // because it might be incorrect when first querying it.
-            yield return k_WaitForEndOfFrame;
+            yield return _waitForEndOfFrame;
 
             var currentWidth = 0;
             var currentHeight = 0;
@@ -365,7 +372,7 @@ namespace GoogleARCoreInternal
             // ARCoreSession component it's called from is destroyed.
             for (;;)
             {
-                yield return k_WaitForEndOfFrame;
+                yield return _waitForEndOfFrame;
 
                 var curFrameLandscape = Screen.width > Screen.height;
                 if (prevFrameLandscape != curFrameLandscape)
@@ -413,7 +420,7 @@ namespace GoogleARCoreInternal
 
                 if (NativeApi.AppShowedTouchWarning())
                 {
-                    Debug.LogWarning(k_InstantPreviewInputWarning);
+                    Debug.LogWarning(_instantPreviewInputWarning);
                     NativeApi.UnityLoggedTouchWarning();
                 }
 
@@ -437,10 +444,10 @@ namespace GoogleARCoreInternal
                     var destinationAspectRatio = (float)destinationWidth / destinationHeight;
 
                     if (Mathf.Abs(sourceAspectRatio - destinationAspectRatio) >
-                        k_MaxTolerableAspectRatioDifference)
+                        _maxTolerableAspectRatioDifference)
                     {
                         Debug.LogWarningFormat(
-                            k_MismatchedAspectRatioWarningFormatString, sourceAspectRatio,
+                            _mismatchedAspectRatioWarningFormatString, sourceAspectRatio,
                             destinationAspectRatio, sourceWidth, sourceHeight);
                         loggedAspectRatioWarning = true;
                     }
@@ -478,7 +485,7 @@ namespace GoogleARCoreInternal
             string apkPath = null;
 
 #if UNITY_EDITOR
-            apkPath = UnityEditor.AssetDatabase.GUIDToAssetPath(k_ApkGuid);
+            apkPath = UnityEditor.AssetDatabase.GUIDToAssetPath(_apkGuid);
 #endif // !UNITY_EDITOR
 
             // Early outs if set to install but the apk can't be found.
@@ -486,7 +493,7 @@ namespace GoogleARCoreInternal
             {
                 Debug.LogErrorFormat(
                     "Trying to install Instant Preview APK but reference to InstantPreview.apk " +
-                    "is broken. Couldn't find an asset with .meta file guid={0}.", k_ApkGuid);
+                    "is broken. Couldn't find an asset with .meta file guid={0}.", _apkGuid);
                 yield break;
             }
 
@@ -509,7 +516,7 @@ namespace GoogleARCoreInternal
                 }
 
                 // Early outs if no device is connected.
-                if (string.Compare(errors, k_NoDevicesFoundAdbResult) == 0)
+                if (string.Compare(errors, _noDevicesFoundAdbResult) == 0)
                 {
                     return;
                 }
@@ -621,8 +628,8 @@ namespace GoogleARCoreInternal
         private static bool StartServer(string adbPath, out string version)
         {
             // Tries to start server.
-            const int k_InstantPreviewVersionStringMaxLength = 64;
-            var versionStringBuilder = new StringBuilder(k_InstantPreviewVersionStringMaxLength);
+            const int _instantPreviewVersionStringMaxLength = 64;
+            var versionStringBuilder = new StringBuilder(_instantPreviewVersionStringMaxLength);
             var started = NativeApi.InitializeInstantPreview(
                 adbPath, versionStringBuilder, versionStringBuilder.Capacity);
             if (!started)
@@ -654,14 +661,14 @@ namespace GoogleARCoreInternal
                 var gameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
                 if (gameViewType == null)
                 {
-                    return k_UnknownGameViewScale;
+                    return _unknownGameViewScale;
                 }
 
                 UnityEngine.Object[] gameViewObjects =
                     UnityEngine.Resources.FindObjectsOfTypeAll(gameViewType);
                 if (gameViewObjects == null || gameViewObjects.Length == 0)
                 {
-                    return k_UnknownGameViewScale;
+                    return _unknownGameViewScale;
                 }
 
                 PropertyInfo minScaleProperty =
@@ -669,14 +676,14 @@ namespace GoogleARCoreInternal
                         "minScale", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (minScaleProperty == null)
                 {
-                    return k_UnknownGameViewScale;
+                    return _unknownGameViewScale;
                 }
 
                 return (float)minScaleProperty.GetValue(gameViewObjects[0], null);
             }
             catch
             {
-                return k_UnknownGameViewScale;
+                return _unknownGameViewScale;
             }
         }
 

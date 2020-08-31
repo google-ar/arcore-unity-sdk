@@ -76,7 +76,17 @@ inline float _ArCoreDepth_GetBlendedAlpha(float2 uv, float3 virtualDepth, float2
     // We choose N=8. To center these points around 0 we need to subctract 7/16.
     //
     // For the triangular weighting, we take weights from the matrix:
-    // https://screenshot.googleplex.com/74BdsbEgxn1
+    //
+    // +--                     --+
+    // |  1  2  3  4  4  3  2  1 |
+    // |  2  4  6  8  8  6  4  2 |
+    // |  3  6  9 12 12  9  6  3 |
+    // |  4  8 12 16 16 12  8  4 |
+    // |  4  8 12 16 16 12  8  4 |
+    // |  3  6  9 12 12  9  6  3 |
+    // |  2  4  6  8  8  6  4  2 |
+    // |  1  2  3  4  4  3  2  1 |
+    // +--                     --+
 
     const float2 center_bias = float2(7.0/16.0, 7.0/16.0);
 

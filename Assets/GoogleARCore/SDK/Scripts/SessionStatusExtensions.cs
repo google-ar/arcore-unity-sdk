@@ -28,9 +28,9 @@ namespace GoogleARCore
     /// </summary>
     public static class SessionStatusExtensions
     {
-        private const int k_NotInitializedGroupStart = 0;
-        private const int k_ValidSessionGroupStart = 100;
-        private const int k_ErrorGroupStart = 200;
+        private const int _notInitializedGroupStart = 0;
+        private const int _validSessionGroupStart = 100;
+        private const int _errorGroupStart = 200;
 
         /// <summary>
         /// Gets whether a SessionStatus is not yet initialized.
@@ -40,7 +40,7 @@ namespace GoogleARCore
         /// <c>false</c>.</returns>
         public static bool IsNotInitialized(this SessionStatus status)
         {
-            int normalizedValue = (int)status - k_NotInitializedGroupStart;
+            int normalizedValue = (int)status - _notInitializedGroupStart;
             return normalizedValue >= 0 && normalizedValue < 100;
         }
 
@@ -52,7 +52,7 @@ namespace GoogleARCore
         /// otherwise <c>false</c>.</returns>
         public static bool IsValid(this SessionStatus status)
         {
-            int normalizedValue = (int)status - k_ValidSessionGroupStart;
+            int normalizedValue = (int)status - _validSessionGroupStart;
             return normalizedValue >= 0 && normalizedValue < 100;
         }
 
@@ -64,7 +64,7 @@ namespace GoogleARCore
         /// otherwise <c>false</c>.</returns>
         public static bool IsError(this SessionStatus status)
         {
-            int normalizedValue = (int)status - k_ErrorGroupStart;
+            int normalizedValue = (int)status - _errorGroupStart;
             return normalizedValue >= 0 && normalizedValue < 100;
         }
     }

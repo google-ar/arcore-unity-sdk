@@ -28,8 +28,8 @@ namespace GoogleARCoreInternal
 
     internal class ARCoreIOSSupportHelper
     {
-        private const string k_ARCoreEditorFolderGuid = "3efa82e8eae0d4459a41fa9c799ea3f8";
-        private const string k_ARCoreIOSDependencyFileName = "ARCoreiOSDependencies";
+        private const string _arCoreEditorFolderGuid = "3efa82e8eae0d4459a41fa9c799ea3f8";
+        private const string _arCoreIOSDependencyFileName = "ARCoreiOSDependencies";
 
         public static void SetARCoreIOSSupportEnabled(bool arcoreIOSEnabled)
         {
@@ -45,12 +45,12 @@ namespace GoogleARCoreInternal
                 Debug.Log("Disabling ARCore iOS support.");
             }
 
-            _UpdateIOSScriptingDefineSymbols(arcoreIOSEnabled);
-            _UpdateIOSPodDependencies(arcoreIOSEnabled);
-            _UpdateARCoreARKitIntegrationPlugin(arcoreIOSEnabled);
+            UpdateIOSScriptingDefineSymbols(arcoreIOSEnabled);
+            UpdateIOSPodDependencies(arcoreIOSEnabled);
+            UpdateARCoreARKitIntegrationPlugin(arcoreIOSEnabled);
         }
 
-        private static void _UpdateIOSScriptingDefineSymbols(bool arcoreIOSEnabled)
+        private static void UpdateIOSScriptingDefineSymbols(bool arcoreIOSEnabled)
         {
             string iOSScriptingDefineSymbols =
                 PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.iOS);
@@ -73,16 +73,16 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private static void _UpdateIOSPodDependencies(bool arcoreIOSEnabled)
+        private static void UpdateIOSPodDependencies(bool arcoreIOSEnabled)
         {
             string currentDirectory = Directory.GetCurrentDirectory();
             string arcoreEditorPath = Path.Combine(currentDirectory,
-              AssetDatabase.GUIDToAssetPath(k_ARCoreEditorFolderGuid));
+              AssetDatabase.GUIDToAssetPath(_arCoreEditorFolderGuid));
 
             string iOSPodDependencyTemplatePath =
-                Path.Combine(arcoreEditorPath, k_ARCoreIOSDependencyFileName + ".template");
+                Path.Combine(arcoreEditorPath, _arCoreIOSDependencyFileName + ".template");
             string iOSPodDependencyXMLPath =
-                Path.Combine(arcoreEditorPath, k_ARCoreIOSDependencyFileName + ".xml");
+                Path.Combine(arcoreEditorPath, _arCoreIOSDependencyFileName + ".xml");
 
             if (arcoreIOSEnabled && !File.Exists(iOSPodDependencyXMLPath))
             {
@@ -110,7 +110,7 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private static void _UpdateARCoreARKitIntegrationPlugin(bool arcoreIOSEnabled)
+        private static void UpdateARCoreARKitIntegrationPlugin(bool arcoreIOSEnabled)
         {
             string enableString = arcoreIOSEnabled ? "Enabling" : "Disabling";
             Debug.LogFormat("{0} ARCoreARKitIntegrationPlugin.", enableString);

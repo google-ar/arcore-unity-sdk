@@ -33,14 +33,14 @@ namespace GoogleARCore
     /// </summary>
     public static class InstantPreviewInput
     {
-        private static Touch[] s_Touches = new Touch[0];
-        private static List<Touch> s_TouchList = new List<Touch>();
+        private static Touch[] _touches = new Touch[0];
+        private static List<Touch> _touchList = new List<Touch>();
 
         /// <summary>
         /// Gets the inputString from Instant Preview since the last update.
         /// </summary>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden field.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden field.")]
         public static string inputString
         {
             get
@@ -53,14 +53,14 @@ namespace GoogleARCore
         /// Gets the available touch inputs from Instant Preview since the last
         /// update.
         /// </summary>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden field.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden field.")]
         public static Touch[] touches
         {
             get
             {
                 NativeApi.UnityGotTouches();
-                return s_Touches;
+                return _touches;
             }
         }
 
@@ -68,8 +68,8 @@ namespace GoogleARCore
         /// Gets the number of touches available from Instant preview since the
         /// last update.
         /// </summary>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden field.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden field.")]
         public static int touchCount
         {
             get
@@ -81,8 +81,8 @@ namespace GoogleARCore
         /// <summary>
         /// Gets return value of Input.mousePosition.
         /// </summary>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden field.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden field.")]
         public static Vector3 mousePosition
         {
             get
@@ -94,8 +94,8 @@ namespace GoogleARCore
         /// <summary>
         /// Gets a value indicating whether a mouse device is detected.
         /// </summary>
-        [SuppressMessage("UnityRules.UnityStyleRules", "US1000:FieldsMustBeUpperCamelCase",
-         Justification = "Overridden field.")]
+        [SuppressMessage("UnityRules.UnityStyleRules",
+         "US1109:PublicPropertiesMustBeUpperCamelCase", Justification = "Overridden field.")]
         public static bool mousePresent
         {
             get
@@ -166,19 +166,19 @@ namespace GoogleARCore
             }
 
             // Removes ended touches, and converts moves to stationary.
-            for (int i = 0; i < s_TouchList.Count; ++i)
+            for (int i = 0; i < _touchList.Count; ++i)
             {
-                if (s_TouchList[i].phase == TouchPhase.Ended)
+                if (_touchList[i].phase == TouchPhase.Ended)
                 {
-                    s_TouchList.RemoveAt(i);
+                    _touchList.RemoveAt(i);
                     --i;
                     continue;
                 }
 
-                var curTouch = s_TouchList[i];
+                var curTouch = _touchList[i];
                 curTouch.phase = TouchPhase.Stationary;
                 curTouch.deltaPosition = Vector2.zero;
-                s_TouchList[i] = curTouch;
+                _touchList[i] = curTouch;
             }
 
             // Updates touches.
@@ -206,22 +206,22 @@ namespace GoogleARCore
                         Screen.width * nativeTouch.X, Screen.height * (1f - nativeTouch.Y)),
                 };
 
-                var index = s_TouchList.FindIndex(touch => touch.fingerId == newTouch.fingerId);
+                var index = _touchList.FindIndex(touch => touch.fingerId == newTouch.fingerId);
 
                 // Adds touch if not found, otherwise updates it.
                 if (index < 0)
                 {
-                    s_TouchList.Add(newTouch);
+                    _touchList.Add(newTouch);
                 }
                 else
                 {
-                    var prevTouch = s_TouchList[index];
+                    var prevTouch = _touchList[index];
                     newTouch.deltaPosition += newTouch.position - prevTouch.position;
-                    s_TouchList[index] = newTouch;
+                    _touchList[index] = newTouch;
                 }
             }
 
-            s_Touches = s_TouchList.ToArray();
+            _touches = _touchList.ToArray();
         }
 
         private struct NativeTouch

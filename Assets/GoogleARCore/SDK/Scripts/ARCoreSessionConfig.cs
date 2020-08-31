@@ -138,6 +138,14 @@ namespace GoogleARCore
         /// </summary>
         [Tooltip("Chooses which DepthMode will be used in the ARCore session.")]
         public DepthMode DepthMode = DepthMode.Disabled;
+        [Header("Instant Placement")]
+
+        /// <summary>
+        /// Chooses the desired Instant Placement mode.
+        /// </summary>
+        [Tooltip("Chooses the desired Instant Placement mode.")]
+        public InstantPlacementMode InstantPlacementMode = InstantPlacementMode.Disabled;
+
         /// <summary>
         ///  Gets or sets a value indicating whether PlaneFinding is enabled.
         /// </summary>
@@ -222,6 +230,7 @@ namespace GoogleARCore
                 AugmentedImageDatabase != otherConfig.AugmentedImageDatabase ||
                 CameraFocusMode != otherConfig.CameraFocusMode ||
                 DepthMode != otherConfig.DepthMode ||
+                InstantPlacementMode != otherConfig.InstantPlacementMode ||
                 AugmentedFaceMode != otherConfig.AugmentedFaceMode)
             {
                 return false;
@@ -253,6 +262,7 @@ namespace GoogleARCore
             CameraFocusMode = other.CameraFocusMode;
             AugmentedFaceMode = other.AugmentedFaceMode;
             DepthMode = other.DepthMode;
+            InstantPlacementMode = other.InstantPlacementMode;
         }
 
         /// <summary>

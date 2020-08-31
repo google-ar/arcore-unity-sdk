@@ -44,7 +44,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// List of current active gestures.
         /// </summary>
-        protected List<T> m_Gestures = new List<T>();
+        protected List<T> _gestures = new List<T>();
 
         /// <summary>
         /// Event fired when a gesture is started.
@@ -65,9 +65,9 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
             TryCreateGestures();
 
             // Update gestures and determine if they should start.
-            for (int i = 0; i < m_Gestures.Count; i++)
+            for (int i = 0; i < _gestures.Count; i++)
             {
-                Gesture<T> gesture = m_Gestures[i];
+                Gesture<T> gesture = _gestures[i];
 
                 gesture.Update();
             }
@@ -96,7 +96,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
                     T gesture = createGestureFunction(touch);
                     gesture.onStart += OnStart;
                     gesture.onFinished += OnFinished;
-                    m_Gestures.Add(gesture);
+                    _gestures.Add(gesture);
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
                 T gesture = createGestureFunction(touch, otherTouch);
                 gesture.onStart += OnStart;
                 gesture.onFinished += OnFinished;
-                m_Gestures.Add(gesture);
+                _gestures.Add(gesture);
             }
         }
 
@@ -174,7 +174,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
 
         private void OnFinished(T gesture)
         {
-            m_Gestures.Remove(gesture);
+            _gestures.Remove(gesture);
         }
     }
 }

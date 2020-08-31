@@ -41,7 +41,7 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public VideoPlayer VideoPlayer;
 
-        private Texture m_RawImageTexture;
+        private Texture _rawImageTexture;
 
         /// <summary>
         /// The Unity Start() method.
@@ -49,8 +49,8 @@ namespace GoogleARCore.Examples.Common
         public void Start()
         {
             VideoPlayer.enabled = false;
-            m_RawImageTexture = RawImage.texture;
-            VideoPlayer.prepareCompleted += _PrepareCompleted;
+            _rawImageTexture = RawImage.texture;
+            VideoPlayer.prepareCompleted += PrepareCompleted;
         }
 
         /// <summary>
@@ -73,12 +73,12 @@ namespace GoogleARCore.Examples.Common
             {
                 // Stop video playback to save power usage.
                 VideoPlayer.Stop();
-                RawImage.texture = m_RawImageTexture;
+                RawImage.texture = _rawImageTexture;
                 VideoPlayer.enabled = false;
             }
         }
 
-        private void _PrepareCompleted(VideoPlayer player)
+        private void PrepareCompleted(VideoPlayer player)
         {
             RawImage.texture = player.texture;
         }

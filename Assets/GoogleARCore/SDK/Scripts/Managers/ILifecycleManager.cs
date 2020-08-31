@@ -24,7 +24,7 @@ namespace GoogleARCoreInternal
     using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    [SuppressMessage("UnityRules.UnityStyleRules", "US1101:NonPublicFieldsMustHavePrefixM",
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1108:NonPublicPropertiesMustBeLowerCamelCase",
      Justification = "This is an interface so fields are already public.")]
     internal interface ILifecycleManager
     {

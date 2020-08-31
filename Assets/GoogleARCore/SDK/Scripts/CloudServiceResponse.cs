@@ -51,8 +51,13 @@ namespace GoogleARCore.CrossPlatform
         ErrorServiceUnreachable,
 
         /// <summary>
-        /// The authorization provided by the application is not valid; The API key included in the
-        /// application manifest should be checked for accuracy.
+        /// The authorization provided by the application is not valid.
+        /// <list type="bullet">
+        /// <item>The Google Cloud project may not have enabled the ARCore Cloud Anchor API.</item>
+        /// <item>It may fail if the operation you are trying to perform is not allowed.</item>
+        /// <item>When using API key authentication, this will happen if the API key in the manifest
+        /// is invalid, unauthorized or missing.</item>
+        /// </list>
         /// </summary>
         ErrorNotAuthorized,
 
