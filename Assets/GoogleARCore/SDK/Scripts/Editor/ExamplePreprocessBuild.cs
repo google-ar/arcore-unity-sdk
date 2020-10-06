@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ExamplePreprocessBuild.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,13 @@ namespace GoogleARCoreInternal
                     SceneGuid = "83fb41cc294e74bdea57537befa00ffc",
                     IconGuid = "dcfb8b44c93d547e2bdf8a638c1415af"
                 });
+            AddExampleScene(new ExampleScene()
+            {
+                ProductName = "Persistent CloudAnchors U3D",
+                PackageName = "com.google.ar.core.examples.unity.persistentcloudanchors",
+                SceneGuid = "a1cbde3cab63248f4bbf8d8ad6586754",
+                IconGuid = "dcfb8b44c93d547e2bdf8a638c1415af"
+            });
             AddExampleScene(new ExampleScene()
                 {
                     ProductName = "AugmentedFaces U3D",

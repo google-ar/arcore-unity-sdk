@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CameraConfig.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,16 @@
 namespace GoogleARCore
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using UnityEngine;
 
     /// <summary>
     /// Type of depth sensor usage for a camera config.
     /// </summary>
     [Flags]
-    public enum CameraConfigDepthSensorUsages
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1200:FlagsEnumsMustBePlural",
+                     Justification = "Usage is plural.")]
+    public enum CameraConfigDepthSensorUsage
     {
         /// <summary>
         /// Indicates that a depth sensor must be present on the device,
@@ -51,7 +54,7 @@ namespace GoogleARCore
     public struct CameraConfig
     {
         internal CameraConfig(Vector2 imageSize, Vector2 textureSize, int minFPS, int maxFPS,
-            CameraConfigDepthSensorUsages depthSensor) : this()
+            CameraConfigDepthSensorUsage depthSensor) : this()
         {
             ImageSize = imageSize;
             TextureSize = textureSize;
@@ -81,8 +84,8 @@ namespace GoogleARCore
         public int MaxFPS { get; private set; }
 
         /// <summary>
-        /// Gets whether the depth sensor usage for this camera config.
+        /// Gets the depth sensor usage for this camera config.
         /// </summary>
-        public CameraConfigDepthSensorUsages DepthSensorUsage { get; private set; }
+        public CameraConfigDepthSensorUsage DepthSensorUsage { get; private set; }
     }
 }

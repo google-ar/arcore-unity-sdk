@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreAndroidLifecycleManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
@@ -62,6 +63,11 @@ namespace GoogleARCoreInternal
         // because it will triggier OnBeforeResumeSession which links to a public API
         // RegisterChooseCameraConfigurationCallback.
         private bool _haveDisableToEnableTransition = false;
+
+        private AsyncTask<AndroidPermissionsRequestResult>
+            _androidPermissionRequest = null;
+
+        private HashSet<string> _requiredPermissionNames = new HashSet<string>();
 
         private AndroidNativeHelper.AndroidSurfaceRotation _cachedDisplayRotation =
             AndroidNativeHelper.AndroidSurfaceRotation.Rotation0;
@@ -303,6 +309,11 @@ namespace GoogleARCoreInternal
                             SessionComponent.SessionConfig);
                 }
 
+                if (_requiredPermissionNames.Count > 0)
+                {
+                    RequestPermissions();
+                }
+
                 UpdateConfiguration(SessionComponent.SessionConfig);
             }
 
@@ -421,6 +432,8 @@ namespace GoogleARCoreInternal
             _cachedConfig = null;
             _desiredSessionState = null;
             _haveDisableToEnableTransition = false;
+            _requiredPermissionNames = new HashSet<string>();
+            _androidPermissionRequest = null;
             BackgroundTexture = null;
             SessionComponent = null;
             IsSessionChangedThisFrame = true;
@@ -563,6 +576,13 @@ namespace GoogleARCoreInternal
 
             _cachedConfig = ScriptableObject.CreateInstance<ARCoreSessionConfig>();
             _cachedConfig.CopyFrom(config);
+
+            if (_requiredPermissionNames.Count > 0)
+            {
+                RequestPermissions();
+                return;
+            }
+
             ExternApi.ArPresto_setConfigurationDirty();
         }
 
@@ -596,6 +616,34 @@ namespace GoogleARCoreInternal
             if (OnSessionSetEnabled != null)
             {
                 OnSessionSetEnabled(isEnabled);
+            }
+        }
+
+        private void RequestPermissions()
+        {
+            // All required permissions are granted.
+            if (_requiredPermissionNames.Count == 0)
+            {
+                return;
+            }
+
+            // Waiting for camera permission or there is another pending request.
+            if (!ARPrestoCallbackManager.Instance.IsCameraPermissionGranted() ||
+                _androidPermissionRequest != null)
+            {
+                return;
+            }
+
+            _androidPermissionRequest = AndroidPermissionsManager
+                .RequestPermission(_requiredPermissionNames.First());
+            if (_androidPermissionRequest != null)
+            {
+                _requiredPermissionNames.Remove(_requiredPermissionNames.First());
+                _androidPermissionRequest.ThenAction(result =>
+                {
+                    _androidPermissionRequest = null;
+                    ExternApi.ArPresto_setConfigurationDirty();
+                });
             }
         }
 

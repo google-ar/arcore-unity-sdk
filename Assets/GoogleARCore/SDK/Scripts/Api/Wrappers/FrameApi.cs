@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="FrameApi.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -247,46 +247,45 @@ namespace GoogleARCoreInternal
             return DepthStatus.Success;
         }
 
-        private bool UpdateDepthTexture(
-            ref Texture2D depthTexture, IntPtr depthImageHandle)
+        private bool UpdateDepthTexture(ref Texture2D texture, IntPtr imageHandle)
         {
             // Get the size of the depth data.
-            int width = _nativeSession.ImageApi.GetWidth(depthImageHandle);
-            int height = _nativeSession.ImageApi.GetHeight(depthImageHandle);
+            int width = _nativeSession.ImageApi.GetWidth(imageHandle);
+            int height = _nativeSession.ImageApi.GetHeight(imageHandle);
 
             // Access the depth image surface data.
             IntPtr planeDoublePtr = IntPtr.Zero;
             int planeSize = 0;
-            _nativeSession.ImageApi.GetPlaneData(
-                depthImageHandle, 0, ref planeDoublePtr, ref planeSize);
+            _nativeSession.ImageApi.GetPlaneData(imageHandle, 0, ref planeDoublePtr, ref planeSize);
             IntPtr planeDataPtr = new IntPtr(planeDoublePtr.ToInt64());
 
-            // Resize the depth texture if needed.
-            if (width != depthTexture.width ||
-                height != depthTexture.height ||
-                depthTexture.format != TextureFormat.RGB565)
-            {
-                if (!depthTexture.Resize(
-                    width, height, TextureFormat.RGB565, false))
-                {
-                    Debug.LogErrorFormat("Unable to resize depth texture! " +
-                            "Current: width {0} height {1} depthFormat {2} " +
-                            "Desired: width {3} height {4} depthFormat {5} ",
-                            depthTexture.width, depthTexture.height,
-                            depthTexture.format.ToString(),
-                            width, height,
-                            TextureFormat.RGB565);
+            int pixelStride = 0;
+            ExternApi.ArImage_getPlanePixelStride(_nativeSession.SessionHandle, imageHandle, 0,
+                                                  ref pixelStride);
 
-                    _nativeSession.ImageApi.Release(depthImageHandle);
+            // Lazy initialization of the image.
+            if (width != texture.width || height != texture.height)
+            {
+                // Pixel stride is 2 for depth images and 1 for confidence images.
+                TextureFormat format =
+                    pixelStride == 2 ? TextureFormat.RGB565 : TextureFormat.Alpha8;
+                if (!texture.Resize(width, height, format, false))
+                {
+                    Debug.LogErrorFormat(
+                        "Unable to resize texture. Current: width {0} height {1} format {2} " +
+                        "Desired: width {3} height {4} format {5} ", texture.width, texture.height,
+                        texture.format.ToString(), width, height, format);
+
+                    _nativeSession.ImageApi.Release(imageHandle);
                     return false;
                 }
             }
 
             // Copy the raw depth data to the texture.
-            depthTexture.LoadRawTextureData(planeDataPtr, planeSize);
-            depthTexture.Apply();
+            texture.LoadRawTextureData(planeDataPtr, planeSize);
+            texture.Apply();
 
-            _nativeSession.ImageApi.Release(depthImageHandle);
+            _nativeSession.ImageApi.Release(imageHandle);
 
             return true;
         }
@@ -351,6 +350,12 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArFrame_acquireDepthImage(
                 IntPtr sessionHandle, IntPtr frameHandle, ref IntPtr imageHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getPlanePixelStride(IntPtr sessionHandle,
+                                                                  IntPtr imageHandle,
+                                                                  int planeIndex,
+                                                                  ref int pixelStride);
 #pragma warning restore 626
         }
     }

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreProjectSettings.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,39 @@ namespace GoogleARCoreInternal
     using UnityEngine;
 
 
+    /// <summary>
+    /// Android Authentication Strategy.
+    /// </summary>
+    [Serializable]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+     Justification = "Internal.")]
+    public enum AndroidAuthenticationStrategy
+    {
+        None = 0,
+        [DisplayName("Api Key")]
+        ApiKey = 1,
+        [DisplayName("Keyless (recommended)")]
+        Keyless = 2,
+    }
+
+    /// <summary>
+    /// IOS Authentication Strategy.
+    /// </summary>
+    [Serializable]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules",
+                     "SA1602:EnumerationItemsMustBeDocumented",
+     Justification = "Internal.")]
+    public enum IOSAuthenticationStrategy
+    {
+        None = 0,
+        [DisplayName("Api Key")]
+        ApiKey = 1,
+        [DisplayName("Authentication Token (recommended)")]
+        AuthenticationToken = 2,
+    }
+
+
     [Serializable]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
      Justification = "Internal")]
@@ -45,9 +78,21 @@ namespace GoogleARCoreInternal
         [DisplayName("iOS Support Enabled")]
         public bool IsIOSSupportEnabled;
 
+        [DisplayName("Android Authentication Strategy")]
+        [DynamicHelp("GetAndroidStrategyHelpInfo")]
+        [EnumRange("GetAndroidStrategyRange")]
+        public AndroidAuthenticationStrategy AndroidAuthenticationStrategySetting =
+            AndroidAuthenticationStrategy.None;
+
         [DisplayName("Android API Key")]
         [DisplayCondition("IsAndroidApiKeyFieldDisplayed")]
         public string CloudServicesApiKey;
+
+        [DisplayName("iOS Authentication Strategy")]
+        [DynamicHelp("GetIosStrategyHelpInfo")]
+        [EnumRange("GetIosStrategyRange")]
+        public IOSAuthenticationStrategy IOSAuthenticationStrategySetting =
+            IOSAuthenticationStrategy.None;
 
         [DisplayName("iOS API Key")]
         [DisplayCondition("IsIosApiKeyFieldDisplayed")]
@@ -85,17 +130,39 @@ namespace GoogleARCoreInternal
             IsInstantPreviewEnabled = true;
             CloudServicesApiKey = string.Empty;
             IosCloudServicesApiKey = string.Empty;
+            AndroidAuthenticationStrategySetting = AndroidAuthenticationStrategy.None;
+            IOSAuthenticationStrategySetting = IOSAuthenticationStrategy.None;
 
-            if (File.Exists(_projectSettingsPath))
+            string absolutePath = Application.dataPath + "/../" + _projectSettingsPath;
+            if (File.Exists(absolutePath))
             {
                 ARCoreProjectSettings settings = JsonUtility.FromJson<ARCoreProjectSettings>(
-                    File.ReadAllText(_projectSettingsPath));
+                    File.ReadAllText(absolutePath));
                 foreach (FieldInfo fieldInfo in this.GetType().GetFields())
                 {
                     fieldInfo.SetValue(this, fieldInfo.GetValue(settings));
                 }
             }
+            else
+            {
+                Debug.Log("Cannot find ARCoreProjectSettings at " + absolutePath);
+            }
 
+            if (AndroidAuthenticationStrategySetting == AndroidAuthenticationStrategy.None)
+            {
+                AndroidAuthenticationStrategySetting =
+                    string.IsNullOrEmpty(ARCoreProjectSettings.Instance.CloudServicesApiKey) ?
+                    AndroidAuthenticationStrategy.Keyless :
+                    AndroidAuthenticationStrategy.ApiKey;
+            }
+
+            if (IOSAuthenticationStrategySetting == IOSAuthenticationStrategy.None)
+            {
+                IOSAuthenticationStrategySetting =
+                    string.IsNullOrEmpty(ARCoreProjectSettings.Instance.IosCloudServicesApiKey) ?
+                    IOSAuthenticationStrategy.AuthenticationToken :
+                    IOSAuthenticationStrategy.ApiKey;
+            }
             // Upgrades settings from V1.0.0 to V1.1.0.
             if (Version.Equals("V1.0.0"))
             {
@@ -124,12 +191,76 @@ namespace GoogleARCoreInternal
 
         public bool IsAndroidApiKeyFieldDisplayed()
         {
-            return true;
+            if (AndroidAuthenticationStrategySetting == AndroidAuthenticationStrategy.ApiKey)
+            {
+                return true;
+            }
+            else
+            {
+                CloudServicesApiKey = string.Empty;
+                return false;
+            }
+        }
+
+        public HelpAttribute GetAndroidStrategyHelpInfo()
+        {
+            if (AndroidAuthenticationStrategySetting == AndroidAuthenticationStrategy.ApiKey)
+            {
+                return new HelpAttribute(
+                    "Cloud Anchor persistence will not be availble on Android when 'API Key'" +
+                        " authentication strategy is selected.",
+                    HelpAttribute.HelpMessageType.Warning);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Array GetAndroidStrategyRange()
+        {
+            return new AndroidAuthenticationStrategy[]
+                {
+                    AndroidAuthenticationStrategy.ApiKey,
+                    AndroidAuthenticationStrategy.Keyless,
+                };
         }
 
         public bool IsIosApiKeyFieldDisplayed()
         {
-            return true;
+            if (IOSAuthenticationStrategySetting == IOSAuthenticationStrategy.ApiKey)
+            {
+                return true;
+            }
+            else
+            {
+                IosCloudServicesApiKey = string.Empty;
+                return false;
+            }
+        }
+
+        public Array GetIosStrategyRange()
+        {
+            return new IOSAuthenticationStrategy[]
+                {
+                    IOSAuthenticationStrategy.ApiKey,
+                    IOSAuthenticationStrategy.AuthenticationToken,
+                };
+        }
+
+        public HelpAttribute GetIosStrategyHelpInfo()
+        {
+            if (IOSAuthenticationStrategySetting == IOSAuthenticationStrategy.ApiKey)
+            {
+                return new HelpAttribute(
+                    "Cloud Anchor persistence will not be availble on iOS when 'API Key'" +
+                        " authentication strategy is selected.",
+                    HelpAttribute.HelpMessageType.Warning);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 

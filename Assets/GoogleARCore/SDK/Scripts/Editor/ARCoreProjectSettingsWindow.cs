@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreProjectSettingsWindow.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ namespace GoogleARCoreInternal
 #if !UNITY_2018_3_OR_NEWER
     internal class ARCoreProjectSettingsWindow : EditorWindow
     {
+        private Vector3 _scrollPos = Vector2.zero;
+
         [MenuItem("Edit/Project Settings/Google ARCore")]
         private static void ShowARCoreProjectSettingsWindow()
         {
             ARCoreProjectSettings.Instance.Load();
-            Rect rect = new Rect(500, 300, 400, 200);
+            Rect rect = new Rect(500, 300, 600, 320);
             ARCoreProjectSettingsWindow window =
                 GetWindowWithRect<ARCoreProjectSettingsWindow>(rect);
             window.titleContent = new GUIContent("ARCore Project Settings");
@@ -42,7 +44,12 @@ namespace GoogleARCoreInternal
         private void OnGUI()
         {
             OnGUIHeader();
+            _scrollPos = EditorGUILayout.BeginScrollView(
+                _scrollPos,
+                GUILayout.Width(position.width),
+                GUILayout.Height(position.height - 100));
             ARCoreProjectSettingsGUI.OnGUI(true);
+            EditorGUILayout.EndScrollView();
             OnGUIFooter();
 
             if (GUI.changed)
@@ -66,6 +73,7 @@ namespace GoogleARCoreInternal
 
         private void OnGUIFooter()
         {
+            GUILayout.Space(EditorGUIUtility.singleLineHeight);
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Close", GUILayout.Width(50), GUILayout.Height(20)))
@@ -74,6 +82,7 @@ namespace GoogleARCoreInternal
             }
 
             EditorGUILayout.EndHorizontal();
+            GUILayout.Space(EditorGUIUtility.singleLineHeight);
         }
     }
 #endif

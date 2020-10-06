@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARPrestoCallbackManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ namespace GoogleARCoreInternal
 
     internal class ARPrestoCallbackManager
     {
+        internal const string _cameraPermissionName = "android.permission.CAMERA";
+
         private static ARPrestoCallbackManager _instance;
 
         private static IAndroidPermissionsCheck _androidPermissionCheck;
@@ -145,6 +147,11 @@ namespace GoogleARCoreInternal
             _pendingInstallationRequestCallbacks.Add(onComplete);
 
             return task;
+        }
+
+        public bool IsCameraPermissionGranted()
+        {
+            return AndroidPermissionsManager.IsPermissionGranted(_cameraPermissionName);
         }
 
         internal static void ResetInstance()
@@ -271,11 +278,9 @@ namespace GoogleARCoreInternal
         private void RequestCameraPermission(CameraPermissionsResultCallback onComplete,
             IntPtr context)
         {
-            const string cameraPermissionName = "android.permission.CAMERA";
-
             if (_androidPermissionCheck != null)
             {
-                _androidPermissionCheck.RequestAndroidPermission(cameraPermissionName)
+                _androidPermissionCheck.RequestAndroidPermission(_cameraPermissionName)
                     .ThenAction((grantResult) =>
                     {
                         onComplete(grantResult.IsAllGranted, context);

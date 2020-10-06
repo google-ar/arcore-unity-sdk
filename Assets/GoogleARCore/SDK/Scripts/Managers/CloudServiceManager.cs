@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CloudServiceManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -125,6 +125,69 @@ namespace GoogleARCoreInternal.CrossPlatform
             CancelCloudAnchorRequest(cloudAnchorId);
         }
 
+        public GoogleARCore.AsyncTask<CloudAnchorResult> CreateCloudAnchor(
+            GoogleARCore.Anchor anchor, int ttlDays)
+        {
+            Action<CloudAnchorResult> onComplete;
+            GoogleARCore.AsyncTask<CloudAnchorResult> task;
+            if (!CreateCloudAnchorResultAsyncTask(out onComplete, out task))
+            {
+                return task;
+            }
+
+            CreateCloudAnchor(onComplete, anchor._nativeHandle, ttlDays);
+
+            return task;
+        }
+
+        public GoogleARCore.AsyncTask<CloudAnchorResult> CreateCloudAnchor(
+            UnityEngine.Pose pose, int ttlDays)
+        {
+            Action<CloudAnchorResult> onComplete;
+            GoogleARCore.AsyncTask<CloudAnchorResult> task;
+            if (!CreateCloudAnchorResultAsyncTask(out onComplete, out task))
+            {
+                return task;
+            }
+
+            // Create an native Pose and Anchor.
+            var poseHandle = LifecycleManager.Instance.NativeSession.PoseApi.Create(pose);
+            IntPtr arkitAnchorHandle = IntPtr.Zero;
+            ExternApi.ARKitAnchor_create(poseHandle, ref arkitAnchorHandle);
+
+            CreateCloudAnchor(onComplete, arkitAnchorHandle, ttlDays);
+
+            // Clean up handles for the Pose and ARKitAnchor.
+            LifecycleManager.Instance.NativeSession.PoseApi.Destroy(poseHandle);
+            ExternApi.ARKitAnchor_release(arkitAnchorHandle);
+
+            return task;
+        }
+
+        public void SetAuthToken(String authToken)
+        {
+            if (String.IsNullOrEmpty(authToken))
+            {
+                Debug.LogWarning("Cannot set token in applications with empty token.");
+                return;
+            }
+
+            if (LifecycleManager.Instance.NativeSession == null)
+            {
+                Debug.LogWarning("Cannot set token before ARCore session is created.");
+                return;
+            }
+
+            LifecycleManager.Instance.NativeSession.SessionApi.SetAuthToken(authToken);
+        }
+
+        // TODO(b/130180380): Re-evaluate FeatureMapQuality API name for public promotion.
+        public FeatureMapQuality EstimateFeatureMapQualityForHosting(Pose pose)
+        {
+            return LifecycleManager.Instance.NativeSession.SessionApi
+                .EstimateFeatureMapQualityForHosting(pose);
+        }
+
         /// <summary>
         /// Helper for creating and initializing the Action and AsyncTask for CloudAnchorResult.
         /// </summary>
@@ -201,6 +264,28 @@ namespace GoogleARCoreInternal.CrossPlatform
             IntPtr cloudAnchorHandle = IntPtr.Zero;
             var status = LifecycleManager.Instance.NativeSession.SessionApi
                 .CreateCloudAnchor(anchorNativeHandle, out cloudAnchorHandle);
+
+            if (status != ApiArStatus.Success)
+            {
+                onComplete(new CloudAnchorResult()
+                {
+                    Response = status.ToCloudServiceResponse(),
+                    Anchor = null,
+                });
+
+                return;
+            }
+
+            CreateAndTrackCloudAnchorRequest(cloudAnchorHandle, onComplete);
+            return;
+        }
+
+        protected internal void CreateCloudAnchor(
+            Action<CloudAnchorResult> onComplete, IntPtr anchorNativeHandle, int ttlDays)
+        {
+            IntPtr cloudAnchorHandle = IntPtr.Zero;
+            var status = LifecycleManager.Instance.NativeSession.SessionApi
+                .HostCloudAnchor(anchorNativeHandle, ttlDays, out cloudAnchorHandle);
 
             if (status != ApiArStatus.Success)
             {

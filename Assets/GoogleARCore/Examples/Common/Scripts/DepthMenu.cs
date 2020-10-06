@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="DepthMenu.cs" company="Google LLC">
 //
-// Copyright 2020 Google LLC. All Rights Reserved.
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@
 
 namespace GoogleARCore.Examples.Common
 {
-    using System.Collections.Generic;
     using GoogleARCore;
-    using GoogleARCore.Examples.Common;
     using UnityEngine;
     using UnityEngine.Serialization;
     using UnityEngine.UI;
@@ -56,25 +54,11 @@ namespace GoogleARCore.Examples.Common
         private Camera _camera = null;
 
         /// <summary>
-        /// The Menu Window shows the depth configurations.
-        /// </summary>
-        [FormerlySerializedAs("m_MenuWindow")]
-        [SerializeField]
-        private GameObject _menuWindow = null;
-
-        /// <summary>
         /// The Depth Card Window.
         /// </summary>
         [FormerlySerializedAs("m_DepthCardWindow")]
         [SerializeField]
         private GameObject _depthCardWindow = null;
-
-        /// <summary>
-        /// The button to open the menu window.
-        /// </summary>
-        [FormerlySerializedAs("m_MenuButton")]
-        [SerializeField]
-        private Button _menuButton = null;
 
         /// <summary>
         /// The button to apply the config and close the menu window.
@@ -139,8 +123,15 @@ namespace GoogleARCore.Examples.Common
         [SerializeField]
         private Text _depthMapToggleLabel = null;
 
+        /// <summary>
+        /// Indicates that the session has been configured based on
+        /// whether the device supports depth.
+        /// </summary>
         private bool _depthConfigured = false;
 
+        /// <summary>
+        /// Indicates what depth state applies to current session.
+        /// </summary>
         private DepthState _depthState = DepthState.DepthNotAvailable;
 
         /// <summary>
@@ -174,14 +165,12 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void Start()
         {
-            _menuButton.onClick.AddListener(OnMenuButtonClicked);
             _applyButton.onClick.AddListener(OnApplyButtonClicked);
             _cancelButton.onClick.AddListener(OnCancelButtonClicked);
             _enableDepthButton.onClick.AddListener(OnEnableDepthButtonClicked);
             _disableDepthButton.onClick.AddListener(OnDisableDepthButtonClicked);
             _enableDepthToggle.onValueChanged.AddListener(OnEnableDepthToggleValueChanged);
 
-            _menuWindow.SetActive(false);
             _depthCardWindow.SetActive(false);
             _debugVisualizer.SetActive(false);
         }
@@ -191,7 +180,6 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnDestroy()
         {
-            _menuButton.onClick.RemoveListener(OnMenuButtonClicked);
             _applyButton.onClick.RemoveListener(OnApplyButtonClicked);
             _cancelButton.onClick.RemoveListener(OnCancelButtonClicked);
             _enableDepthButton.onClick.RemoveListener(OnEnableDepthButtonClicked);
@@ -210,23 +198,19 @@ namespace GoogleARCore.Examples.Common
                 // Hence, it would be better NOT to call `IsDepthModeSupported` in start().
                 if (Session.IsDepthModeSupported(DepthMode.Automatic))
                 {
+                    _depthState = DepthState.DepthDisabled;
+                    _menuText.text = "Your device supports depth.";
                     _depthCardWindow.SetActive(true);
                     _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
                 }
                 else
                 {
-                    _depthConfigured = true;
+                    _depthState = DepthState.DepthNotAvailable;
+                    _menuText.text = "Your device doesn't support depth.";
                 }
-            }
-        }
 
-        /// <summary>
-        /// Check whether the user could place asset.
-        /// </summary>
-        /// <returns>Whether the user could place asset.</returns>
-        public bool CanPlaceAsset()
-        {
-            return !_depthCardWindow.activeSelf & !_menuWindow.activeSelf;
+                _depthConfigured = true;
+            }
         }
 
         /// <summary>
@@ -239,7 +223,10 @@ namespace GoogleARCore.Examples.Common
                 || _depthState == DepthState.DepthMap;
         }
 
-        private void OnMenuButtonClicked()
+        /// <summary>
+        /// Callback event when the depth menu button is clicked.
+        /// </summary>
+        public void OnMenuButtonClicked()
         {
             if (!_depthConfigured)
             {
@@ -257,10 +244,10 @@ namespace GoogleARCore.Examples.Common
                     _menuText.text = "Your device doesn't support depth.";
                 }
 
-                ResetToggle();
+                _depthConfigured = true;
+                ApplyDepthState();
             }
 
-            _menuWindow.SetActive(true);
             _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(false);
         }
 
@@ -277,21 +264,19 @@ namespace GoogleARCore.Examples.Common
                 _debugVisualizer.SetActive(false);
             }
 
-            _menuWindow.SetActive(false);
             _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
         private void OnCancelButtonClicked()
         {
-            ResetToggle();
-            _menuWindow.SetActive(false);
+            ApplyDepthState();
             _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
 
         private void OnEnableDepthButtonClicked()
         {
             ConfigureDepth(true);
-            ResetToggle();
+            ApplyDepthState();
             _depthCardWindow.SetActive(false);
             _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
@@ -299,7 +284,7 @@ namespace GoogleARCore.Examples.Common
         private void OnDisableDepthButtonClicked()
         {
             ConfigureDepth(false);
-            ResetToggle();
+            ApplyDepthState();
             _depthCardWindow.SetActive(false);
             _planeDiscoveryGuide.EnablePlaneDiscoveryGuide(true);
         }
@@ -322,11 +307,10 @@ namespace GoogleARCore.Examples.Common
         private void ConfigureDepth(bool depthEnabled)
         {
             (_camera.GetComponent(typeof(DepthEffect)) as MonoBehaviour).enabled = depthEnabled;
-            _depthConfigured = true;
             _depthState = depthEnabled ? DepthState.DepthEnabled : DepthState.DepthDisabled;
         }
 
-        private void ResetToggle()
+        private void ApplyDepthState()
         {
             switch (_depthState)
             {

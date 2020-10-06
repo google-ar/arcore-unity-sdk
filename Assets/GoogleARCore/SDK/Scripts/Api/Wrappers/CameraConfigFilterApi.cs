@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CameraConfigFilterApi.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -87,12 +87,12 @@ namespace GoogleARCoreInternal
             int depthFilter = 0;
             if (depthSensorUsage.RequireAndUse)
             {
-                depthFilter |= (int)CameraConfigDepthSensorUsages.RequireAndUse;
+                depthFilter |= (int)CameraConfigDepthSensorUsage.RequireAndUse;
             }
 
             if (depthSensorUsage.DoNotUse)
             {
-                depthFilter |= (int)CameraConfigDepthSensorUsages.DoNotUse;
+                depthFilter |= (int)CameraConfigDepthSensorUsage.DoNotUse;
             }
 
             return depthFilter;

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreWorldOriginHelper.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,8 +138,8 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// Output the closest hit from the camera.
         /// Note that the Unity's screen coordinate (0, 0) starts from bottom left.
         /// </summary>
-        /// <param name="x">Horizontal touch position in Unity's screen coordiante.</param>
-        /// <param name="y">Vertical touch position in Unity's screen coordiante.</param>
+        /// <param name="x">Horizontal touch position in Unity's screen coordinate.</param>
+        /// <param name="y">Vertical touch position in Unity's screen coordinate.</param>
         /// <param name="filter">A filter bitmask where each set bit in
         /// <see cref="TrackableHitFlags"/>
         /// represents a category of raycast hits the method call should consider valid.</param>

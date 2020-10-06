@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ApiCameraMetadata.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace GoogleARCoreInternal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
-    internal enum NdkCameraMetadataType
+    internal enum ArCameraMetadataType
     {
         Byte = 0,
         Int32 = 1,
@@ -49,7 +49,7 @@ namespace GoogleARCoreInternal
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct NdkCameraMetadata
+    internal struct ArCameraMetadata
     {
         [FieldOffset(0)]
         [MarshalAs(UnmanagedType.I4)]
@@ -57,7 +57,7 @@ namespace GoogleARCoreInternal
 
         [FieldOffset(4)]
         [MarshalAs(UnmanagedType.I1)]
-        public NdkCameraMetadataType Type;
+        public ArCameraMetadataType Type;
 
         [FieldOffset(8)]
         [MarshalAs(UnmanagedType.I4)]

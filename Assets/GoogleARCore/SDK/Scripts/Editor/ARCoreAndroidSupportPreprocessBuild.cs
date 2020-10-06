@@ -51,7 +51,8 @@ namespace GoogleARCoreInternal
         {
             if (target == BuildTarget.Android)
             {
-#if UNITY_2018_4 || UNITY_2019 || UNITY_2020_1
+                Check64BitArch();
+#if UNITY_2018_4 || UNITY_2019
 #if UNITY_2018_4
                 CheckBuildSystem();
 #endif
@@ -156,6 +157,20 @@ namespace GoogleARCoreInternal
                     "check 'Custom Launcher Gradle Template'. Then edit the generated file " +
                     "'Assets/Plugins/Android/launcherTemplate.gradle' by adding dependency " +
                     "'com.android.tools.build:gradle:3.6.0.'.");
+            }
+        }
+
+        private void Check64BitArch()
+        {
+            bool includes64Bit =
+                    (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
+            if (!includes64Bit)
+            {
+                Debug.LogWarning("ARCore: Missing ARM64 architecture which is required for " +
+                "Android 64-bit devices. See https://developers.google.com/ar/64bit.\nSelect " +
+                "IL2CPP  in 'Project Settings > Player > Other Settings > Scripting Backend' and " +
+                "select ARM64 in 'Project Settings > Player > Other Settings > Target " +
+                "Architectures.'");
             }
         }
 

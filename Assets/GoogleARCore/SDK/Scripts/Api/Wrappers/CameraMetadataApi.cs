@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CameraMetadataApi.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,18 +54,17 @@ namespace GoogleARCoreInternal
         public bool TryGetValues(IntPtr cameraMetadataHandle,
             CameraMetadataTag tag, List<CameraMetadataValue> resultList)
         {
-            IntPtr ndkMetadataHandle = IntPtr.Zero;
-            ExternApi.ArImageMetadata_getNdkCameraMetadata(_nativeSession.SessionHandle,
-                cameraMetadataHandle, ref ndkMetadataHandle);
-
             resultList.Clear();
-            NdkCameraMetadata entry = new NdkCameraMetadata();
-            NdkCameraStatus status =
-                ExternApi.ACameraMetadata_getConstEntry(ndkMetadataHandle, tag, ref entry);
-            if (status != NdkCameraStatus.Ok)
+            uint utag = (uint)tag;
+            ArCameraMetadata entry = new ArCameraMetadata();
+            ApiArStatus status =
+                ExternApi.ArImageMetadata_getConstEntry(_nativeSession.SessionHandle,
+                                                        cameraMetadataHandle, utag,
+                                                        ref entry);
+            if (status != ApiArStatus.Success)
             {
                 ARDebug.LogErrorFormat(
-                    "ACameraMetadata_getConstEntry error with native camera error code: {0}",
+                    "ArImageMetadata_getConstEntry error with native camera error code: {0}",
                     status);
                 return false;
             }
@@ -82,37 +81,37 @@ namespace GoogleARCoreInternal
             {
                 switch (entry.Type)
                 {
-                    case NdkCameraMetadataType.Byte:
+                    case ArCameraMetadataType.Byte:
                         sbyte byteValue = (sbyte)Marshal.PtrToStructure(
                             MarshalingHelper.GetPtrToUnmanagedArrayElement<sbyte>(entry.Value, i),
                             typeof(sbyte));
                         resultList.Add(new CameraMetadataValue(byteValue));
                         break;
-                    case NdkCameraMetadataType.Int32:
+                    case ArCameraMetadataType.Int32:
                         int intValue = (int)Marshal.PtrToStructure(
                             MarshalingHelper.GetPtrToUnmanagedArrayElement<int>(entry.Value, i),
                             typeof(int));
                         resultList.Add(new CameraMetadataValue(intValue));
                         break;
-                    case NdkCameraMetadataType.Float:
+                    case ArCameraMetadataType.Float:
                         float floatValue = (float)Marshal.PtrToStructure(
                             MarshalingHelper.GetPtrToUnmanagedArrayElement<float>(entry.Value, i),
                             typeof(float));
                         resultList.Add(new CameraMetadataValue(floatValue));
                         break;
-                    case NdkCameraMetadataType.Int64:
+                    case ArCameraMetadataType.Int64:
                         long longValue = (long)Marshal.PtrToStructure(
                             MarshalingHelper.GetPtrToUnmanagedArrayElement<long>(entry.Value, i),
                             typeof(long));
                         resultList.Add(new CameraMetadataValue(longValue));
                         break;
-                    case NdkCameraMetadataType.Double:
+                    case ArCameraMetadataType.Double:
                         double doubleValue = (double)Marshal.PtrToStructure(
                             MarshalingHelper.GetPtrToUnmanagedArrayElement<double>(entry.Value, i),
                             typeof(double));
                         resultList.Add(new CameraMetadataValue(doubleValue));
                         break;
-                    case NdkCameraMetadataType.Rational:
+                    case ArCameraMetadataType.Rational:
                         CameraMetadataRational rationalValue =
                             (CameraMetadataRational)Marshal.PtrToStructure(
                                 MarshalingHelper
@@ -132,26 +131,20 @@ namespace GoogleARCoreInternal
         public bool GetAllCameraMetadataTags(
             IntPtr cameraMetadataHandle, List<CameraMetadataTag> resultList)
         {
-            IntPtr ndkMetadataHandle = IntPtr.Zero;
-
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 InstantPreviewManager.LogLimitedSupportMessage("access camera metadata tags");
                 return false;
             }
 
-            ExternApi.ArImageMetadata_getNdkCameraMetadata(_nativeSession.SessionHandle,
-                cameraMetadataHandle, ref ndkMetadataHandle);
-
             IntPtr tagsHandle = IntPtr.Zero;
             int tagsCount = 0;
-            NdkCameraStatus status = ExternApi.ACameraMetadata_getAllTags(
-                ndkMetadataHandle, ref tagsCount, ref tagsHandle);
-            if (status != NdkCameraStatus.Ok)
+            ExternApi.ArImageMetadata_getAllKeys(
+                _nativeSession.SessionHandle, cameraMetadataHandle, ref tagsCount, ref tagsHandle);
+            if (tagsCount == 0 || tagsHandle == IntPtr.Zero)
             {
-                ARDebug.LogErrorFormat(
-                    "ACameraMetadata_getAllTags error with native camera error code: {0}",
-                    status);
+                ARDebug.LogError(
+                    "ArImageMetadata_getAllKeys error with empty metadata keys list.");
                 return false;
             }
 
@@ -169,19 +162,17 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArImageMetadata_getNdkCameraMetadata(
-                IntPtr session, IntPtr image_metadata, ref IntPtr out_ndk_metadata);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImageMetadata_release(IntPtr metadata);
 
-            [AndroidImport(ApiConstants.NdkCameraApi)]
-            public static extern NdkCameraStatus ACameraMetadata_getConstEntry(
-                IntPtr ndkCameraMetadata, CameraMetadataTag tag, ref NdkCameraMetadata entry);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImageMetadata_getAllKeys(
+                IntPtr session, IntPtr image_metadata, ref int out_number_of_tags,
+                ref IntPtr out_tags);
 
-            [AndroidImport(ApiConstants.NdkCameraApi)]
-            public static extern NdkCameraStatus ACameraMetadata_getAllTags(
-                IntPtr ndkCameraMetadata, ref int numEntries, ref IntPtr tags);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArImageMetadata_getConstEntry(
+                IntPtr session, IntPtr image_metadata, uint tag,
+                ref ArCameraMetadata out_metadata_entry);
 #pragma warning restore 626
         }
     }

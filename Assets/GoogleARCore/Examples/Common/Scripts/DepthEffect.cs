@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="DepthEffect.cs" company="Google LLC">
 //
-// Copyright 2020 Google LLC. All Rights Reserved.
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -182,7 +182,8 @@ namespace GoogleARCore.Examples.Common
             _depthMaterial.SetFloat("_TransitionSize", TransitionSize);
             Shader.SetGlobalFloat("_BlurSize", BlurSize / BlurDownsample);
 
-            if (DepthMenu != null && DepthMenu.IsDepthEnabled())
+            if (Session.Status == SessionStatus.Tracking && DepthMenu != null &&
+                DepthMenu.IsDepthEnabled())
             {
                 // Gets the latest depth map from ARCore.
                 Frame.CameraImage.UpdateDepthTexture(ref _depthTexture);

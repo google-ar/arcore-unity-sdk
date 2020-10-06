@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="PointCloudPoint.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ namespace GoogleARCore
         /// <summary>
         /// Gets or sets a number that identifies the point within a point cloud and ARCore session.
         ///
-        /// This value is guarenteed to be unique if the ARCore session has been running for less
+        /// This value is guaranteed to be unique if the ARCore session has been running for less
         /// than 24 hours.
         /// </summary>
         /// <value>A number that identifies the point within a point cloud and ARCore

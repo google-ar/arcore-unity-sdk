@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AndroidPermissionsManager.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 namespace GoogleARCore
 {
     using System;
+    using System.Collections.Generic;
     using GoogleARCoreInternal;
     using UnityEngine;
 
@@ -101,7 +102,7 @@ namespace GoogleARCore
             return _currentRequest;
         }
 
-         /// <summary>
+        /// <summary>
         /// Requests an Android permission from the user.
         /// </summary>
         /// <param name="permissionName">The permission to be requested (e.g.

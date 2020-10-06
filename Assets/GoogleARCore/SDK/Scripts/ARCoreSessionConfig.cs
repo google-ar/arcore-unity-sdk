@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreSessionConfig.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ namespace GoogleARCore
         /// sets QualitySetting.vSyncCount to 0 the entire Unity application (e.g animations, UI)
         /// will also update at the camera sensor frame rate.
         ///
-        /// Note that enabling this setting does not guarentee each Unity frame will have a new and
+        /// Note that enabling this setting does not guarantee each Unity frame will have a new and
         /// unique camera background texture.  This is because the period of time ARCore will wait
         /// for a new camera frame to become available is capped (currently at 66ms) to avoid a
         /// deadlock.
@@ -132,12 +132,12 @@ namespace GoogleARCore
         /// </summary>
         public AugmentedFaceMode AugmentedFaceMode = AugmentedFaceMode.Disabled;
 
-
         /// <summary>
         /// Chooses which DepthMode will be used in the ARCore session.
         /// </summary>
         [Tooltip("Chooses which DepthMode will be used in the ARCore session.")]
         public DepthMode DepthMode = DepthMode.Disabled;
+
         [Header("Instant Placement")]
 
         /// <summary>

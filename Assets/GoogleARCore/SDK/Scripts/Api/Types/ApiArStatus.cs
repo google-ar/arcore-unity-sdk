@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ApiArStatus.cs" company="Google LLC">
 //
-// Copyright 2016 Google LLC. All Rights Reserved.
+// Copyright 2016 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -105,6 +105,9 @@ namespace GoogleARCoreInternal
         // ArSession_resume() will return this status if the camera configuration was changed
         // and there are any unreleased images.
         ErrorIllegalState = -20,
+
+        // The requested metadata tag cannot be found in input metadata.
+        ErrorMetadataNotFound = -26,
 
         // The ARCore APK is not installed on this device.
         UnavailableArCoreNotInstalled = -100,

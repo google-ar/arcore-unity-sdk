@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CameraConfigApi.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -123,19 +123,19 @@ namespace GoogleARCoreInternal
                 _nativeSession.SessionHandle, cameraConfigHandle, ref minFps, ref maxFps);
         }
 
-        public CameraConfigDepthSensorUsages GetDepthSensorUsage(IntPtr cameraConfigHandle)
+        public CameraConfigDepthSensorUsage GetDepthSensorUsage(IntPtr cameraConfigHandle)
         {
-            int depthSensorUsage = (int)CameraConfigDepthSensorUsages.DoNotUse;
+            int depthSensorUsage = (int)CameraConfigDepthSensorUsage.DoNotUse;
 
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 InstantPreviewManager.LogLimitedSupportMessage("access ARCamera DepthSensorUsage");
-                return (CameraConfigDepthSensorUsages)depthSensorUsage;
+                return (CameraConfigDepthSensorUsage)depthSensorUsage;
             }
 
             ExternApi.ArCameraConfig_getDepthSensorUsage(
                 _nativeSession.SessionHandle, cameraConfigHandle, ref depthSensorUsage);
-            return (CameraConfigDepthSensorUsages)depthSensorUsage;
+            return (CameraConfigDepthSensorUsage)depthSensorUsage;
         }
 
         private struct ExternApi

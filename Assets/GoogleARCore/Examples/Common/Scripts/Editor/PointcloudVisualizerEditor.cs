@@ -1,6 +1,6 @@
 // <copyright file="PointcloudVisualizerEditor.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,13 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         public void OnEnable()
         {
-            _script = serializedObject.FindProperty("_script");
+            _script = serializedObject.FindProperty("m_Script");
+            if (_script == null)
+            {
+                // Early versions of Unity used `_script` instead of `m_Script`.
+                _script = serializedObject.FindProperty("_script");
+            }
+
             _pointColor = serializedObject.FindProperty("PointColor");
             _defaultSize = serializedObject.FindProperty("_defaultSize");
             _maxPointCount = serializedObject.FindProperty("_maxPointCount");
@@ -62,9 +68,13 @@ namespace GoogleARCore.Examples.Common
         {
             serializedObject.Update();
 
-            GUI.enabled = false;
-            EditorGUILayout.PropertyField(_script, true, new GUILayoutOption[0]);
-            GUI.enabled = true;
+            // Only attempt to add built-in srcipt property if it was actually found in OnEnable().
+            if (_script != null)
+            {
+                GUI.enabled = false;
+                EditorGUILayout.PropertyField(_script, true, new GUILayoutOption[0]);
+                GUI.enabled = true;
+            }
 
             var pointcloudVisualizerScript = target as PointcloudVisualizer;
 

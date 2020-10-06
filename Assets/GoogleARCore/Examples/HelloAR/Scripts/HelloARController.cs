@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="HelloARController.cs" company="Google LLC">
 //
-// Copyright 2020 Google LLC. All Rights Reserved.
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,17 @@ namespace GoogleARCore.Examples.HelloAR
         /// The Depth Setting Menu.
         /// </summary>
         public DepthMenu DepthMenu;
+
+        /// <summary>
+        /// The Instant Placement Setting Menu.
+        /// </summary>
+        public InstantPlacementMenu InstantPlacementMenu;
+
+        /// <summary>
+        /// A prefab to place when an instant placement raycast from a user touch hits an instant
+        /// placement point.
+        /// </summary>
+        public GameObject InstantPlacementPrefab;
 
         /// <summary>
         /// The first-person camera being used to render the passthrough camera image (i.e. AR
@@ -90,11 +101,6 @@ namespace GoogleARCore.Examples.HelloAR
         {
             UpdateApplicationLifecycle();
 
-            if (DepthMenu != null && !DepthMenu.CanPlaceAsset())
-            {
-                return;
-            }
-
             // If the player has not touched the screen, we are done with this update.
             Touch touch;
             if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
@@ -110,25 +116,21 @@ namespace GoogleARCore.Examples.HelloAR
 
             // Raycast against the location the player touched to search for planes.
             TrackableHit hit;
-            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
-                TrackableHitFlags.FeaturePointWithSurfaceNormal;
+            bool foundHit = false;
+            if (InstantPlacementMenu.IsInstantPlacementEnabled())
+            {
+                foundHit = Frame.RaycastInstantPlacement(
+                    touch.position.x, touch.position.y, 1.0f, out hit);
+            }
+            else
+            {
+                TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                    TrackableHitFlags.FeaturePointWithSurfaceNormal;
+                foundHit = Frame.Raycast(
+                    touch.position.x, touch.position.y, raycastFilter, out hit);
+            }
 
-            // To use Instant Placement, which supports frame by frame 2D tracking and
-            // automatically switches to 6DOF tracking once it's available, follow these steps:
-            // 1. Use InstantPlacementMode.LocalYUp in ARCoreSessionConfig.
-            // 2. Use Frame.RaycastInstantPlacement(float, float, float, out TrackableHit) method
-            // with an approximate distance in meters.
-            // 3. Create anchor with the hit result from previous step by:
-            // hit.Trackable.CreateAnchor(hit.Pose).
-            //
-            // An anchor will be created at the approximate pose if there has been no Trackable
-            // detected yet, and updates its pose to attach to the real world.
-            // Note: there may be a noticeable jump in position during this tracking method change.
-            // Use InstantPlacementPoint.TrackingMethod to customize pose update logic.
-            //
-            // See the Instant Placement Developer's Guide at:
-            // https://developers.google.com/ar/develop/unity/instant-placement.
-            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            if (foundHit)
             {
                 // Use hit pose and camera pose to check if hittest is from the
                 // back of the plane, if it is, no need to create the anchor.
@@ -148,7 +150,11 @@ namespace GoogleARCore.Examples.HelloAR
 
                     // Choose the prefab based on the Trackable that got hit.
                     GameObject prefab;
-                    if (hit.Trackable is FeaturePoint)
+                    if (hit.Trackable is InstantPlacementPoint)
+                    {
+                        prefab = InstantPlacementPrefab;
+                    }
+                    else if (hit.Trackable is FeaturePoint)
                     {
                         prefab = GameObjectPointPrefab;
                     }
@@ -182,6 +188,13 @@ namespace GoogleARCore.Examples.HelloAR
 
                     // Make game object a child of the anchor.
                     gameObject.transform.parent = anchor.transform;
+
+                    // Initialize Instant Placement Effect.
+                    if (hit.Trackable is InstantPlacementPoint)
+                    {
+                        gameObject.GetComponentInChildren<InstantPlacementEffect>()
+                            .InitializeWithTrackable(hit.Trackable);
+                    }
                 }
             }
         }

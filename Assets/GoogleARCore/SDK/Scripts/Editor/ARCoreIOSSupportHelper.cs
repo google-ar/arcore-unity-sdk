@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreIOSSupportHelper.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,8 +46,46 @@ namespace GoogleARCoreInternal
             }
 
             UpdateIOSScriptingDefineSymbols(arcoreIOSEnabled);
-            UpdateIOSPodDependencies(arcoreIOSEnabled);
+            UpdateIOSPodDependencies(arcoreIOSEnabled, _arCoreIOSDependencyFileName);
             UpdateARCoreARKitIntegrationPlugin(arcoreIOSEnabled);
+        }
+
+        public static void UpdateIOSPodDependencies(bool arcoreIOSEnabled,
+            string dependencyFileName)
+        {
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string arcoreEditorPath = Path.Combine(currentDirectory,
+              AssetDatabase.GUIDToAssetPath(_arCoreEditorFolderGuid));
+
+            string iOSPodDependencyTemplatePath =
+                Path.Combine(arcoreEditorPath, dependencyFileName + ".template");
+            string iOSPodDependencyXMLPath =
+                Path.Combine(arcoreEditorPath, dependencyFileName + ".xml");
+
+            if (arcoreIOSEnabled && !File.Exists(iOSPodDependencyXMLPath))
+            {
+                Debug.LogFormat("Adding {0}.", dependencyFileName);
+
+                if (!File.Exists(iOSPodDependencyTemplatePath))
+                {
+                    Debug.LogError(
+                        "Failed to enable ARCore iOS dependency xml. Template file is missing.");
+                    return;
+                }
+
+                File.Copy(iOSPodDependencyTemplatePath, iOSPodDependencyXMLPath);
+
+                AssetDatabase.Refresh();
+            }
+            else if (!arcoreIOSEnabled && File.Exists(iOSPodDependencyXMLPath))
+            {
+                Debug.LogFormat("Removing {0}.", dependencyFileName);
+
+                File.Delete(iOSPodDependencyXMLPath);
+                File.Delete(iOSPodDependencyXMLPath + ".meta");
+
+                AssetDatabase.Refresh();
+            }
         }
 
         private static void UpdateIOSScriptingDefineSymbols(bool arcoreIOSEnabled)
@@ -70,43 +108,6 @@ namespace GoogleARCoreInternal
                     iOSScriptingDefineSymbols.Replace("ARCORE_IOS_SUPPORT", string.Empty);
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(
                     BuildTargetGroup.iOS, iOSScriptingDefineSymbols);
-            }
-        }
-
-        private static void UpdateIOSPodDependencies(bool arcoreIOSEnabled)
-        {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            string arcoreEditorPath = Path.Combine(currentDirectory,
-              AssetDatabase.GUIDToAssetPath(_arCoreEditorFolderGuid));
-
-            string iOSPodDependencyTemplatePath =
-                Path.Combine(arcoreEditorPath, _arCoreIOSDependencyFileName + ".template");
-            string iOSPodDependencyXMLPath =
-                Path.Combine(arcoreEditorPath, _arCoreIOSDependencyFileName + ".xml");
-
-            if (arcoreIOSEnabled && !File.Exists(iOSPodDependencyXMLPath))
-            {
-                Debug.Log("Adding ARCoreiOSDependencies.");
-
-                if (!File.Exists(iOSPodDependencyTemplatePath))
-                {
-                    Debug.LogError(
-                        "Failed to enable ARCore iOS dependency xml. Template file is missing.");
-                    return;
-                }
-
-                File.Copy(iOSPodDependencyTemplatePath, iOSPodDependencyXMLPath);
-
-                AssetDatabase.Refresh();
-            }
-            else if (!arcoreIOSEnabled && File.Exists(iOSPodDependencyXMLPath))
-            {
-                Debug.Log("Removing ARCoreiOSDependencies.");
-
-                File.Delete(iOSPodDependencyXMLPath);
-                File.Delete(iOSPodDependencyXMLPath + ".meta");
-
-                AssetDatabase.Refresh();
             }
         }
 

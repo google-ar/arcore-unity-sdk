@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="Session.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -141,7 +141,7 @@ namespace GoogleARCore
         /// <summary>
         /// Requests an installation of the ARCore APK on the device.
         /// </summary>
-        /// <param name="userRequested">Whether the installation was requested explicity by a user
+        /// <param name="userRequested">Whether the installation was requested explicitly by a user
         /// action.</param>
         /// <returns>An AsyncTask that completes with an ApkInstallationStatus when the installation
         /// status is resolved.</returns>

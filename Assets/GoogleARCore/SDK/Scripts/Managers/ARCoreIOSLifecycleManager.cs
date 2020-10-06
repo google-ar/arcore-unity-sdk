@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreIOSLifecycleManager.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ namespace GoogleARCoreInternal
 
         private IntPtr _realArKitSessionHandle = IntPtr.Zero;
 #endif // ARCORE_IOS_SUPPORT
-        // Avoid warnings for fields that are unused on when ARCORE_IOS_SUPPORT is not defined.
+       // Avoid warnings for fields that are unused when ARCORE_IOS_SUPPORT is not defined.
 #pragma warning disable 67, 414
 
         public event Action EarlyUpdate;

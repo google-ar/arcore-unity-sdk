@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreProjectSettingsGUI.cs" company="Google LLC">
 //
-// Copyright 2019 Google, LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,21 +31,7 @@ namespace GoogleARCoreInternal
     // ARCoreProjectSettingsProvider.
     internal class ARCoreProjectSettingsGUI
     {
-        // Use public static properties here, so that labels are automatically extracted by
-        // GetSearchKeywordsFromGUIContentProperties() in ARCoreProjectSettingsProvider.
-        public static readonly GUIContent ARCoreRequired = new GUIContent("ARCore Required");
-        public static readonly GUIContent InstantPreviewEnabled =
-            new GUIContent("Instant Preview Enabled");
-
-        public static readonly GUIContent IOSSupportEnabled =
-            new GUIContent("iOS Support Enabled");
-
-        public static readonly GUIContent CloudAnchorAPIKeys =
-            new GUIContent("Cloud Anchor API Keys");
-
-        public static readonly GUIContent Android = new GUIContent("Android");
-        public static readonly GUIContent IOS = new GUIContent("iOS");
-
+        private static readonly float _toggleLabelWidth = 180;
         private static readonly float _groupLabelIndent = 15;
         private static readonly float _groupFieldIndent =
             EditorGUIUtility.labelWidth - _groupLabelIndent;
@@ -146,9 +132,11 @@ namespace GoogleARCoreInternal
                 }
                 else if (fieldInfo.FieldType == typeof(Boolean))
                 {
+                    float originalWidth = EditorGUIUtility.labelWidth;
                     Boolean value = (Boolean)fieldInfo.GetValue(targetObject);
-                    value = UnityEditor.EditorGUILayout.Toggle(
-                        new GUIContent(fieldName), value);
+                    EditorGUIUtility.labelWidth = _toggleLabelWidth;
+                    value = UnityEditor.EditorGUILayout.Toggle(new GUIContent(fieldName), value);
+                    EditorGUIUtility.labelWidth = originalWidth;
                     fieldInfo.SetValue(targetObject, value);
                 }
                 else if (fieldInfo.FieldType == typeof(string))

@@ -1,6 +1,6 @@
 Google ARCore SDK for Unity
 ===========================
-Copyright 2017 Google LLC.  All rights reserved.
+Copyright 2017 Google LLC
 
 This SDK provides native APIs for all of the essential AR features like motion
 tracking, environmental understanding, and light estimation. With these

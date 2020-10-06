@@ -19,4 +19,4 @@ MonoBehaviour:
   CameraFocusMode: 1
   AugmentedFaceMode: 0
   DepthMode: 1
-  InstantPlacementMode: 0
+  InstantPlacementMode: 2

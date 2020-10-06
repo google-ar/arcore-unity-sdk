@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CloudServiceResponse.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,12 @@ namespace GoogleARCore.CrossPlatform
         /// <item>It may fail if the operation you are trying to perform is not allowed.</item>
         /// <item>When using API key authentication, this will happen if the API key in the manifest
         /// is invalid, unauthorized or missing.</item>
+        /// <item>When using auth token in the iOS app, this will happen if the auth token is
+        /// invalid or missing.</item>
+        /// <item>When using keyless authentication, this will happen if the developer fails to
+        /// create OAuth client. It may also fail if Google Play Services isn't installed, is too
+        /// old, or is malfunctioning for some reason (e.g. services killed due to memory
+        /// pressure).</item>
         /// </list>
         /// </summary>
         ErrorNotAuthorized,

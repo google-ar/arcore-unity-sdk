@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="InstantPlacementMode.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,11 @@ namespace GoogleARCore
     {
         /// <summary>
         /// Instant Placement mode is disabled.
+
+        /// When Instant Placement is disabled, any <see cref="InstantPlacementPoint"/> having <see
+        /// cref="InstantPlacementPointTrackingMethod"/>.<c>ScreenspaceWithApproximateDistance</c>
+        /// tracking method will result in tracking state becoming permanently <see
+        /// cref="TrackingState"/>.<c>Stopped</c>.
         /// </summary>
         Disabled = 0,
 

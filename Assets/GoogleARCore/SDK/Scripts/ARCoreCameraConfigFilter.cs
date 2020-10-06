@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="ARCoreCameraConfigFilter.cs" company="Google LLC">
 //
-// Copyright 2019 Google LLC. All Rights Reserved.
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,11 +37,11 @@ namespace GoogleARCore
     /// Beginning with ARCore SDK 1.15.0, some devices support additional camera configs with lower
     /// GPU texture resolutions than the device's default GPU texture resolution. See the
     /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
-    /// devices</a> page for details.
+    /// devices</a> for an up to date list of affected devices.
     ///
     /// An app may adjust its capabilities at runtime by selecting a wider range of config filters
-    /// and using ARCoreSession.RegisterChooseCameraConfigurationCallback(
-    /// ARCoreSession.OnChooseCameraConfigurationDelegate) to specify a selection function.
+    /// and using <see cref="ARCoreSession.RegisterChooseCameraConfigurationCallback(
+    /// ARCoreSession.OnChooseCameraConfigurationDelegate)"/> to specify a selection function.
     /// In that function the app may then adjust its runtime settings and select an appropriate
     /// camera configuration. If no callback is registered, ARCore will use the first
     /// <see cref="CameraConfig"/> in the list of available configurations.
@@ -81,7 +81,7 @@ namespace GoogleARCore
 
             if (!DepthSensorUsage.DoNotUse && !DepthSensorUsage.RequireAndUse)
             {
-                Debug.LogError("No options in Depth Senor Usage are selected, " +
+                Debug.LogError("No options in Depth Sensor Usage are selected, " +
                     "there will be no camera configs and this app will fail to run.");
             }
             else if (!DepthSensorUsage.DoNotUse)

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="Frame.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ namespace GoogleARCore
 
     /// <summary>
     /// Provides a snapshot of the state of ARCore at a specific timestamp associated with the
-    /// current frame.  Frame holds information about ARCore's state including tracking status, the
-    /// pose of the camera relative to the world, estimated lighting parameters, and information on
-    /// updates to objects (like Planes or Point Clouds) that ARCore is tracking.
+    /// current frame.  Frame holds information about ARCore's state including the pose of the
+    /// camera relative to the world, estimated lighting parameters, and information on updates to
+    /// objects (like Planes or Point Clouds) that ARCore is tracking.
     /// </summary>
     public class Frame
     {
@@ -127,7 +127,7 @@ namespace GoogleARCore
         ///
         /// This function will succeed only if <see cref="InstantPlacementMode"/> is
         /// <c>InstantPlacementMode.LocalYUp</c> in the ARCore session configuration, the ARCore
-        /// session status is <see cref="SessionStatus"/>.<c>Tracking</c>, and there are sufficent
+        /// session status is <see cref="SessionStatus"/>.<c>Tracking</c>, and there are sufficient
         /// feature points to track the point in screen space.
         ///
         /// </summary>
@@ -367,8 +367,8 @@ namespace GoogleARCore
                         return 0;
                     }
 
-                     return nativeSession.PointCloudApi.GetNumberOfPoints(
-                         nativeSession.PointCloudHandle);
+                    return nativeSession.PointCloudApi.GetNumberOfPoints(
+                        nativeSession.PointCloudHandle);
                 }
             }
 

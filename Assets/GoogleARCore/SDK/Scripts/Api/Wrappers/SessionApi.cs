@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="SessionApi.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ namespace GoogleARCoreInternal
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using GoogleARCore.CrossPlatform;
     using UnityEngine;
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -197,6 +198,38 @@ namespace GoogleARCoreInternal
             return isSupported != 0;
         }
 
+        public ApiArStatus HostCloudAnchor(IntPtr platformAnchorHandle, int ttlDays,
+            out IntPtr cloudAnchorHandle)
+        {
+            cloudAnchorHandle = IntPtr.Zero;
+            var result = ExternApi.ArSession_hostAndAcquireNewCloudAnchorWithTtl(
+                _nativeSession.SessionHandle, platformAnchorHandle, ttlDays,
+                ref cloudAnchorHandle);
+            return result;
+        }
+
+        public void SetAuthToken(String authToken)
+        {
+            ExternApi.ArSession_setAuthToken(_nativeSession.SessionHandle, authToken);
+        }
+
+        public FeatureMapQuality EstimateFeatureMapQualityForHosting(Pose pose)
+        {
+            IntPtr poseHandle = _nativeSession.PoseApi.Create(pose);
+            int featureMapQuality = (int)FeatureMapQuality.Insufficient;
+            var status = ExternApi.ArSession_estimateFeatureMapQualityForHosting(
+                _nativeSession.SessionHandle, poseHandle, ref featureMapQuality);
+            _nativeSession.PoseApi.Destroy(poseHandle);
+
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogWarningFormat("Failed to estimate feature map quality with status {0}.",
+                    status);
+            }
+
+            return (FeatureMapQuality)featureMapQuality;
+        }
+
         private CameraConfig CreateCameraConfig(IntPtr cameraConfigHandle)
         {
             int imageWidth = 0;
@@ -205,7 +238,7 @@ namespace GoogleARCoreInternal
             int textureHeight = 0;
             int minFps = 0;
             int maxFps = 0;
-            CameraConfigDepthSensorUsages depthSensorUsage =
+            CameraConfigDepthSensorUsage depthSensorUsage =
                 _nativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
             _nativeSession.CameraConfigApi.GetImageDimensions(
                 cameraConfigHandle, out imageWidth, out imageHeight);
@@ -269,6 +302,19 @@ namespace GoogleARCoreInternal
                 IntPtr sessionHandle,
                 String cloudAnchorId,
                 ref IntPtr cloudAnchorHandle);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_hostAndAcquireNewCloudAnchorWithTtl(
+                IntPtr sessionHandle, IntPtr anchorHandle, int ttlDays,
+                ref IntPtr cloudAnchorHandle);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_setAuthToken(
+                IntPtr sessionHandle, String authToken);
+
+            [DllImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_estimateFeatureMapQualityForHosting(
+                IntPtr sessionHandle, IntPtr poseHandle, ref int featureMapQuality);
         }
     }
 }

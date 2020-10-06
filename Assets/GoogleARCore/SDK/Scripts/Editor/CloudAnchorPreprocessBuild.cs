@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CloudAnchorPreprocessBuild.cs" company="Google LLC">
 //
-// Copyright 2018 Google LLC. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ namespace GoogleARCoreInternal
     using System.Xml;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Callbacks;
     using UnityEngine;
 
     internal class CloudAnchorPreprocessBuild : PreprocessBuildBase
@@ -47,6 +48,61 @@ namespace GoogleARCoreInternal
         }
 
         private void PreprocessAndroidBuild()
+        {
+            SetApiKeyOnAndroid();
+        }
+
+        private void PreprocessIosBuild()
+        {
+            SetApiKeyOnIos();
+        }
+
+        private bool IsApiKeyDirty(string jarPath, string aarPath, string apiKey)
+        {
+            bool isApiKeyDirty = true;
+            var cachedCurrentDirectory = Directory.GetCurrentDirectory();
+            var tempDirectoryPath =
+                Path.Combine(cachedCurrentDirectory, FileUtil.GetUniqueTempPathInProject());
+
+            if (!File.Exists(aarPath))
+            {
+                return isApiKeyDirty;
+            }
+
+            try
+            {
+                // Move to a temp directory.
+                Directory.CreateDirectory(tempDirectoryPath);
+                Directory.SetCurrentDirectory(tempDirectoryPath);
+                var tempAarPath = Path.Combine(tempDirectoryPath, "cloud_anchor_manifest.aar");
+                File.Copy(aarPath, tempAarPath, true);
+
+                // Extract the aar.
+                string output;
+                string errors;
+                ShellHelper.RunCommand(jarPath, string.Format("xf \"{0}\"", tempAarPath),
+                    out output, out errors);
+
+                // Read Api key parameter in manifest file.
+                var manifestPath = Path.Combine(tempDirectoryPath, "AndroidManifest.xml");
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.Load(manifestPath);
+                XmlNode metaDataNode =
+                    xmlDocument.SelectSingleNode("/manifest/application/meta-data");
+                string oldApiKey = metaDataNode.Attributes["android:value"].Value;
+                isApiKeyDirty = !apiKey.Equals(oldApiKey);
+            }
+            finally
+            {
+                // Cleanup.
+                Directory.SetCurrentDirectory(cachedCurrentDirectory);
+                Directory.Delete(tempDirectoryPath, true);
+            }
+
+            return isApiKeyDirty;
+        }
+
+        private void SetApiKeyOnAndroid()
         {
             string cachedCurrentDirectory = Directory.GetCurrentDirectory();
             string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,
@@ -151,52 +207,7 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private bool IsApiKeyDirty(string jarPath, string aarPath, string apiKey)
-        {
-            bool isApiKeyDirty = true;
-            var cachedCurrentDirectory = Directory.GetCurrentDirectory();
-            var tempDirectoryPath =
-                Path.Combine(cachedCurrentDirectory, FileUtil.GetUniqueTempPathInProject());
-
-            if (!File.Exists(aarPath))
-            {
-                return isApiKeyDirty;
-            }
-
-            try
-            {
-                // Move to a temp directory.
-                Directory.CreateDirectory(tempDirectoryPath);
-                Directory.SetCurrentDirectory(tempDirectoryPath);
-                var tempAarPath = Path.Combine(tempDirectoryPath, "cloud_anchor_manifest.aar");
-                File.Copy(aarPath, tempAarPath, true);
-
-                // Extract the aar.
-                string output;
-                string errors;
-                ShellHelper.RunCommand(jarPath, string.Format("xf \"{0}\"", tempAarPath),
-                    out output, out errors);
-
-                // Read Api key parameter in manifest file.
-                var manifestPath = Path.Combine(tempDirectoryPath, "AndroidManifest.xml");
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(manifestPath);
-                XmlNode metaDataNode =
-                    xmlDocument.SelectSingleNode("/manifest/application/meta-data");
-                string oldApiKey = metaDataNode.Attributes["android:value"].Value;
-                isApiKeyDirty = !apiKey.Equals(oldApiKey);
-            }
-            finally
-            {
-                // Cleanup.
-                Directory.SetCurrentDirectory(cachedCurrentDirectory);
-                Directory.Delete(tempDirectoryPath, true);
-            }
-
-            return isApiKeyDirty;
-        }
-
-        private void PreprocessIosBuild()
+        private void SetApiKeyOnIos()
         {
             var runtimeSettingsPath = Path.Combine(Application.dataPath, _runtimeSettingsPath);
             Directory.CreateDirectory(runtimeSettingsPath);

@@ -96,12 +96,17 @@ namespace GoogleARCoreInternal
             var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
             foreach (var graphicsApi in graphicsApis)
             {
-                if (graphicsApi != GraphicsDeviceType.OpenGLES2 &&
-                    graphicsApi != GraphicsDeviceType.OpenGLES3)
+                // GLES3 is always supported.
+                if (graphicsApi != GraphicsDeviceType.OpenGLES3)
                 {
-                    throw new BuildFailedException(
-                        string.Format("You have enabled the {0} graphics API, which is not " +
-                        "supported by ARCore.", graphicsApi));
+                    // GLES2 is only supported when ARCore is not required.
+                    if (ARCoreProjectSettings.Instance.IsARCoreRequired ||
+                        graphicsApi != GraphicsDeviceType.OpenGLES2)
+                    {
+                        throw new BuildFailedException(
+                            string.Format("You have enabled the {0} graphics API, which is not " +
+                            "supported by ARCore.", graphicsApi));
+                    }
                 }
             }
         }

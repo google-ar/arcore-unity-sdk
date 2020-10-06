@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="SessionStatus.cs" company="Google LLC">
 //
-// Copyright 2017 Google LLC. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,10 +62,10 @@ namespace GoogleARCore
         ErrorApkNotAvailable = 201,
 
         /// <summary>
-        /// The ARCore session cannot begin tracking because an Android permission is not granted
-        /// (e.g. android.permission.CAMERA).
+        /// The ARCore session cannot begin tracking because an Android permission, such as
+        /// android.permission.CAMERA, is not granted.
         ///
-        /// Use <see cref="AndroidPermissionsManager.IsPermissionGranted"> to check if
+        /// Use <see cref="AndroidPermissionsManager.IsPermissionGranted"/> to check if
         /// the required Android permission has been granted.
         /// </summary>
         ErrorPermissionNotGranted = 202,
