@@ -230,6 +230,96 @@ namespace GoogleARCoreInternal
             return (FeatureMapQuality)featureMapQuality;
         }
 
+        public PlaybackStatus GetPlaybackStatus()
+        {
+            ApiPlaybackStatus status = ApiPlaybackStatus.None;
+            ExternApi.ArSession_getPlaybackStatus(
+                _nativeSession.SessionHandle, ref status);
+            return status.ToPlaybackStatus();
+        }
+
+        public PlaybackResult SetPlaybackDataset(String datasetFilepath)
+        {
+            ApiArStatus status = ExternApi.ArSession_setPlaybackDataset(
+                _nativeSession.SessionHandle,
+                datasetFilepath);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return PlaybackResult.OK;
+                case ApiArStatus.ErrorSessionNotPaused:
+                    return PlaybackResult.ErrorSessionNotPaused;
+                case ApiArStatus.ErrorSessionUnsupported:
+                    return PlaybackResult.ErrorSessionUnsupported;
+                case ApiArStatus.ErrorPlaybackFailed:
+                    return PlaybackResult.ErrorPlaybackFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to set a playback dataset path failed with "
+                                         + "unexpected status: {0}", status);
+                    break;
+            }
+
+            return PlaybackResult.ErrorPlaybackFailed;
+        }
+
+        public RecordingStatus GetRecordingStatus()
+        {
+            ApiRecordingStatus status = ApiRecordingStatus.None;
+            ExternApi.ArSession_getRecordingStatus(
+                _nativeSession.SessionHandle, ref status);
+            return status.ToRecordingStatus();
+        }
+
+        public RecordingResult StartRecording(ARCoreRecordingConfig config)
+        {
+            IntPtr recordingConfigHandle =
+                _nativeSession.RecordingConfigApi.Create(config);
+            ApiArStatus status = ExternApi.ArSession_startRecording(
+                _nativeSession.SessionHandle, recordingConfigHandle);
+            _nativeSession.RecordingConfigApi.Destory(recordingConfigHandle);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return RecordingResult.OK;
+                case ApiArStatus.ErrorIllegalState:
+                    return RecordingResult.ErrorIllegalState;
+                case ApiArStatus.ErrorInvalidArgument:
+                    return RecordingResult.ErrorInvalidArgument;
+                case ApiArStatus.ErrorRecordingFailed:
+                    return RecordingResult.ErrorRecordingFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to start a recording failed with unexpected " +
+                        "status: {0}", status);
+                    break;
+            }
+
+            return RecordingResult.ErrorRecordingFailed;
+        }
+
+        public RecordingResult StopRecording()
+        {
+            ApiArStatus status = ExternApi.ArSession_stopRecording(_nativeSession.SessionHandle);
+
+            // Only specific ArStatus responses are expected.
+            switch (status)
+            {
+                case ApiArStatus.Success:
+                    return RecordingResult.OK;
+                case ApiArStatus.ErrorRecordingFailed:
+                    return RecordingResult.ErrorRecordingFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to stop recording failed with unexpected " +
+                        "status: {0}", status);
+                    break;
+            }
+
+            return RecordingResult.ErrorRecordingFailed;
+        }
+
         private CameraConfig CreateCameraConfig(IntPtr cameraConfigHandle)
         {
             int imageWidth = 0;
@@ -240,6 +330,8 @@ namespace GoogleARCoreInternal
             int maxFps = 0;
             CameraConfigDepthSensorUsage depthSensorUsage =
                 _nativeSession.CameraConfigApi.GetDepthSensorUsage(cameraConfigHandle);
+            CameraConfigStereoCameraUsage stereoCameraUsage =
+                _nativeSession.CameraConfigApi.GetStereoCameraUsage(cameraConfigHandle);
             _nativeSession.CameraConfigApi.GetImageDimensions(
                 cameraConfigHandle, out imageWidth, out imageHeight);
             _nativeSession.CameraConfigApi.GetTextureDimensions(
@@ -248,7 +340,8 @@ namespace GoogleARCoreInternal
                 cameraConfigHandle, out minFps, out maxFps);
 
             return new CameraConfig(new Vector2(imageWidth, imageHeight),
-                new Vector2(textureWidth, textureHeight), minFps, maxFps, depthSensorUsage);
+                                    new Vector2(textureWidth, textureHeight), minFps, maxFps,
+                                    depthSensorUsage, stereoCameraUsage);
         }
 
         private struct ExternApi
@@ -315,6 +408,29 @@ namespace GoogleARCoreInternal
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArSession_estimateFeatureMapQualityForHosting(
                 IntPtr sessionHandle, IntPtr poseHandle, ref int featureMapQuality);
+#pragma warning disable 626
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_getRecordingStatus(
+                IntPtr sessionHandle, ref ApiRecordingStatus recordingStatus);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_startRecording(
+                IntPtr sessionHandle, IntPtr recordingConfigHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_stopRecording(
+                IntPtr sessionHandle);
+#pragma warning restore 626
+#pragma warning disable 626
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArSession_getPlaybackStatus(
+                IntPtr sessionHandle, ref ApiPlaybackStatus playbackStatus);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArSession_setPlaybackDataset(
+              IntPtr sessionHandle, String mp4DatasetFilePath);
+#pragma warning restore 626
         }
     }
 }

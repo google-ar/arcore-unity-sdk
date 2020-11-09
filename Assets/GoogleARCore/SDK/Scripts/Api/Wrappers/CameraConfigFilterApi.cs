@@ -54,6 +54,9 @@ namespace GoogleARCoreInternal
                     cameraConfigFilterHandle, ConvertToFpsFilter(filter.TargetCameraFramerate));
                 ExternApi.ArCameraConfigFilter_setDepthSensorUsage(_nativeSession.SessionHandle,
                     cameraConfigFilterHandle, ConvertToDepthFilter(filter.DepthSensorUsage));
+                ExternApi.ArCameraConfigFilter_setStereoCameraUsage(
+                    _nativeSession.SessionHandle, cameraConfigFilterHandle,
+                    ConvertToStereoFilter(filter.StereoCameraUsage));
             }
 
             return cameraConfigFilterHandle;
@@ -98,6 +101,23 @@ namespace GoogleARCoreInternal
             return depthFilter;
         }
 
+        private int ConvertToStereoFilter(
+            ARCoreCameraConfigFilter.StereoCameraUsageFilter stereoCameraUsage)
+        {
+            int stereoFilter = 0;
+            if (stereoCameraUsage.RequireAndUse)
+            {
+                stereoFilter |= (int)CameraConfigStereoCameraUsage.RequireAndUse;
+            }
+
+            if (stereoCameraUsage.DoNotUse)
+            {
+                stereoFilter |= (int)CameraConfigStereoCameraUsage.DoNotUse;
+            }
+
+            return stereoFilter;
+        }
+
         private struct ExternApi
         {
 #pragma warning disable 626
@@ -115,6 +135,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfigFilter_setDepthSensorUsage(IntPtr sessionHandle,
                 IntPtr cameraConfigFilterHandle, int depthFilter);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCameraConfigFilter_setStereoCameraUsage(
+                IntPtr sessionHandle, IntPtr cameraConfigFilterHandle, int stereoFilter);
 #pragma warning restore 626
         }
     }

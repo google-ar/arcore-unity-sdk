@@ -181,6 +181,11 @@ namespace GoogleARCoreInternal
 
         private void PreprocessAndroidBuild()
         {
+            // This function causes build error in 2020.2 if the current directory is changed.
+            // So do the check first here.
+            CheckCompatibilityWithAllSesssionConfigs(
+                        ARCoreProjectSettings.Instance, GetAllSessionConfigs());
+
             string cachedCurrentDirectory = Directory.GetCurrentDirectory();
             string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,
                 AssetDatabase.GUIDToAssetPath(_pluginsFolderGuid));
@@ -200,8 +205,6 @@ namespace GoogleARCoreInternal
 
                 CreateClassesJar(jarPath, tempDirectoryPath);
 
-                CheckCompatibilityWithAllSesssionConfigs(
-                    ARCoreProjectSettings.Instance, GetAllSessionConfigs());
                 XDocument customizedManifest =
                     GenerateCustomizedAndroidManifest(ARCoreProjectSettings.Instance);
                 var manifestPath = Path.Combine(tempDirectoryPath, "AndroidManifest.xml");

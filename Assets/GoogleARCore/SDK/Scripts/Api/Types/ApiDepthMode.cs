@@ -24,5 +24,5 @@ namespace GoogleARCoreInternal
     {
         Disabled = 0,
         Automatic = 1,
-  }
+    }
 }

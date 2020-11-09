@@ -17,3 +17,6 @@ MonoBehaviour:
   DepthSensorUsage:
     RequireAndUse: 1
     DoNotUse: 1
+  StereoCameraUsage:
+    RequireAndUse: 1
+    DoNotUse: 1

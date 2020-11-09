@@ -49,18 +49,43 @@ namespace GoogleARCore
     }
 
     /// <summary>
+    /// Type of stereo camera usage for a camera config.
+    /// </summary>
+    [Flags]
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1200:FlagsEnumsMustBePlural",
+                     Justification = "Usage is plural.")]
+    public enum CameraConfigStereoCameraUsage
+    {
+        /// <summary>
+        /// Indicates that a stereo camera must be present on the device and the stereo camera will
+        /// be used by ARCore.
+        /// Not supported on all devices.
+        /// </summary>
+        RequireAndUse = 0x0001,
+
+        /// <summary>
+        /// Indicates that ARCore will not attempt to use a stereo camera, even if one is present.
+        /// Can be used to limit power consumption.
+        /// Available on all ARCore supported devices.
+        /// </summary>
+        DoNotUse = 0x0002,
+    }
+
+    /// <summary>
     /// A configuration for ARCore accessing the device's camera sensor.
     /// </summary>
     public struct CameraConfig
     {
         internal CameraConfig(Vector2 imageSize, Vector2 textureSize, int minFPS, int maxFPS,
-            CameraConfigDepthSensorUsage depthSensor) : this()
+            CameraConfigDepthSensorUsage depthSensor, CameraConfigStereoCameraUsage stereoCamera)
+            : this()
         {
             ImageSize = imageSize;
             TextureSize = textureSize;
             MinFPS = minFPS;
             MaxFPS = maxFPS;
             DepthSensorUsage = depthSensor;
+            StereoCameraUsage = stereoCamera;
         }
 
         /// <summary>
@@ -87,5 +112,10 @@ namespace GoogleARCore
         /// Gets the depth sensor usage for this camera config.
         /// </summary>
         public CameraConfigDepthSensorUsage DepthSensorUsage { get; private set; }
+
+        /// <summary>
+        /// Gets the stereo camera usage for this camera config.
+        /// </summary>
+        public CameraConfigStereoCameraUsage StereoCameraUsage { get; private set; }
     }
 }

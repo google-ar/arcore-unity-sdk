@@ -40,6 +40,10 @@ namespace GoogleARCoreInternal
     {
         private const int _mtNumTextureIds = 4;
 
+        private const int _invalidTextureId = -1;
+
+        private const int _nullTextureId = 0;
+
         private static ARCoreAndroidLifecycleManager _instance = null;
 
         private IntPtr _cachedSessionHandle = IntPtr.Zero;
@@ -250,7 +254,7 @@ namespace GoogleARCoreInternal
 
         private void OnEarlyUpdate()
         {
-            SetCameraTextureName();
+            SetCameraTextureNameIfNecessary();
 
             // Update session activity before EarlyUpdate.
             if (_haveDisableToEnableTransition)
@@ -382,37 +386,54 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private void SetCameraTextureName()
+        private void SetCameraTextureNameIfNecessary()
         {
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 return;
             }
 
-            // Generate texture IDs if necessary
             if (_cameraTextureIds == null)
             {
-                int textureNum = SystemInfo.graphicsMultiThreaded ? _mtNumTextureIds : 1;
-                Debug.LogFormat("Using {0} textures for ARCore session", textureNum);
-                _cameraTextureIds = new int[textureNum];
-                OpenGL.glGenTextures(_cameraTextureIds.Length, _cameraTextureIds);
-                int error = OpenGL.glGetError();
-                if (error != 0)
-                {
-                    Debug.LogErrorFormat("OpenGL glGenTextures error: {0}", error);
-                }
+                GenerateCameraTextureNames();
+            }
 
-                foreach (int textureId in _cameraTextureIds)
+            // Check if ARCore has a valid texture name. If not, set it.
+            if (NativeSession != null)
+            {
+                if (!ArCoreHasValidTextureName())
                 {
-                    OpenGL.glBindTexture(OpenGL.Target.GL_TEXTURE_EXTERNAL_OES,
-                                         textureId);
-                    Texture2D texture2d = Texture2D.CreateExternalTexture(
-                        0, 0, TextureFormat.ARGB32, false, false, new IntPtr(textureId));
-                    _textureIdToTexture2D[textureId] = texture2d;
+                    ExternApi.ArPresto_setCameraTextureNames(
+                        _cameraTextureIds.Length, _cameraTextureIds);
                 }
+            }
+        }
 
-                ExternApi.ArPresto_setCameraTextureNames(
-                    _cameraTextureIds.Length, _cameraTextureIds);
+        private bool ArCoreHasValidTextureName()
+        {
+            int textureName = NativeSession.FrameApi.GetCameraTextureName();
+            return textureName != _invalidTextureId && textureName != _nullTextureId;
+        }
+
+        private void GenerateCameraTextureNames()
+        {
+            int textureNum = SystemInfo.graphicsMultiThreaded ? _mtNumTextureIds : 1;
+            Debug.LogFormat("Using {0} textures for ARCore session", textureNum);
+            _cameraTextureIds = new int[textureNum];
+            OpenGL.glGenTextures(_cameraTextureIds.Length, _cameraTextureIds);
+            int error = OpenGL.glGetError();
+            if (error != 0)
+            {
+                Debug.LogErrorFormat("OpenGL glGenTextures error: {0}", error);
+            }
+
+            foreach (int textureId in _cameraTextureIds)
+            {
+                OpenGL.glBindTexture(OpenGL.Target.GL_TEXTURE_EXTERNAL_OES,
+                                     textureId);
+                Texture2D texture2d = Texture2D.CreateExternalTexture(
+                    0, 0, TextureFormat.ARGB32, false, false, new IntPtr(textureId));
+                _textureIdToTexture2D[textureId] = texture2d;
             }
         }
 

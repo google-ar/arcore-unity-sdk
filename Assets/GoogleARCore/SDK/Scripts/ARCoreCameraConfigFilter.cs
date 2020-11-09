@@ -63,6 +63,11 @@ namespace GoogleARCore
         public DepthSensorUsageFilter DepthSensorUsage;
 
         /// <summary>
+        /// This allows an app to use or disable additional cameras to improve tracking.
+        /// </summary>
+        public StereoCameraUsageFilter StereoCameraUsage;
+
+        /// <summary>
         /// Unity OnValidate.
         /// </summary>
         public void OnValidate()
@@ -87,6 +92,18 @@ namespace GoogleARCore
             else if (!DepthSensorUsage.DoNotUse)
             {
                 Debug.LogWarning("DoNotUseDepthSensor is not selected, this may cause " +
+                    "no camera config be available for this filter and " +
+                    "the app may not run on all devices.");
+            }
+
+            if (!StereoCameraUsage.DoNotUse && !StereoCameraUsage.RequireAndUse)
+            {
+                Debug.LogError("No options in Stereo Camera Usage are selected, " +
+                    "there will be no camera configs and this app will fail to run.");
+            }
+            else if (!StereoCameraUsage.DoNotUse)
+            {
+                Debug.LogWarning("DoNotUseStereoCamera is not selected, this may cause " +
                     "no camera config be available for this filter and " +
                     "the app may not run on all devices.");
             }
@@ -147,6 +164,33 @@ namespace GoogleARCore
             /// reconstruction. Available on all ARCore supported devices.
             /// </summary>
             [Tooltip("ARCore will not use the depth sensor, even if it is present. " +
+                     "Available on all supported devices.")]
+            public bool DoNotUse = true;
+        }
+
+        /// <summary>
+        /// This allows an app to use or disable a stereo camera if present on the device.
+        /// </summary>
+        [Serializable]
+        public class StereoCameraUsageFilter
+        {
+            /// <summary>
+            /// Filters for camera configs that require a stereo camera to be present on the device,
+            /// and that will be used by ARCore.
+            ///
+            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// ARCore supported devices</a> page for a list of devices that currently have
+            /// supported stereo cameras.
+            /// </summary>
+            [Tooltip("ARCore requires a stereo camera to be present on the device. " +
+                     "Not available on all ARCore supported devices.")]
+            public bool RequireAndUse = true;
+
+            /// <summary>
+            /// Filters for camera configs where a stereo camera is not present, or is present but
+            /// will not be used by ARCore. Available on all ARCore supported devices.
+            /// </summary>
+            [Tooltip("ARCore will not use the stereo camera, even if it is present. " +
                      "Available on all supported devices.")]
             public bool DoNotUse = true;
         }

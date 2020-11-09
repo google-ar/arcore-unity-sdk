@@ -457,14 +457,16 @@ namespace GoogleARCore.Examples.ComputerVision
 
                 LowResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
                     "Low Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
-                    "Depth Sensor Usage: {4}",
+                    "Depth Sensor Usage: {4}, Stereo Camera Usage: {5}",
                     minimalConfig.ImageSize.x, minimalConfig.ImageSize.y,
-                    minimalConfig.MinFPS, minimalConfig.MaxFPS, minimalConfig.DepthSensorUsage);
+                    minimalConfig.MinFPS, minimalConfig.MaxFPS,
+                    minimalConfig.DepthSensorUsage, minimalConfig.StereoCameraUsage);
                 HighResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
                     "High Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
-                    "Depth Sensor Usage: {4}",
+                    "Depth Sensor Usage: {4}, Stereo Camera Usage: {5}",
                     maximalConfig.ImageSize.x, maximalConfig.ImageSize.y,
-                    maximalConfig.MinFPS, maximalConfig.MaxFPS, maximalConfig.DepthSensorUsage);
+                    maximalConfig.MinFPS, maximalConfig.MaxFPS,
+                    maximalConfig.DepthSensorUsage, maximalConfig.StereoCameraUsage);
                 _resolutioninitialized = true;
             }
 

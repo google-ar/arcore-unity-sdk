@@ -138,6 +138,21 @@ namespace GoogleARCoreInternal
             return (CameraConfigDepthSensorUsage)depthSensorUsage;
         }
 
+        public CameraConfigStereoCameraUsage GetStereoCameraUsage(IntPtr cameraConfigHandle)
+        {
+            int stereoCameraUsage = (int)CameraConfigStereoCameraUsage.DoNotUse;
+
+            if (InstantPreviewManager.IsProvidingPlatform)
+            {
+                InstantPreviewManager.LogLimitedSupportMessage("access ARCamera StereoCameraUsage");
+                return (CameraConfigStereoCameraUsage)stereoCameraUsage;
+            }
+
+            ExternApi.ArCameraConfig_getStereoCameraUsage(_nativeSession.SessionHandle,
+                cameraConfigHandle, ref stereoCameraUsage);
+            return (CameraConfigStereoCameraUsage)stereoCameraUsage;
+        }
+
         private struct ExternApi
         {
 #pragma warning disable 626
@@ -168,6 +183,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfig_getDepthSensorUsage(
                 IntPtr sessionHandle, IntPtr cameraConfigHandle, ref int depthSensorUsage);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArCameraConfig_getStereoCameraUsage(IntPtr sessionHandle,
+                IntPtr cameraConfigHandle, ref int stereoCameraUsage);
 #pragma warning restore 626
         }
     }

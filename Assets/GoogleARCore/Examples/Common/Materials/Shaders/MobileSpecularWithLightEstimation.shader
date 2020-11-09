@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="MobileSpecularWithLightEstimation.cginc" company="Google LLC">
+// <copyright file="MobileSpecularWithLightEstimation.shader" company="Google LLC">
 //
 // Copyright 2019 Google LLC
 //
@@ -18,15 +18,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-Shader "ARCore/SpecularWithLightEstimation" 
+Shader "ARCore/SpecularWithLightEstimation"
 {
-    Properties 
+    Properties
     {
         _Shininess ("Shininess", Range (0.03, 1)) = 0.078125
         _MainTex ("Base (RGB) Gloss (A)", 2D) = "white" {}
         [NoScaleOffset] _BumpMap ("Normalmap", 2D) = "bump" {}
     }
-    SubShader 
+    SubShader
     {
         Tags { "RenderType"="Opaque" }
         LOD 250

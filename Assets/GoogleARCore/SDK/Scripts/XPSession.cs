@@ -65,16 +65,17 @@ namespace GoogleARCore.CrossPlatform
 #endif
 
         /// <summary>
-        /// Attempts to asynchronously resolve a <see cref="Cloud Anchor"/>. You don't need to wait for a call to
-        /// resolve a <see cref="Cloud Anchor"/> to complete before initiating another call. A session can have
-        /// up to 20 Cloud Anchors and pending AsyncTasks at a given time.
-        /// The task will continue to retry in the background indefinitely,
-        /// until it is successfully resolved, cancelled, or reaches a terminal error state.
+        /// Attempts to asynchronously resolve a <see cref="Cloud Anchor"/>. You don't need to wait
+        /// for a call to resolve a <see cref="Cloud Anchor"/> to complete before initiating another
+        /// call. A session can have up to 40 Cloud Anchors and pending AsyncTasks at a given time.
+        /// The task will continue to retry in the background indefinitely, until it is successfully
+        /// resolved, cancelled, or reaches a terminal error state.
         /// </summary>
         /// <param name="cloudAnchorId">The id of the <see cref="Cloud Anchor"/> to resolve.</param>
         /// <returns>
-        /// A task that will complete when the attempt to resolve a <see cref="Cloud Anchor"/> has finished.
-        /// The result will be a <see cref="CloudAnchorResult"/> associated with the operation.
+        /// A task that will complete when the attempt to resolve a <see cref="Cloud Anchor"/> has
+        /// finished. The result will be a <see cref="CloudAnchorResult"/> associated with the
+        /// operation.
         /// </returns>
         public static AsyncTask<CloudAnchorResult> ResolveCloudAnchor(string cloudAnchorId)
         {

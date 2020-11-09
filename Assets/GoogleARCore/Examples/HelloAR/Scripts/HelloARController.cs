@@ -99,6 +99,22 @@ namespace GoogleARCore.Examples.HelloAR
         /// </summary>
         public void Update()
         {
+            // To use Recording API:
+            // 1. Create an instance of ARCoreRecordingConfig. The Mp4DatasetFilepath needs to
+            // be accessible by the app, e.g. Application.persistentDataPath, or you can request
+            // the permission of external storage.
+            // 2. Call Session.StartRecording(ARCoreRecordingConfig) when a valid ARCore session
+            // is available.
+            // 3. Call Session.StopRecording() to end the recording. When
+            // ARCoreRecordingConfig.AutoStopOnPause is true, it can also stop recording when
+            // the ARCoreSession component is disabled.
+            // To use Playback API:
+            // 1. Pause the session by disabling ARCoreSession component.
+            // 2. In the next frame or later, call Session.SetPlaybackDataset(datasetFilepath)
+            // where the datasetFilepath is the same one used by Recording API.
+            // 3. In the next frame or later, resume the session by enabling ARCoreSession component
+            // and the app will play the recorded camera stream install of using the real time
+            // camera stream.
             UpdateApplicationLifecycle();
 
             // If the player has not touched the screen, we are done with this update.

@@ -106,6 +106,15 @@ namespace GoogleARCoreInternal
         // and there are any unreleased images.
         ErrorIllegalState = -20,
 
+        // The recording failed.
+        ErrorRecordingFailed = -23,
+
+        // Playback failed.
+        ErrorPlaybackFailed = -24,
+
+        // Operation is unsupported with the current session.
+        ErrorSessionUnsupported = -25,
+
         // The requested metadata tag cannot be found in input metadata.
         ErrorMetadataNotFound = -26,
 

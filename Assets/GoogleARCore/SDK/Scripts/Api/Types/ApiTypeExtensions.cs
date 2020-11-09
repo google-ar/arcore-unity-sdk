@@ -376,5 +376,43 @@ namespace GoogleARCoreInternal
                     return CloudServiceResponse.ErrorInternal;
             }
         }
+
+        public static RecordingStatus ToRecordingStatus(
+            this ApiRecordingStatus recordingStatus)
+        {
+            switch (recordingStatus)
+            {
+                case ApiRecordingStatus.OK:
+                    return RecordingStatus.OK;
+                case ApiRecordingStatus.IOError:
+                    return RecordingStatus.IOError;
+                case ApiRecordingStatus.None:
+                    return RecordingStatus.None;
+                default:
+                    Debug.LogErrorFormat("Unrecognized ApiRecordingStatus value {0}",
+                        recordingStatus);
+                    return RecordingStatus.None;
+            }
+        }
+
+        public static PlaybackStatus ToPlaybackStatus(
+            this ApiPlaybackStatus playbackStatus)
+        {
+            switch (playbackStatus)
+            {
+                case ApiPlaybackStatus.None:
+                  return PlaybackStatus.None;
+                case ApiPlaybackStatus.OK:
+                    return PlaybackStatus.OK;
+                case ApiPlaybackStatus.IOError:
+                    return PlaybackStatus.IOError;
+                case ApiPlaybackStatus.FinishedSuccess:
+                    return PlaybackStatus.FinishedSuccess;
+                default:
+                    Debug.LogErrorFormat("Unrecognized ApiPlaybackStatus value {0}",
+                        playbackStatus);
+                    return PlaybackStatus.None;
+            }
+        }
     }
 }

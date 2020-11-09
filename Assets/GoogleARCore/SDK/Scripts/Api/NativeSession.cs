@@ -57,6 +57,7 @@ namespace GoogleARCoreInternal
             PointApi = new PointApi(this);
             PointCloudApi = new PointCloudApi(this);
             PoseApi = new PoseApi(this);
+            RecordingConfigApi = new RecordingConfigApi(this);
             SessionApi = new SessionApi(this);
             SessionConfigApi = new SessionConfigApi(this);
             TrackableApi = new TrackableApi(this);
@@ -124,6 +125,8 @@ namespace GoogleARCoreInternal
         public PointCloudApi PointCloudApi { get; private set; }
 
         public PoseApi PoseApi { get; private set; }
+
+        public RecordingConfigApi RecordingConfigApi { get; private set; }
 
         public SessionApi SessionApi { get; private set; }
 
