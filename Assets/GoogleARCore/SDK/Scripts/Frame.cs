@@ -690,6 +690,10 @@ namespace GoogleARCore
             /// If there is no new data, or an error occurs, the contents of the
             /// texture will remain unchanged. See <see cref="DepthStatus"/> for a
             /// complete list of reasons.
+            ///
+            /// The actual resolution of the depth image depends on the device and its display
+            /// aspect ratio, with sizes typically around 160x120 pixels, with higher resolutions up
+            /// to 640x480 on some devices. These sizes may change in the future.
             /// </summary>
             /// <param name="depthTexture">The texture to hold the depth data.</param>
             /// <returns><see cref="DepthStatus"/>.<c>Success</c> if
