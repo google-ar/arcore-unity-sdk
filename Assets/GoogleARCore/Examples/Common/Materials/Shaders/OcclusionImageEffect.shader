@@ -122,7 +122,7 @@ Shader "Hidden/OcclusionImageEffect"
             #pragma fragment frag
 
             sampler2D _MainTex;
-            sampler2D _OcclusionMapBlurred;
+            sampler2D _OcclusionMap;
             sampler2D _BackgroundTexture;
 
             fixed _OcclusionTransparency;
@@ -131,24 +131,14 @@ Shader "Hidden/OcclusionImageEffect"
             {
                 fixed4 input = tex2D(_MainTex, i.uv);
                 fixed4 background = tex2D(_BackgroundTexture, i.uv);
-                fixed4 occlusionBlurred = tex2D(_OcclusionMapBlurred, i.uv);
-                float objectMask = occlusionBlurred.a;
 
-                // The virtual object mask is blurred, we make the falloff
-                // steeper to simulate erosion operator. This is needed to make
-                // the fully occluded virtual object invisible.
-                float objectMaskEroded = pow(objectMask, 10);
-
-                // occlusionTransition equal to 1 means fully occluded object.
-                // This operation boosts occlusion near the edges of the virtual
-                // object, but does not affect occlusion within the object.
-                float occlusionTransition =
-                    saturate(occlusionBlurred.a * (2.0 - objectMaskEroded));
+                // 0.0 - fully visible region, 1.0 - fully occluded region.
+                fixed occlusionAlpha = tex2D(_OcclusionMap, i.uv).a;
 
                 // Clips occlusion if we want to partially show occluded object.
-                occlusionTransition = min(occlusionTransition, _OcclusionTransparency);
+                occlusionAlpha = min(occlusionAlpha, _OcclusionTransparency);
 
-                return lerp(input, background, occlusionTransition);
+                return lerp(input, background, occlusionAlpha);
             }
             ENDCG
         }

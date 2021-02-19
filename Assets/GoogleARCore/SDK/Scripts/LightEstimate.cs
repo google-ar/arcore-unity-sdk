@@ -286,11 +286,18 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Gets the timestamp of the LightEstimate in nanoseconds. This timestamp uses
-        /// the same time base as frame timestamp. This timestamp is used to improve performance
+        /// Gets the timestamp of the LightEstimate in nanoseconds.
+        /// </summary>
+        /// <remarks>
+        /// ARCore returns a different timestamp when the underlying light estimate has changed.
+        /// Conversely, the same timestamp is returned if the light estimate has not changed.
+        ///
+        /// This timestamp uses the same time base as frame timestamp.
+        ///
+        /// This timestamp is used to improve performance
         /// of the EnvironmentalHDRWithReflection light estimation mode, by ensuring that the
         /// Unity environmental reflections are only updated when ReflectionCubemap has changed.
-        /// </summary>
+        /// </remarks>
         /// <value>The timestamp of the LightEstimate.</value>
         public long Timestamp { get; private set; }
 

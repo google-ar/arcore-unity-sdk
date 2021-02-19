@@ -104,20 +104,20 @@ namespace GoogleARCore
         /// </summary>
         /// <remarks>
         /// On these devices, the default desired focus mode is currently
-        /// <see cref="GoogleARCore.CameraFocusMode"/>.<c>FixedFocus</c>, although this default
-        /// might change in the future. See the
+        /// <c><see cref="GoogleARCore.CameraFocusMode"/></c>.<c>FixedFocus</c>, although this
+        /// default might change in the future. See the
         /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
         /// devices</a> page for a list of devices on which ARCore does not support changing the
         /// desired focus mode.
         ///
         /// For optimal AR tracking performance, use the focus mode provided by the default session
         /// config. While capturing pictures or video, use
-        /// <see cref="GoogleARCore.CameraFocusMode"/>.<c>AutoFocus</c>. For optimal AR tracking,
-        /// revert to the default focus mode once auto focus behavior is no longer needed. If your
-        /// app requires fixed focus camera, set
-        /// <see cref="GoogleARCore.CameraFocusMode"/>.<c>FixedFocus</c> before enabling the AR
-        /// session. This ensures that your app always uses fixed focus, even if the default camera
-        /// config focus mode changes in a future release.
+        /// <c><see cref="GoogleARCore.CameraFocusMode"/></c>.<c>AutoFocus</c>. For optimal AR
+        /// tracking, revert to the default focus mode once auto focus behavior is no longer needed.
+        /// If your app requires fixed focus camera, set
+        /// <c><see cref="GoogleARCore.CameraFocusMode"/></c>.<c>FixedFocus</c> before enabling the
+        /// AR session. This ensures that your app always uses fixed focus, even if the default
+        /// camera config focus mode changes in a future release.
         /// </remarks>
         [Tooltip("On supported devices, chooses the desired focus mode to be used by the ARCore " +
                  "camera.")]
@@ -128,7 +128,8 @@ namespace GoogleARCore
         public CameraFocusMode CameraFocusMode = CameraFocusMode.FixedFocus;
 
         /// <summary>
-        /// Chooses which <see cref="GoogleARCore.AugmentedFaceMode"/> the ARCore session uses.
+        /// Chooses which <c><see cref="GoogleARCore.AugmentedFaceMode"/></c> the ARCore session
+        /// uses.
         /// </summary>
         public AugmentedFaceMode AugmentedFaceMode = AugmentedFaceMode.Disabled;
 

@@ -344,6 +344,14 @@ namespace GoogleARCore.Examples.ComputerVision
                 _isQuitting = true;
                 Invoke("DoQuit", 0.5f);
             }
+            else if (Session.Status == SessionStatus.ErrorInvalidCameraConfig)
+            {
+                ShowAndroidToastMessage(
+                    "Cannot find a valid camera config. " +
+                    "Please try a less restrictive filter and start the app again.");
+                _isQuitting = true;
+                Invoke("DoQuit", 0.5f);
+            }
             else if (Session.Status == SessionStatus.FatalError)
             {
                 ShowAndroidToastMessage(
@@ -455,20 +463,30 @@ namespace GoogleARCore.Examples.ComputerVision
                     }
                 }
 
-                LowResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
-                    "Low Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
-                    "Depth Sensor Usage: {4}, Stereo Camera Usage: {5}",
-                    minimalConfig.ImageSize.x, minimalConfig.ImageSize.y,
-                    minimalConfig.MinFPS, minimalConfig.MaxFPS,
-                    minimalConfig.DepthSensorUsage, minimalConfig.StereoCameraUsage);
-                HighResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
-                    "High Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
-                    "Depth Sensor Usage: {4}, Stereo Camera Usage: {5}",
-                    maximalConfig.ImageSize.x, maximalConfig.ImageSize.y,
-                    maximalConfig.MinFPS, maximalConfig.MaxFPS,
-                    maximalConfig.DepthSensorUsage, maximalConfig.StereoCameraUsage);
+                string lowResConfigText = string.Empty;
+                string highResConfigText = string.Empty;
+                lowResConfigText +=
+                    string.Format("Facing Direction: {0}, ", minimalConfig.FacingDirection);
+                highResConfigText +=
+                    string.Format("Facing Direction: {0}, ", maximalConfig.FacingDirection);
+                lowResConfigText += string.Format(
+                  "Low Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
+                  "Depth Sensor Usage: {4}",
+                  minimalConfig.ImageSize.x, minimalConfig.ImageSize.y, minimalConfig.MinFPS,
+                  minimalConfig.MaxFPS, minimalConfig.DepthSensorUsage);
+                highResConfigText = string.Format(
+                  "High Resolution CPU Image ({0} x {1}), Target FPS: ({2} - {3}), " +
+                  "Depth Sensor Usage: {4}",
+                   maximalConfig.ImageSize.x, maximalConfig.ImageSize.y, maximalConfig.MinFPS,
+                   maximalConfig.MaxFPS, maximalConfig.DepthSensorUsage);
+                lowResConfigText +=
+                  string.Format(", Stereo Camera Usage: {0}", minimalConfig.StereoCameraUsage);
+                highResConfigText +=
+                  string.Format(", Stereo Camera Usage: {0}", maximalConfig.StereoCameraUsage);
+                LowResConfigToggle.GetComponentInChildren<Text>().text = lowResConfigText;
+                HighResConfigToggle.GetComponentInChildren<Text>().text = highResConfigText;
                 _resolutioninitialized = true;
-            }
+          }
 
             if (_useHighResCPUTexture)
             {

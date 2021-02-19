@@ -21,19 +21,65 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using GoogleARCore;
     using UnityEditor;
+    using UnityEditor.SceneManagement;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     /// <summary>
-    /// This handles the addition and removal android dependencies, and run PlayServicesResolver
-    /// plugin.
+    /// This handles the addition and removal android dependencies, and run
+    /// ExternalDependencyManager plugin.
     /// </summary>
     internal static class AndroidDependenciesHelper
     {
         private static readonly string _templateFileExtension = ".template";
         private static readonly string _playServiceDependencyFileExtension = ".xml";
+
+        /// <summary>
+        /// Gets all session configs from active scenes.
+        /// </summary>
+        /// <returns>A dictionary contains session config to scene path mapping.</returns>
+        public static Dictionary<ARCoreSessionConfig, string> GetAllSessionConfigs()
+        {
+            Dictionary<ARCoreSessionConfig, string> sessionToPathMap =
+                new Dictionary<ARCoreSessionConfig, string>();
+            EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
+            foreach (EditorBuildSettingsScene editorScene in EditorBuildSettings.scenes)
+            {
+                if (editorScene.enabled)
+                {
+                    Scene scene = SceneManager.GetSceneByPath(editorScene.path);
+                    if (!scene.isLoaded)
+                    {
+                        scene = EditorSceneManager.OpenScene(
+                            editorScene.path, OpenSceneMode.Additive);
+                    }
+
+                    foreach (GameObject gameObject in scene.GetRootGameObjects())
+                    {
+                        ARCoreSession sessionComponent =
+                            (ARCoreSession)gameObject.GetComponentInChildren(
+                                typeof(ARCoreSession));
+                        if (sessionComponent != null)
+                        {
+                            if (!sessionToPathMap.ContainsKey(sessionComponent.SessionConfig))
+                            {
+                                sessionToPathMap.Add(
+                                    sessionComponent.SessionConfig, editorScene.path);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return sessionToPathMap;
+        }
 
         /// <summary>
         /// Gets the JDK path used by this project.
@@ -118,9 +164,9 @@ namespace GoogleARCoreInternal
         }
 
         /// <summary>
-        /// Handle the addition or removal Android dependencies using the PlayServicesResolver.
+        /// Handle the addition or removal Android dependencies using the ExternalDependencyManager.
         /// Adding the dependencies is done by renaming the dependencies .template file to a .xml
-        /// file so that it will be picked up by the PlayServicesResolver plugin.
+        /// file so that it will be picked up by the ExternalDependencyManager plugin.
         /// </summary>
         /// <param name="enabledDependencies">If set to <c>true</c> enabled dependencies.</param>
         /// <param name="dependenciesTemplateGuid">Dependencies template GUID.</param>

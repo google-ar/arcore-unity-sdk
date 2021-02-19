@@ -3,7 +3,7 @@
 All files in the following folders:
 - Assets/GoogleARCore/SDK/Plugins/
 - Assets/GoogleARCore/SDK/InstantPreview/Plugins/
-- Assets/PlayServicesResolver/
+- Assets/ExternalDependencyManager/
 
 are licensed as follows:
 

@@ -27,13 +27,14 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The background texture used to display the pass-through camera available from
-        /// <see cref="GoogleARCore.Frame.CameraImage.Texture"/>.
+        /// <c><see cref="GoogleARCore.Frame.CameraImage.Texture"/></c>.
         /// </summary>
         BackgroundTexture,
 
         /// <summary>
-        /// The background image bytes used for CPU access to the pass-through camera image available from
-        /// <see cref="GoogleARCore.Frame.CameraImage.AcquireCameraImageBytes"/>.
+        /// The background image bytes used for CPU access to the pass-through camera image
+        /// available from
+        /// <c><see cref="GoogleARCore.Frame.CameraImage.AcquireCameraImageBytes"/></c>.
         /// </summary>
         BackgroundImage,
 

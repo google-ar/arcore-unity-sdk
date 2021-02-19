@@ -47,19 +47,6 @@ namespace GoogleARCore.Examples.Common
         public DepthMenu DepthMenu;
 
         /// <summary>
-        /// The blur kernel size applied to the camera feed. In pixels.
-        /// </summary>
-        [Space]
-        public float BlurSize = 20f;
-
-        /// <summary>
-        /// The number of times occlusion map is downsampled before blurring. Useful for
-        /// performance optimization. The value of 1 means no downsampling, each next one
-        /// downsamples by 2.
-        /// </summary>
-        public int BlurDownsample = 2;
-
-        /// <summary>
         /// Maximum occlusion transparency. The value of 1.0 means completely invisible when
         /// occluded.
         /// </summary>
@@ -131,9 +118,7 @@ namespace GoogleARCore.Examples.Common
             _depthBuffer.Blit(
                 BuiltinRenderTextureType.CameraTarget,
                 occlusionMapTextureID, _depthMaterial, /*pass=*/ 0);
-
-            // Blurs the occlusion map.
-            _depthBuffer.SetGlobalTexture("_OcclusionMapBlurred", occlusionMapTextureID);
+            _depthBuffer.SetGlobalTexture("_OcclusionMap", occlusionMapTextureID);
 
             _camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, _depthBuffer);
             _camera.AddCommandBuffer(CameraEvent.AfterGBuffer, _depthBuffer);
@@ -150,10 +135,8 @@ namespace GoogleARCore.Examples.Common
             _backgroundBuffer.name = "Camera texture";
             _backgroundTextureID = Shader.PropertyToID(BackgroundTexturePropertyName);
             _backgroundBuffer.GetTemporaryRT(_backgroundTextureID,
-                /*width=*/
-                -1, /*height=*/ -1,
-                /*depthBuffer=*/
-                0, FilterMode.Bilinear);
+                                             /*width=*/ -1, /*height=*/ -1, /*depthBuffer=*/0,
+                                             FilterMode.Bilinear);
 
             var material = _backgroundRenderer.BackgroundMaterial;
             if (material != null)
@@ -180,7 +163,6 @@ namespace GoogleARCore.Examples.Common
                 Mathf.Clamp(_currentOcclusionTransparency, 0.0f, OcclusionTransparency);
             _depthMaterial.SetFloat("_OcclusionTransparency", _currentOcclusionTransparency);
             _depthMaterial.SetFloat("_TransitionSize", TransitionSize);
-            Shader.SetGlobalFloat("_BlurSize", BlurSize / BlurDownsample);
 
             if (Session.Status == SessionStatus.Tracking && DepthMenu != null &&
                 DepthMenu.IsDepthEnabled())

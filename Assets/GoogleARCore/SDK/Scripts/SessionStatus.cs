@@ -65,7 +65,7 @@ namespace GoogleARCore
         /// The ARCore session cannot begin tracking because an Android permission, such as
         /// android.permission.CAMERA, is not granted.
         ///
-        /// Use <see cref="AndroidPermissionsManager.IsPermissionGranted"/> to check if
+        /// Use <c><see cref="AndroidPermissionsManager.IsPermissionGranted"/></c> to check if
         /// the required Android permission has been granted.
         /// </summary>
         ErrorPermissionNotGranted = 202,
@@ -90,5 +90,15 @@ namespace GoogleARCore
         /// and there is at least one unreleased image.
         /// </summary>
         ErrorIllegalState = 205,
+
+        /// <summary>
+        /// The ARCore session failed to set a camera config. Returned when no supported
+        /// camera config exists for the given
+        /// <c><see cref="ARCoreSession.CameraConfigFilter"/></c>.
+        ///
+        /// To recover, try a less restrictive filter and then enable the
+        /// <c><see cref="ARCoreSession"/></c> again.
+        /// </summary>
+        ErrorInvalidCameraConfig = 206,
     }
 }

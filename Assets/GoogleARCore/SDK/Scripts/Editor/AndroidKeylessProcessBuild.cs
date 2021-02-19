@@ -20,6 +20,8 @@
 
 namespace GoogleARCoreInternal
 {
+    using System.Collections.Generic;
+    using GoogleARCore;
     using UnityEditor;
     using UnityEditor.Callbacks;
     using UnityEngine;
@@ -63,7 +65,7 @@ namespace GoogleARCoreInternal
             AndroidDependenciesHelper.UpdateAndroidDependencies(
                 enabledKeyless, _androidKeylessDependenciesGuid);
 
-           if (enabledKeyless)
+            if (enabledKeyless)
             {
                 Debug.Log("ARCore: Including Keyless dependencies in this build.");
                 AndroidDependenciesHelper.DoPlayServicesResolve();
@@ -74,8 +76,8 @@ namespace GoogleARCoreInternal
         {
             Debug.Log("ARCore: Cleaning up Keyless dependencies.");
 
-            // Run the pre-process step with <c>Keyless</c> disabled so project files get
-            // reset.  Then run the PlayServicesResolver dependency resolution which will remove
+            // Run the pre-process step with <c>Keyless</c> disabled so project files get reset.
+            // Then run the ExternalDependencyManager dependency resolution which will remove
             // the Keyless dependencies.
             PreprocessAndroidBuild(false);
             AndroidDependenciesHelper.DoPlayServicesResolve();
@@ -84,7 +86,21 @@ namespace GoogleARCoreInternal
         private static bool IsKeylessAuthenticationEnabled()
         {
             return ARCoreProjectSettings.Instance.AndroidAuthenticationStrategySetting ==
-                AndroidAuthenticationStrategy.Keyless;
+                AndroidAuthenticationStrategy.Keyless && IsCloudAnchorModeEnabled();
+        }
+
+        private static bool IsCloudAnchorModeEnabled()
+        {
+            foreach (ARCoreSessionConfig config in
+                AndroidDependenciesHelper.GetAllSessionConfigs().Keys)
+            {
+                if (config.CloudAnchorMode != CloudAnchorMode.Disabled)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

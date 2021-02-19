@@ -89,10 +89,10 @@ namespace GoogleARCore
         /// <param name="x">Horizontal touch position in Unity screen coordinates.</param>
         /// <param name="y">Vertical touch position in Unity screen coordinates.</param>
         /// <param name="filter">A filter bitmask where each set bit in
-        /// <see cref="TrackableHitFlags"/>
+        /// <c><see cref="TrackableHitFlags"/></c>
         /// represents a category of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResult">A <see cref="TrackableHit"/> that will be set if the raycast is
-        /// successful.</param>
+        /// <param name="hitResult">A <c><see cref="TrackableHit"/></c> that will be set if the
+        /// raycast is successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
         public static bool Raycast(float x, float y, TrackableHitFlags filter,
@@ -123,12 +123,13 @@ namespace GoogleARCore
         /// The pose and apparent scale of attached objects depends on the <see
         /// cref="InstantPlacementPoint"/> tracking method and the provided
         /// approximateDistanceMeters. A discussion of the different tracking methods and the
-        /// effects of apparent object scale are described in <see cref="InstantPlacementPoint"/>.
+        /// effects of apparent object scale are described in
+        /// <c><see cref="InstantPlacementPoint"/></c>.
         ///
-        /// This function will succeed only if <see cref="InstantPlacementMode"/> is
+        /// This function will succeed only if <c><see cref="InstantPlacementMode"/></c> is
         /// <c>InstantPlacementMode.LocalYUp</c> in the ARCore session configuration, the ARCore
-        /// session status is <see cref="SessionStatus"/>.<c>Tracking</c>, and there are sufficient
-        /// feature points to track the point in screen space.
+        /// session status is <c><see cref="SessionStatus"/></c>.<c>Tracking</c>, and there are
+        /// sufficient feature points to track the point in screen space.
         ///
         /// </summary>
         /// <param name="x">Horizontal touch position in Unity screen coordinates.</param>
@@ -137,8 +138,8 @@ namespace GoogleARCore
         /// cref="InstantPlacementPoint"/>. This is only used while the tracking method for the
         /// returned point is
         /// <c>InstantPlacementPointTrackingMethod.ScreenspaceWithApproximateDistance</c>.</param>
-        /// <param name="hitResult">If successful a <see cref="HitResult"/> with a trackable of type
-        /// <see cref="InstantPlacementPoint"/>.</param>
+        /// <param name="hitResult">If successful a <c><see cref="HitResult"/></c> with a trackable
+        /// of type <c><see cref="InstantPlacementPoint"/></c>.</param>
         /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
         public static bool RaycastInstantPlacement(float x, float y,
@@ -168,11 +169,11 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>
         /// <param name="direction">The direction of the ray.</param>
-        /// <param name="hitResult">A <see cref="TrackableHit"/> that will be set if the raycast is
-        /// successful.</param>
+        /// <param name="hitResult">A <c><see cref="TrackableHit"/></c> that will be set if the
+        /// raycast is successful.</param>
         /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
         /// <param name="filter">A filter bitmask where each set bit in
-        /// <see cref="TrackableHitFlags"/>
+        /// <c><see cref="TrackableHitFlags"/></c>
         /// represents a category of raycast hits the method call should consider valid.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
@@ -210,10 +211,10 @@ namespace GoogleARCore
         /// <param name="x">Horizontal touch position in Unity screen coordinates.</param>
         /// <param name="y">Vertical touch position in Unity screen coordinates.</param>
         /// <param name="filter">A filter bitmask where each set bit in
-        /// <see cref="TrackableHitFlags"/>
+        /// <c><see cref="TrackableHitFlags"/></c>
         /// represents a category of raycast hits the method call should consider valid.</param>
-        /// <param name="hitResults">A list of <see cref="TrackableHit"/> that will be set if the
-        /// raycast is successful.</param>
+        /// <param name="hitResults">A list of <c><see cref="TrackableHit"/></c> that will be set
+        /// if the raycast is successful.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
         public static bool RaycastAll(
@@ -236,11 +237,11 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="origin">The starting point of the ray in world coordinates.</param>
         /// <param name="direction">The direction of the ray.</param>
-        /// <param name="hitResults">A list of <see cref="TrackableHit"/> that will be set if the
-        /// raycast is successful.</param>
+        /// <param name="hitResults">A list of <c><see cref="TrackableHit"/></c> that will be set
+        /// if the raycast is successful.</param>
         /// <param name="maxDistance">The max distance the ray should check for collisions.</param>
         /// <param name="filter">A filter bitmask where each set bit in
-        /// <see cref="TrackableHitFlags"/> represents a category
+        /// <c><see cref="TrackableHitFlags"/></c> represents a category
         /// of raycast hits the method call should consider valid.</param>
         /// <returns><c>true</c> if the raycast had a hit, otherwise <c>false</c>.</returns>
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "List could be resized")]
@@ -479,7 +480,7 @@ namespace GoogleARCore
 
             /// <summary>
             /// Gets UVs that map the orientation and aspect ratio of
-            /// <see cref="Frame.CameraImage.Texture"/> to those of the device's display.
+            /// <c><see cref="Frame.CameraImage.Texture"/></c> to those of the device's display.
             /// </summary>
             public static DisplayUvCoords TextureDisplayUvs
             {
@@ -526,7 +527,8 @@ namespace GoogleARCore
 
             /// <summary>
             /// Gets UVs that map the orientation and aspect ratio of the image returned by
-            /// <see cref="Frame.CameraImage.AcquireCameraImageBytes"/> to that of the device's display.
+            /// <c><see cref="Frame.CameraImage.AcquireCameraImageBytes"/></c> to that of the
+            /// device's display.
             /// </summary>
             public static DisplayUvCoords ImageDisplayUvs
             {
@@ -688,7 +690,7 @@ namespace GoogleARCore
             /// <summary>
             /// Updates the input texture with the latest depth data from ARCore.
             /// If there is no new data, or an error occurs, the contents of the
-            /// texture will remain unchanged. See <see cref="DepthStatus"/> for a
+            /// texture will remain unchanged. See <c><see cref="DepthStatus"/></c> for a
             /// complete list of reasons.
             ///
             /// The actual resolution of the depth image depends on the device and its display
@@ -696,7 +698,7 @@ namespace GoogleARCore
             /// to 640x480 on some devices. These sizes may change in the future.
             /// </summary>
             /// <param name="depthTexture">The texture to hold the depth data.</param>
-            /// <returns><see cref="DepthStatus"/>.<c>Success</c> if
+            /// <returns><c><see cref="DepthStatus"/></c>.<c>Success</c> if
             /// successful.</returns>
             public static DepthStatus UpdateDepthTexture(ref Texture2D depthTexture)
             {

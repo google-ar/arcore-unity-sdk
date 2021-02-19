@@ -22,15 +22,16 @@ namespace GoogleARCore
 {
     /// <summary>
     /// Indicates whether Instant Placement is enabled or disabled.
-    /// The default value is <see cref="InstantPlacementMode"/>.<c>Disabled</c>.
+    /// The default value is <c><see cref="InstantPlacementMode"/></c>.<c>Disabled</c>.
     /// </summary>
     public enum InstantPlacementMode
     {
         /// <summary>
         /// Instant Placement mode is disabled.
 
-        /// When Instant Placement is disabled, any <see cref="InstantPlacementPoint"/> having <see
-        /// cref="InstantPlacementPointTrackingMethod"/>.<c>ScreenspaceWithApproximateDistance</c>
+        /// When Instant Placement is disabled, any <c><see cref="InstantPlacementPoint"/></c>
+        /// having
+        /// <see cref="InstantPlacementPointTrackingMethod"/>.<c>ScreenspaceWithApproximateDistance</c>
         /// tracking method will result in tracking state becoming permanently <see
         /// cref="TrackingState"/>.<c>Stopped</c>.
         /// </summary>
@@ -38,8 +39,8 @@ namespace GoogleARCore
 
         /// <summary>
         /// Enable Instant Placement. If the hit test is successful,
-        /// it will return a single <see cref="InstantPlacementPoint"/> with the +Y pointing upward,
-        /// against gravity. Otherwise, returns an empty result set.
+        /// it will return a single <c><see cref="InstantPlacementPoint"/></c> with the +Y pointing
+        /// upward, against gravity. Otherwise, returns an empty result set.
         ///
         /// This mode is currently intended to be used with hit tests against
         /// horizontal surfaces.
@@ -52,10 +53,10 @@ namespace GoogleARCore
         ///    Specifically, a hit test against a vertical surface, such as a wall,
         ///    will not result in a pose that's in any way aligned to the plane of the
         ///    wall, other than +Y being up, against gravity.</item>
-        ///   <item> The <see cref="InstantPlacementPoint"/>'s tracking method may never become
-        ///    <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c> or may take
-        ///    a long time to reach this state.The tracking method remains
-        ///    <see cref="InstantPlacementPointTrackingMethod"/>.
+        ///   <item> The <c><see cref="InstantPlacementPoint"/></c>'s tracking method may never
+        ///   become <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c>
+        ///    or may take a long time to reach this state. The tracking method remains
+        ///    <c><see cref="InstantPlacementPointTrackingMethod"/></c>.
         ///    <c>ScreenspaceWithApproximateDistance</c>
         ///    until a (tiny) horizontal plane is fitted at the point of the hit test.</item>
         /// </list>

@@ -199,15 +199,15 @@ namespace GoogleARCoreInternal
             _instance = null;
         }
 
-        private void OnBeforeResumeSession(IntPtr sessionHandle)
+        private ApiPrestoCallbackResult OnBeforeResumeSession(IntPtr sessionHandle)
         {
+            ApiPrestoCallbackResult result = ApiPrestoCallbackResult.InvalidCameraConfig;
             if (SessionComponent == null || sessionHandle == IntPtr.Zero)
             {
-                return;
+                return result;
             }
 
             NativeSession tempNativeSession = GetNativeSession(sessionHandle);
-
             var listHandle = tempNativeSession.CameraConfigListApi.Create();
             tempNativeSession.SessionApi.GetSupportedCameraConfigurationsWithFilter(
                 SessionComponent.CameraConfigFilter,
@@ -237,6 +237,13 @@ namespace GoogleARCoreInternal
                         Debug.LogErrorFormat(
                             "Failed to set the ARCore camera configuration: {0}", status);
                     }
+                    else
+                    {
+                        result = ApiPrestoCallbackResult.Success;
+
+                        // sync the session configuration with the new camera direction.
+                        ExternApi.ArPresto_setConfigurationDirty();
+                    }
                 }
 
                 for (int i = 0; i < _tempCameraConfigHandles.Count; i++)
@@ -247,9 +254,9 @@ namespace GoogleARCoreInternal
 
             // clean up
             tempNativeSession.CameraConfigListApi.Destroy(listHandle);
-
             _tempCameraConfigHandles.Clear();
             _tempCameraConfigs.Clear();
+            return result;
         }
 
         private void OnEarlyUpdate()
@@ -534,12 +541,14 @@ namespace GoogleARCoreInternal
             }
 
             _cachedCameraDirection = cameraDirection;
-            var apiCameraDirection =
-                cameraDirection == DeviceCameraDirection.BackFacing ?
-                    ApiPrestoDeviceCameraDirection.BackFacing :
-                    ApiPrestoDeviceCameraDirection.FrontFacing;
-
-            ExternApi.ArPresto_setDeviceCameraDirection(apiCameraDirection);
+            ApiPrestoStatus prestoStatus = ApiPrestoStatus.Uninitialized;
+            ExternApi.ArPresto_getStatus(ref prestoStatus);
+            if (prestoStatus == ApiPrestoStatus.ErrorInvalidCameraConfig)
+            {
+                // if the session is paused by invalid camera configuration,
+                // attempt to recover by changing the camera direction:
+                OnBeforeResumeSession(_cachedSessionHandle);
+            }
 
             return true;
         }
@@ -558,6 +567,11 @@ namespace GoogleARCoreInternal
                 return;
             }
 
+            if (_cachedConfig == null)
+            {
+                return;
+            }
+
             // Disable depth if the device doesn't support it.
             if (_cachedConfig.DepthMode != DepthMode.Disabled)
             {
@@ -567,6 +581,16 @@ namespace GoogleARCoreInternal
                 {
                     _cachedConfig.DepthMode = DepthMode.Disabled;
                 }
+            }
+
+            // Don't set session config before the camera direction has changed to desired one.
+            NativeSession nativeSession = GetNativeSession(sessionHandle);
+            if (_cachedCameraDirection != null &&
+                nativeSession.SessionApi.GetCameraConfig().FacingDirection !=
+                _cachedCameraDirection)
+            {
+                _cachedConfig = null;
+                return;
             }
 
             SessionConfigApi.UpdateApiConfigWithARCoreSessionConfig(
@@ -684,7 +708,6 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_setDeviceCameraDirection(
                 ApiPrestoDeviceCameraDirection cameraDirection);
-
 
             [AndroidImport(ApiConstants.ARPrestoApi)]
             public static extern void ArPresto_setCameraTextureNames(

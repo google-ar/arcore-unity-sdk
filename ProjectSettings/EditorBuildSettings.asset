@@ -20,9 +20,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/GoogleARCore/Examples/AugmentedFaces/Scenes/AugmentedFaces.unity
     guid: 7d2be221c0e8f4e259a08279fab0da42
-  - enabled: 1
+  - enabled: 0
     path: Assets/GoogleARCore/Examples/ObjectManipulation/Scenes/ObjectManipulation.unity
     guid: 9dba7e74f4d2b410f90b920f80528d44
-  - enabled: 0
+  - enabled: 1
     path: Assets/GoogleARCore/Examples/PersistentCloudAnchors/Scenes/PersistentCloudAnchors.unity
     guid: a1cbde3cab63248f4bbf8d8ad6586754

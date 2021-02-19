@@ -22,6 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
     using GoogleARCore.CrossPlatform;
@@ -50,15 +51,21 @@ namespace GoogleARCoreInternal
                 _nativeSession.SessionHandle, "Unity", Application.unityVersion);
         }
 
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules",
+                         "SA1118:ParameterMustNotSpanMultipleLines",
+                         Justification = "Bypass source check.")]
         public void GetSupportedCameraConfigurationsWithFilter(
             ARCoreCameraConfigFilter cameraConfigFilter,
             IntPtr cameraConfigListHandle, List<IntPtr> supportedCameraConfigHandles,
             List<CameraConfig> supportedCameraConfigs, DeviceCameraDirection cameraFacingDirection)
         {
-            IntPtr cameraConfigFilterHandle =
-                _nativeSession.CameraConfigFilterApi.Create(cameraConfigFilter);
-            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(_nativeSession.SessionHandle,
-                cameraConfigFilterHandle, cameraConfigListHandle);
+            IntPtr cameraConfigFilterHandle = _nativeSession.CameraConfigFilterApi.Create(
+                cameraFacingDirection,
+                cameraConfigFilter);
+            ExternApi.ArSession_getSupportedCameraConfigsWithFilter(
+                _nativeSession.SessionHandle,
+                cameraConfigFilterHandle,
+                cameraConfigListHandle);
             _nativeSession.CameraConfigFilterApi.Destroy(cameraConfigFilterHandle);
 
             supportedCameraConfigHandles.Clear();
@@ -70,16 +77,6 @@ namespace GoogleARCoreInternal
                 IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
                 _nativeSession.CameraConfigListApi.GetItemAt(
                     cameraConfigListHandle, i, cameraConfigHandle);
-
-                // Skip camera config that has a different camera facing direction.
-                DeviceCameraDirection configDirection =
-                    _nativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle)
-                    .ToDeviceCameraDirection();
-                if (configDirection != cameraFacingDirection)
-                {
-                    continue;
-                }
-
                 supportedCameraConfigHandles.Add(cameraConfigHandle);
                 supportedCameraConfigs.Add(CreateCameraConfig(cameraConfigHandle));
             }
@@ -93,14 +90,13 @@ namespace GoogleARCoreInternal
 
         public CameraConfig GetCameraConfig()
         {
-            IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
-
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 InstantPreviewManager.LogLimitedSupportMessage("access camera config");
                 return new CameraConfig();
             }
 
+            IntPtr cameraConfigHandle = _nativeSession.CameraConfigApi.Create();
             ExternApi.ArSession_getCameraConfig(_nativeSession.SessionHandle, cameraConfigHandle);
             CameraConfig currentCameraConfig = CreateCameraConfig(cameraConfigHandle);
             _nativeSession.CameraConfigApi.Destroy(cameraConfigHandle);
@@ -320,8 +316,13 @@ namespace GoogleARCoreInternal
             return RecordingResult.ErrorRecordingFailed;
         }
 
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules",
+                         "SA1118:ParameterMustNotSpanMultipleLines",
+                         Justification = "Bypass source check.")]
         private CameraConfig CreateCameraConfig(IntPtr cameraConfigHandle)
         {
+            DeviceCameraDirection facingDirection =
+                _nativeSession.CameraConfigApi.GetFacingDirection(cameraConfigHandle);
             int imageWidth = 0;
             int imageHeight = 0;
             int textureWidth = 0;
@@ -338,10 +339,14 @@ namespace GoogleARCoreInternal
                 cameraConfigHandle, out textureWidth, out textureHeight);
             _nativeSession.CameraConfigApi.GetFpsRange(
                 cameraConfigHandle, out minFps, out maxFps);
-
-            return new CameraConfig(new Vector2(imageWidth, imageHeight),
-                                    new Vector2(textureWidth, textureHeight), minFps, maxFps,
-                                    depthSensorUsage, stereoCameraUsage);
+            return new CameraConfig(
+                facingDirection,
+                new Vector2(imageWidth, imageHeight),
+                new Vector2(textureWidth, textureHeight),
+                minFps,
+                maxFps,
+                stereoCameraUsage,
+                depthSensorUsage);
         }
 
         private struct ExternApi

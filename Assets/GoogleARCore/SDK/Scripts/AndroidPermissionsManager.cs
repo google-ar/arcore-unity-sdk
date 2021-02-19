@@ -73,8 +73,8 @@ namespace GoogleARCore
         /// <param name="permissionName">The permission to be requested (e.g.
         /// android.permission.CAMERA).</param>
         /// <returns>An asynchronous task that completes when the user has accepted or rejected the
-        /// requested permission and yields a <see cref="AndroidPermissionsRequestResult"/> that
-        /// summarizes the result. If this method is called when another permissions request is
+        /// requested permission and yields a <c><see cref="AndroidPermissionsRequestResult"/></c>
+        /// that summarizes the result. If this method is called when another permissions request is
         /// pending, <c>null</c> will be returned instead.</returns>
         [SuppressMemoryAllocationError(
             IsWarning = true, Reason = "Allocates new objects the first time is called")]
@@ -108,8 +108,8 @@ namespace GoogleARCore
         /// <param name="permissionName">The permission to be requested (e.g.
         /// android.permission.CAMERA).</param>
         /// <returns>An asynchronous task that completes when the user has accepted or rejected the
-        /// requested permission and yields a <see cref="AndroidPermissionsRequestResult"/> that
-        /// summarizes the result. If this method is called when another permissions request is
+        /// requested permission and yields a <c><see cref="AndroidPermissionsRequestResult"/></c>
+        /// that summarizes the result. If this method is called when another permissions request is
         /// pending, <c>null</c> will be returned instead.</returns>
         public AsyncTask<AndroidPermissionsRequestResult> RequestAndroidPermission(
             string permissionName)

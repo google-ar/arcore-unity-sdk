@@ -31,7 +31,7 @@ namespace GoogleARCoreInternal
     {
         /// <summary>
         /// Initializes a new instance of the
-        /// <see cref="GoogleARCoreInternal.SuppressMemoryAllocationErrorAttribute"/> class.
+        /// <c><see cref="GoogleARCoreInternal.SuppressMemoryAllocationErrorAttribute"/></c> class.
         /// </summary>
         public SuppressMemoryAllocationErrorAttribute()
         {

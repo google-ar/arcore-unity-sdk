@@ -40,45 +40,24 @@ namespace GoogleARCoreInternal
             _nativeSession = nativeSession;
         }
 
-        public void GetImageBuffer(
-            IntPtr imageHandle, out int width, out int height, out IntPtr yPlane, out IntPtr uPlane,
-            out IntPtr vPlane, out int yRowStride, out int uvPixelStride, out int uvRowStride)
+        public int GetPlanePixelStride(IntPtr imageHandle, int planeIndex)
         {
-            IntPtr ndkImageHandle = IntPtr.Zero;
-            ExternApi.ArImage_getNdkImage(imageHandle, ref ndkImageHandle);
+            int stride = 0;
+            ExternApi.ArImage_getPlanePixelStride(_nativeSession.SessionHandle, imageHandle,
+                planeIndex, ref stride);
+            return stride;
+        }
 
-            width = 0;
-            ExternApi.AImage_getWidth(ndkImageHandle, ref width);
-
-            height = 0;
-            ExternApi.AImage_getHeight(ndkImageHandle, ref height);
-
-            const int Y_PLANE = 0;
-            const int U_PLANE = 1;
-            const int V_PLANE = 2;
-            int bufferLength = 0;
-
-            yPlane = IntPtr.Zero;
-            ExternApi.AImage_getPlaneData(ndkImageHandle, Y_PLANE, ref yPlane, ref bufferLength);
-
-            uPlane = IntPtr.Zero;
-            ExternApi.AImage_getPlaneData(ndkImageHandle, U_PLANE, ref uPlane, ref bufferLength);
-
-            vPlane = IntPtr.Zero;
-            ExternApi.AImage_getPlaneData(ndkImageHandle, V_PLANE, ref vPlane, ref bufferLength);
-
-            yRowStride = 0;
-            ExternApi.AImage_getPlaneRowStride(ndkImageHandle, Y_PLANE, ref yRowStride);
-
-            uvPixelStride = 0;
-            ExternApi.AImage_getPlanePixelStride(ndkImageHandle, U_PLANE, ref uvPixelStride);
-
-            uvRowStride = 0;
-            ExternApi.AImage_getPlaneRowStride(ndkImageHandle, U_PLANE, ref uvRowStride);
+        public int GetPlaneRowStride(IntPtr imageHandle, int planeIndex)
+        {
+            int stride = 0;
+            ExternApi.ArImage_getPlaneRowStride(_nativeSession.SessionHandle, imageHandle,
+                planeIndex, ref stride);
+            return stride;
         }
 
         public void GetPlaneData(IntPtr imageHandle, int planeIndex, ref IntPtr surfaceData,
-            ref int dataLength)
+                                 ref int dataLength)
         {
             ExternApi.ArImage_getPlaneData(_nativeSession.SessionHandle, imageHandle, planeIndex,
                 ref surfaceData, ref dataLength);
@@ -107,41 +86,27 @@ namespace GoogleARCoreInternal
         {
 #pragma warning disable 626
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArImage_getNdkImage(IntPtr imageHandle, ref IntPtr ndkImage);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImage_release(IntPtr imageHandle);
 
-            [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getWidth(IntPtr ndkImageHandle, ref int width);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getWidth(IntPtr sessionHandle, IntPtr imageHandle,
+                out int width);
 
-            [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getHeight(IntPtr ndkImageHandle, ref int height);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getHeight(IntPtr sessionHandle, IntPtr imageHandle,
+                out int height);
 
-            [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlaneData(
-                IntPtr imageHandle, int planeIdx, ref IntPtr data, ref int dataLength);
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getPlaneData(IntPtr sessionHandle, IntPtr imageHandle,
+                int planeIndex, ref IntPtr surfaceData, ref int dataLength);
 
-            [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlanePixelStride(
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getPlanePixelStride(IntPtr sessionHandle,
                 IntPtr imageHandle, int planeIdx, ref int pixelStride);
 
-            [AndroidImport(ApiConstants.MediaNdk)]
-            public static extern int AImage_getPlaneRowStride(
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArImage_getPlaneRowStride(IntPtr sessionHandle,
                 IntPtr imageHandle, int planeIdx, ref int rowStride);
-
-           [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArImage_getWidth(
-                IntPtr sessionHandle, IntPtr imageHandle, out int width);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArImage_getHeight(
-                IntPtr sessionHandle, IntPtr imageHandle, out int height);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArImage_getPlaneData(
-                IntPtr sessionHandle, IntPtr imageHandle, int planeIndex, ref IntPtr surfaceData,
-                ref int dataLength);
 #pragma warning restore 626
         }
     }

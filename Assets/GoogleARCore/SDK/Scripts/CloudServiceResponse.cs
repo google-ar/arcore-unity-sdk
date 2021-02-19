@@ -21,7 +21,7 @@
 namespace GoogleARCore.CrossPlatform
 {
     /// <summary>
-    /// A response from the ARCore <see cref="Cloud Anchor"/> service.
+    /// A response from the ARCore <c><see cref="Cloud Anchor"/></c> service.
     /// </summary>
     public enum CloudServiceResponse
     {
@@ -41,7 +41,8 @@ namespace GoogleARCore.CrossPlatform
         ErrorNotTracking,
 
         /// <summary>
-        /// The ARCore <see cref="Cloud Anchor"/> service could not be reached via the network connection.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service could not be reached via the
+        /// network connection.
         /// </summary>
         /// @deprecated This enum value is deprecated.
         [System.Obsolete(
@@ -74,17 +75,17 @@ namespace GoogleARCore.CrossPlatform
 
         /// <summary>
         /// The device needs to gather additional tracking data from the environment before the
-        /// ARCore <see cref="Cloud Anchor"/> service can fulfill the request.
+        /// ARCore <c><see cref="Cloud Anchor"/></c> service can fulfill the request.
         /// </summary>
         ErrorDatasetInadequate,
 
         /// <summary>
-        /// The request referenced a <see cref="Cloud Anchor"/> ID that was not found.
+        /// The request referenced a <c><see cref="Cloud Anchor"/></c> ID that was not found.
         /// </summary>
         ErrorCloudIdNotFound,
 
         /// <summary>
-        /// The ARCore <see cref="Cloud Anchor"/> service failed to localize.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service failed to localize.
         /// </summary>
         /// @deprecated This enum value is deprecated.
         [System.Obsolete(
@@ -93,32 +94,36 @@ namespace GoogleARCore.CrossPlatform
         ErrorLocalizationFailed,
 
         /// <summary>
-        /// The SDK version is too old to be compatible with the ARCore <see cref="Cloud Anchor"/> service.
+        /// The SDK version is too old to be compatible with the ARCore
+        /// <c><see cref="Cloud Anchor"/></c> service.
         /// </summary>
         ErrorSDKTooOld,
 
         /// <summary>
-        /// The SDK version is too new to be compatible with the ARCore <see cref="Cloud Anchor"/> service.
+        /// The SDK version is too new to be compatible with the ARCore
+        /// <c><see cref="Cloud Anchor"/></c> service.
         /// </summary>
         ErrorSDKTooNew,
 
         /// <summary>
-        /// The ARCore <see cref="Cloud Anchor"/> service experienced an internal error when processing the request.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service experienced an internal error when
+        /// processing the request.
         /// </summary>
         ErrorInternal,
 
         /// <summary>
-        /// The ARCore <see cref="Cloud Anchor"/> service was unreachable. This can happen because
-        /// of a number of reasons. The device may is in airplane mode or does not
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service was unreachable. This can happen
+        /// because of a number of reasons. The device may is in airplane mode or does not
         /// have a working internet connection. The request sent to the server could
         /// have timed out with no response, there could be a bad network
         /// connection, DNS unavailability, firewall issues, or anything that could
-        /// affect the device's ability to connect to the ARCore <see cref="Cloud Anchor"/> service.
+        /// affect the device's ability to connect to the ARCore <c><see cref="Cloud Anchor"/></c>
+        /// service.
         /// </summary>
         ErrorHostingServiceUnavailable,
 
         /// <summary>
-        /// The ARCore <see cref="Cloud Anchor"/> service request has been cancelled.
+        /// The ARCore <c><see cref="Cloud Anchor"/></c> service request has been cancelled.
         /// </summary>
         ErrorRequestCancelled,
 

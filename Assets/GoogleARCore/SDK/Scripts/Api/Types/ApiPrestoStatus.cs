@@ -36,5 +36,6 @@ namespace GoogleARCoreInternal
         ErrorSessionConfigurationNotSupported = 203,
         ErrorCameraNotAvailable = 204,
         ErrorIllegalState = 205,
+        ErrorInvalidCameraConfig = 206,
     }
 }

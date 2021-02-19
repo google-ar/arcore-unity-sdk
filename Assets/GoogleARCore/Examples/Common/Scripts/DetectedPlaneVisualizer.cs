@@ -69,8 +69,8 @@ namespace GoogleARCore.Examples.Common
             }
             else if (_detectedPlane.TrackingState != TrackingState.Tracking)
             {
-                 _meshRenderer.enabled = false;
-                 return;
+                _meshRenderer.enabled = false;
+                return;
             }
 
             _meshRenderer.enabled = true;

@@ -28,32 +28,34 @@ namespace GoogleARCore
     /// Trackable Instant Placement point returned by <see
     /// cref="Frame.RaycastInstantPlacement(float, float, float, TrackableHit)"/>.
     ///
-    /// If ARCore has an accurate 3D pose for the <see cref="InstantPlacementPoint"/> returned by
-    /// <see cref="Frame.RaycastInstantPlacement(float, float, float, TrackableHit)"/> it will start
-    /// with tracking method <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c>.
+    /// If ARCore has an accurate 3D pose for the <c><see cref="InstantPlacementPoint"/></c>
+    /// returned by
+    /// <c><see cref="Frame.RaycastInstantPlacement(float, float, float, TrackableHit)"/></c>
+    /// it will start with tracking method
+    /// <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c>.
     /// Otherwise, it will start with tracking method
     /// <c>InstantPlacementPointTrackingMethod.ScreenspaceWithApproximateDistance</c>, and will
-    /// transition to <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c> once
-    /// ARCore has an accurate 3D pose. Once the tracking method is
-    /// <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c> it will not revert to
-    /// <c>InstantPlacementPointTrackingMethod.ScreenspaceWithApproximateDistance</c>.
+    /// transition to <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c>
+    /// once ARCore has an accurate 3D pose. Once the tracking method is
+    /// <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c> it will not
+    /// revert to <c>InstantPlacementPointTrackingMethod.ScreenspaceWithApproximateDistance</c>.
     ///
     /// When the tracking method changes from
     /// <c>InstantPlacementPointTrackingMethod.ScreenspaceWithApproximateDistance</c> in one frame
-    /// to <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c> in the next frame,
-    /// the pose will jump from its initial location based on the provided approximate distance to a
-    /// new location at an accurate distance.
+    /// to <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c> in the next
+    /// frame, the pose will jump from its initial location based on the provided approximate
+    /// distance to a new location at an accurate distance.
     ///
     /// This instantaneous change in pose will change the apparent scale of any objects that are
-    /// anchored to the <see cref="InstantPlacementPoint"/>. That is, an object will suddenly appear
-    /// larger or smaller than it was in the previous frame.
+    /// anchored to the <c><see cref="InstantPlacementPoint"/></c>. That is, an object will suddenly
+    /// appear larger or smaller than it was in the previous frame.
     ///
     /// To avoid the visual jump due to the sudden change in apparent object scale, use the
     /// following procedure:
-    /// 1. Keep track of the pose and tracking method of the <see cref="InstantPlacementPoint"/> in
-    ///    each frame.
+    /// 1. Keep track of the pose and tracking method of the
+    ///    <c><see cref="InstantPlacementPoint"/></c> in each frame.
     /// 2. Wait for the tracking method to change to
-    ///    <see cref="InstantPlacementPointTrackingMethod"/>.<c>FullTracking</c>.
+    ///    <c><see cref="InstantPlacementPointTrackingMethod"/></c>.<c>FullTracking</c>.
     /// 3. Use the pose from the previous frame and the pose in the current frame to determine the
     ///    object's distance to the device in both frames.
     /// 4. Calculate the apparent change in scale due to the change in distance from the camera.

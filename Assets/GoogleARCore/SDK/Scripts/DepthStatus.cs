@@ -46,7 +46,7 @@ namespace GoogleARCore
         NotYetAvailable,
 
         /// <summary>
-        /// <see cref="Session.Status"/> is not <see cref="SessionStatus.Tracking"/>,
+        /// <c><see cref="Session.Status"/></c> is not <c><see cref="SessionStatus.Tracking"/></c>,
         /// which is required to acquire depth images.
         /// </summary>
         NotTracking,

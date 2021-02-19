@@ -60,7 +60,7 @@ namespace GoogleARCore
         /// </summary>
         /// <param name="supportedConfigurations">
         /// A list of supported camera configurations. The size is dependent on
-        /// <see cref="ARCoreSession.CameraConfigFilter"/> settings.
+        /// <c><see cref="ARCoreSession.CameraConfigFilter"/></c> settings.
         /// The GPU texture resolutions are the same in all configs.
         /// Currently, most devices provide GPU texture resolution of 1920 x 1080,
         /// but devices might provide higher or lower resolution textures, depending
@@ -181,7 +181,7 @@ namespace GoogleARCore
         /// The callback should be registered before the ARCore session is enabled
         /// to ensure it is triggered on the first frame update.
         /// The callback will then be invoked each time the ARCore session is resumed,
-        /// which can happen when the <see cref="ARCoreSession"/> component is enabled or the
+        /// which can happen when the <c><see cref="ARCoreSession"/></c> component is enabled or the
         /// Android app moves from a state of 'paused' to 'resumed' state.
         ///
         /// Note: Starting in ARCore 1.12, changing the active camera config will make existing

@@ -37,22 +37,35 @@ namespace GoogleARCore
             _imageHandle = imageHandle;
             if (_imageHandle != IntPtr.Zero)
             {
-                int width, height;
                 IntPtr y, u, v;
-                int yRowStride, uvPixelStride, uvRowStride;
-                LifecycleManager.Instance.NativeSession.ImageApi.GetImageBuffer(
-                    _imageHandle, out width, out height, out y, out u, out v, out yRowStride,
-                    out uvPixelStride, out uvRowStride);
+                y = u = v = IntPtr.Zero;
+                int bufferLengthIgnore = 0;
+                const int Y_PLANE = 0;
+                const int U_PLANE = 1;
+                const int V_PLANE = 2;
 
                 IsAvailable = true;
-                Width = width;
-                Height = height;
+
+                Width = LifecycleManager.Instance.NativeSession.ImageApi.GetWidth(imageHandle);
+                Height = LifecycleManager.Instance.NativeSession.ImageApi.GetHeight(imageHandle);
+
+                LifecycleManager.Instance.NativeSession.ImageApi.GetPlaneData(imageHandle, Y_PLANE,
+                    ref y, ref bufferLengthIgnore);
+                LifecycleManager.Instance.NativeSession.ImageApi.GetPlaneData(imageHandle, U_PLANE,
+                    ref u, ref bufferLengthIgnore);
+                LifecycleManager.Instance.NativeSession.ImageApi.GetPlaneData(imageHandle, V_PLANE,
+                    ref v, ref bufferLengthIgnore);
+
+                YRowStride = LifecycleManager.Instance.NativeSession.ImageApi.GetPlaneRowStride(
+                    imageHandle, Y_PLANE);
+                UVPixelStride = LifecycleManager.Instance.NativeSession.ImageApi
+                    .GetPlanePixelStride(imageHandle, U_PLANE);
+                UVRowStride = LifecycleManager.Instance.NativeSession.ImageApi.GetPlaneRowStride(
+                    imageHandle, U_PLANE);
+
                 Y = y;
                 U = u;
                 V = v;
-                YRowStride = yRowStride;
-                UVPixelStride = uvPixelStride;
-                UVRowStride = uvRowStride;
             }
             else
             {
@@ -128,8 +141,8 @@ namespace GoogleARCore
         /// <summary>
         /// Calls release as part of IDisposable pattern supporting 'using' statements.
         /// </summary>
-        [SuppressMemoryAllocationError(
-            IsWarning = true, Reason = "Requires further investigation.")]
+        [SuppressMemoryAllocationError(IsWarning = true,
+            Reason = "Requires further investigation.")]
         public void Dispose()
         {
             Release();

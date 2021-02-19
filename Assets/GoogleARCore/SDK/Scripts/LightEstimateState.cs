@@ -21,7 +21,7 @@
 namespace GoogleARCore
 {
     /// <summary>
-    /// Possible states for <see cref="LightEstimate"/>.
+    /// Possible states for <c><see cref="LightEstimate"/></c>.
     /// </summary>
     public enum LightEstimateState
     {

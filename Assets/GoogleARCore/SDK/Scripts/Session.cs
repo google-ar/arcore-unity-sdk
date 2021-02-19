@@ -61,9 +61,9 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// The current state of the recorder.
+        /// Gets the current state of the recorder.
         /// </summary>
-        /// <returns>The current <cref="RecordingStatus"/>.</returns>
+        /// <returns>The current <see cref="RecordingStatus"/>.</returns>
         public static RecordingStatus RecordingStatus
         {
             get
@@ -79,9 +79,9 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// The current state of playback.
+        /// Gets the current state of playback.
         /// </summary>
-        /// <returns>The current <cref="PlaybackStatus"/>.</returns>
+        /// <returns>The current <see cref="PlaybackStatus"/>.</returns>
         public static PlaybackStatus PlaybackStatus
         {
             get
@@ -211,18 +211,18 @@ namespace GoogleARCore
 
         /// <summary>
         /// Starts a new recording, using the provided
-        /// <cref="ARCoreRecordingConfig"/> to define the location to save the
+        /// <see cref="ARCoreRecordingConfig"/> to define the location to save the
         /// dataset and other options. If a recording is already in progress this
-        /// call will fail, check the <cref="RecordingStatus"/> before making
+        /// call will fail, check the <see cref="RecordingStatus"/> before making
         /// this call. When an ARCore session is paused, recording may continue,
         /// during this time the camera feed will be recorded as a black screen,
         /// but sensor data will continue to be captured.
         /// </summary>
-        /// <param name="config"><cref="ARCoreRecordingConfig"/> containing the
+        /// <param name="config"><see cref="ARCoreRecordingConfig"/> containing the
         /// path to save the dataset along with other recording options.</param>
-        /// <returns><cref="RecordingResult"/>.<c>OK</c> if the recording is
+        /// <returns><see cref="RecordingResult"/>.<c>OK</c> if the recording is
         /// started (or will start on the next Session resume.) Or a
-        /// <cref="RecordingResult"/> if there was an error.</returns>
+        /// <see cref="RecordingResult"/> if there was an error.</returns>
         public static RecordingResult StartRecording(ARCoreRecordingConfig config)
         {
             var nativeSession = LifecycleManager.Instance.NativeSession;
@@ -236,11 +236,11 @@ namespace GoogleARCore
 
         /// <summary>
         /// Stops the current recording. If there is no recording in progress, this
-        /// method will return <cref="RecordingResult".<c>OK</c>.
+        /// method will return <see cref="RecordingResult"/>.<c>OK</c>.
         /// </summary>
-        /// <returns><cref="RecordingResult"/>.<c>OK</c> if the recording was
+        /// <returns><see cref="RecordingResult"/>.<c>OK</c> if the recording was
         /// stopped successfully, or
-        /// <cref="RecordingResult">.<c>ErrorRecordingFailed</c> if there was an
+        /// <see cref="RecordingResult"/>.<c>ErrorRecordingFailed</c> if there was an
         /// error.</returns>
         public static RecordingResult StopRecording()
         {
@@ -254,14 +254,25 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Sets the filepath for a dataset to be played back. The ARCore session
-        /// must be paused when using this method. Resume the session for the
-        /// change to take effect.
-        /// <param name="datasetFilepath"> The filepath of the dataset. Null if
-        /// stopping the playback.</param>
-        /// <returns><cref="PlaybackResult"/>.<c>OK</c> if playback filepath was
-        /// was set without issue. A different <cref="PlaybackResult"/> will be
-        /// returned in the case of an error.</returns>
+        /// Sets an MP4 dataset file to playback instead of using the live camera feed and IMU
+        /// sensor data.
+        ///
+        /// Restrictions:
+        /// - Due to the way session data is processed, ARCore APIs may sometimes produce different
+        ///   results during playback than during recording and produce different results during
+        ///   subsequent playback sessions. For exmaple, the number of detected planes and other
+        ///   trackables, the precise timing of their detection and their pose over time may be
+        ///   different in subsequent playback sessions.
+        /// - Can only be called while the session is paused. Playback of the MP4 dataset file will
+        ///   start once the session is resumed.
+        /// - The MP4 dataset file must use the same camera facing direction as is configured in the
+        ///   session.
+        ///
+        /// <param name="datasetFilepath"> The filepath of the MP4 dataset. Null if
+        /// stopping the playback and resuming a live feed.</param>
+        /// <returns><see cref="PlaybackResult"/>.<c>Success</c> if playback filepath was
+        /// set without issue. Otherwise, the <see cref="PlaybackResult"/> will indicate the
+        /// error.</returns>
         public static PlaybackResult SetPlaybackDataset(string datasetFilepath)
         {
             var nativeSession = LifecycleManager.Instance.NativeSession;

@@ -87,15 +87,15 @@ namespace GoogleARCore.CrossPlatform
 
             if (isCreate)
             {
-               XPAnchor anchor = (new GameObject()).AddComponent<XPAnchor>();
-               anchor.gameObject.name = "XPAnchor";
-               anchor.CloudId = nativeSession.AnchorApi.GetCloudAnchorId(anchorHandle);
-               anchor._nativeHandle = anchorHandle;
-               anchor._nativeSession = nativeSession;
-               anchor.Update();
+                XPAnchor anchor = (new GameObject()).AddComponent<XPAnchor>();
+                anchor.gameObject.name = "XPAnchor";
+                anchor.CloudId = nativeSession.AnchorApi.GetCloudAnchorId(anchorHandle);
+                anchor._nativeHandle = anchorHandle;
+                anchor._nativeSession = nativeSession;
+                anchor.Update();
 
-               _anchorDict.Add(anchorHandle, anchor);
-               return anchor;
+                _anchorDict.Add(anchorHandle, anchor);
+                return anchor;
             }
 
             return null;

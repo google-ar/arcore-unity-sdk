@@ -24,8 +24,8 @@ namespace GoogleARCore
     using UnityEngine;
 
     /// <summary>
-    /// The <see cref="ARCoreCameraConfigFilter"/> class derives a list of camera configurations
-    /// available on the device at runtime.
+    /// The <c><see cref="ARCoreCameraConfigFilter"/></c> class derives a list of camera
+    /// configurations available on the device at runtime.
     /// </summary>
     /// <remarks>
     /// This is used to derive a list of camera configurations available on the device at runtime
@@ -40,11 +40,11 @@ namespace GoogleARCore
     /// devices</a> for an up to date list of affected devices.
     ///
     /// An app may adjust its capabilities at runtime by selecting a wider range of config filters
-    /// and using <see cref="ARCoreSession.RegisterChooseCameraConfigurationCallback(
-    /// ARCoreSession.OnChooseCameraConfigurationDelegate)"/> to specify a selection function.
+    /// and using <c><see cref="ARCoreSession.RegisterChooseCameraConfigurationCallback(
+    /// ARCoreSession.OnChooseCameraConfigurationDelegate)"/></c> to specify a selection function.
     /// In that function the app may then adjust its runtime settings and select an appropriate
     /// camera configuration. If no callback is registered, ARCore will use the first
-    /// <see cref="CameraConfig"/> in the list of available configurations.
+    /// <c><see cref="CameraConfig"/></c> in the list of available configurations.
     /// </remarks>
     [CreateAssetMenu(
         fileName = "ARCoreCameraConfigFilter",
@@ -58,7 +58,8 @@ namespace GoogleARCore
         public TargetCameraFramerateFilter TargetCameraFramerate;
 
         /// <summary>
-        /// This allows an app to use or disable a hardware depth sensor if present on the device.
+        /// This allows an app to use or disable a hardware depth sensor, such as a time-of-flight
+        /// sensor (or ToF sensor), if present on the device.
         /// </summary>
         public DepthSensorUsageFilter DepthSensorUsage;
 
@@ -138,13 +139,15 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// This allows an app to use or disable a hardware depth sensor if present on the device.
+        /// This allows an app to use or disable a hardware depth sensor, such as a time-of-flight
+        /// sensor (or ToF sensor), if present on the device.
         /// </summary>
         [Serializable]
         public class DepthSensorUsageFilter
         {
             /// <summary>
-            /// Filters for camera configs that require a depth sensor to be present on the device,
+            /// Filters for camera configs that require a hardware depth sensor, such as a
+            /// time-of-flight sensor (or ToF sensor), to be present on the device,
             /// and that will be used by ARCore.
             ///
             /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
@@ -156,15 +159,17 @@ namespace GoogleARCore
             public bool RequireAndUse = true;
 
             /// <summary>
-            /// Filters for camera configs where a depth sensor is not present, or is present but
+            /// Filters for camera configs where a hardware depth sensor, such as a time-of-flight
+            /// sensor (or ToF sensor), is not present, or is present but
             /// will not be used by ARCore.
             ///
             /// Most commonly used to filter camera configurations when the app requires exclusive
-            /// access to the depth sensor outside of ARCore, for example to support 3D mesh
-            /// reconstruction. Available on all ARCore supported devices.
+            /// access to the hardware depth sensor outside of ARCore, for example to support
+            /// 3D mesh reconstruction. Available on all ARCore supported devices.
             /// </summary>
-            [Tooltip("ARCore will not use the depth sensor, even if it is present. " +
-                     "Available on all supported devices.")]
+            [Tooltip("ARCore will not use the hardware depth sensor, such as a time-of-flight" +
+                     " sensor (or ToF sensor), even if it is present." +
+                     " Available on all supported devices.")]
             public bool DoNotUse = true;
         }
 

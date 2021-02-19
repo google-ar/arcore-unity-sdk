@@ -35,8 +35,8 @@ namespace GoogleARCore
     {
         /// <summary>
         /// The directional light used by
-        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithReflections</c> and
-        /// <see cref="LightEstimationMode"/>.<c>EnvironmentalHDRWithoutReflections</c>.
+        /// <c><see cref="LightEstimationMode"/></c>.<c>EnvironmentalHDRWithReflections</c> and
+        /// <c><see cref="LightEstimationMode"/></c>.<c>EnvironmentalHDRWithoutReflections</c>.
         /// The rotation and color will be updated automatically by this component.
         /// </summary>
         public Light DirectionalLight;

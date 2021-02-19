@@ -64,7 +64,8 @@ namespace GoogleARCoreInternal
         private delegate void OnBeforeSetConfigurationCallback(
             IntPtr sessionHandle, IntPtr configHandle);
 
-        private delegate void OnBeforeResumeSessionCallback(IntPtr sessionHandle);
+        private delegate ApiPrestoCallbackResult OnBeforeResumeSessionCallback(
+            IntPtr sessionHandle);
 
         private delegate void CameraPermissionRequestProvider(
             CameraPermissionsResultCallback onComplete, IntPtr context);
@@ -83,7 +84,7 @@ namespace GoogleARCoreInternal
 
         public event Action EarlyUpdate;
 
-        public event Action<IntPtr> BeforeResumeSession;
+        public event Func<IntPtr, ApiPrestoCallbackResult> BeforeResumeSession;
 
         public event Action<IntPtr, IntPtr> OnSetConfiguration;
 
@@ -207,11 +208,15 @@ namespace GoogleARCoreInternal
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnBeforeResumeSessionCallback))]
-        private static void BeforeResumeSessionTrampoline(IntPtr sessionHandle)
+        private static ApiPrestoCallbackResult BeforeResumeSessionTrampoline(IntPtr sessionHandle)
         {
             if (Instance.BeforeResumeSession != null)
             {
-                Instance.BeforeResumeSession(sessionHandle);
+                return Instance.BeforeResumeSession(sessionHandle);
+            }
+            else
+            {
+                return ApiPrestoCallbackResult.Success;
             }
         }
 

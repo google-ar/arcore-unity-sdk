@@ -22,6 +22,7 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
@@ -44,14 +45,13 @@ namespace GoogleARCoreInternal
 
         public IntPtr Create()
         {
-            IntPtr cameraConfigHandle = IntPtr.Zero;
-
             if (InstantPreviewManager.IsProvidingPlatform)
             {
                 InstantPreviewManager.LogLimitedSupportMessage("create ARCamera config");
-                return cameraConfigHandle;
+                return IntPtr.Zero;
             }
 
+            IntPtr cameraConfigHandle = IntPtr.Zero;
             ExternApi.ArCameraConfig_create(_nativeSession.SessionHandle, ref cameraConfigHandle);
             return cameraConfigHandle;
         }
@@ -92,9 +92,9 @@ namespace GoogleARCoreInternal
                 _nativeSession.SessionHandle, cameraConfigHandle, ref width, ref height);
         }
 
-        public ApiCameraConfigFacingDirection GetFacingDirection(IntPtr cameraConfigHandle)
+        public DeviceCameraDirection GetFacingDirection(IntPtr cameraConfigHandle)
         {
-            ApiCameraConfigFacingDirection direction = ApiCameraConfigFacingDirection.Back;
+            DeviceCameraDirection direction = DeviceCameraDirection.BackFacing;
 
             if (InstantPreviewManager.IsProvidingPlatform)
             {
@@ -174,7 +174,7 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfig_getFacingDirection(
                 IntPtr sessionHandle, IntPtr cameraConfigHandle,
-                ref ApiCameraConfigFacingDirection facingDirection);
+                ref DeviceCameraDirection facingDirection);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCameraConfig_getFpsRange(

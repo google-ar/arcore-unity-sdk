@@ -44,8 +44,8 @@ namespace GoogleARCoreInternal
         public readonly HelpMessageType MessageType = HelpMessageType.None;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:GoogleARCoreInternal.HelpAttribute"/>
-        /// class.
+        /// Initializes a new instance of the
+        /// <c><see cref="T:GoogleARCoreInternal.HelpAttribute"/></c> class.
         /// </summary>
         /// <param name="helpMessage">Help message.</param>
         /// <param name="messageType">Message type.</param>

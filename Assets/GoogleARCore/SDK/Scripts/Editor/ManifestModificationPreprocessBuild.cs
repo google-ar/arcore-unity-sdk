@@ -31,9 +31,6 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEditor;
     using UnityEditor.Build;
-    using UnityEditor.SceneManagement;
-    using UnityEngine;
-    using UnityEngine.SceneManagement;
 
     internal class ManifestModificationPreprocessBuild : PreprocessBuildBase
     {
@@ -94,44 +91,6 @@ namespace GoogleARCoreInternal
             }
         }
 
-        private static Dictionary<ARCoreSessionConfig, string> GetAllSessionConfigs()
-        {
-            Dictionary<ARCoreSessionConfig, string> sessionToPathMap =
-                new Dictionary<ARCoreSessionConfig, string>();
-            EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
-            foreach (EditorBuildSettingsScene editorScene in EditorBuildSettings.scenes)
-            {
-                if (editorScene.enabled)
-                {
-                    Scene scene = SceneManager.GetSceneByPath(editorScene.path);
-                    if (!scene.isLoaded)
-                    {
-                        scene = EditorSceneManager.OpenScene(
-                            editorScene.path, OpenSceneMode.Additive);
-                    }
-
-                    foreach (GameObject gameObject in scene.GetRootGameObjects())
-                    {
-                        ARCoreSession sessionComponent =
-                            (ARCoreSession)gameObject.GetComponentInChildren(
-                                typeof(ARCoreSession));
-                        if (sessionComponent != null)
-                        {
-                            if (!sessionToPathMap.ContainsKey(sessionComponent.SessionConfig))
-                            {
-                                sessionToPathMap.Add(
-                                    sessionComponent.SessionConfig, editorScene.path);
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return sessionToPathMap;
-        }
-
         private static XDocument GetDefaultAndroidManifest()
         {
             string str =
@@ -184,7 +143,7 @@ namespace GoogleARCoreInternal
             // This function causes build error in 2020.2 if the current directory is changed.
             // So do the check first here.
             CheckCompatibilityWithAllSesssionConfigs(
-                        ARCoreProjectSettings.Instance, GetAllSessionConfigs());
+                ARCoreProjectSettings.Instance, AndroidDependenciesHelper.GetAllSessionConfigs());
 
             string cachedCurrentDirectory = Directory.GetCurrentDirectory();
             string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,

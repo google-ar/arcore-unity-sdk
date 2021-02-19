@@ -21,26 +21,26 @@
 namespace GoogleARCore
 {
     /// <summary>
-    /// Tracking methods for <see cref="InstantPlacementPoint"/>.
+    /// Tracking methods for <c><see cref="InstantPlacementPoint"/></c>.
     /// </summary>
     public enum InstantPlacementPointTrackingMethod
     {
         /// <summary>
-        /// The <see cref="InstantPlacementPoint"/> is not currently being tracked. The <see
-        /// cref="TrackingState"/> is <see cref="TrackingState"/>.<c>Paused</c> or <see
+        /// The <c><see cref="InstantPlacementPoint"/></c> is not currently being tracked. The <see
+        /// cref="TrackingState"/> is <c><see cref="TrackingState"/></c>.<c>Paused</c> or <see
         /// cref="TrackingState"/>.<c>Stopped</c>.
         /// </summary>
         NotTracking = 0x00,
 
         /// <summary>
-        /// The <see cref="InstantPlacementPoint"/> is currently being tracked in screen space and
-        /// the pose returned by <see cref="InstantPlacementPoint"/>.<c>Pose</c> is being estimated
-        /// using the approximate distance provided to <see
+        /// The <c><see cref="InstantPlacementPoint"/></c> is currently being tracked in screen
+        /// space and the pose returned by <c><see cref="InstantPlacementPoint"/></c>.<c>Pose</c>
+        /// is being estimated using the approximate distance provided to <see
         /// cref="Frame.RaycastInstantPlacement(float, float, float, TrackableHit)"/>.
         ///
-        /// ARCore concurrently tracks at most 20 <see cref="InstantPlacementPoint"/>s that are
-        /// <c>ScreenspaceWithApproximateDistance</c>.
-        /// As additional <see cref="InstantPlacementPoint"/>s with
+        /// ARCore concurrently tracks at most 20 <c><see cref="InstantPlacementPoint"/></c>s that
+        /// are <c>ScreenspaceWithApproximateDistance</c>.
+        /// As additional <c><see cref="InstantPlacementPoint"/></c>s with
         /// <c>ScreenspaceWithApproximateDistance</c> are created, the oldest points will
         /// become permanently cref="TrackingState"/>.<c>Stopped</c> in order to maintain the
         /// the maximum number of concurrently tracked points.
@@ -48,10 +48,10 @@ namespace GoogleARCore
         ScreenspaceWithApproximateDistance = 0x01,
 
         /// <summary>
-        /// The <see cref="InstantPlacementPoint"/> is being tracked normally and
-        /// <see cref="InstantPlacementPoint"/>.Pose is fully determined by ARCore.
+        /// The <c><see cref="InstantPlacementPoint"/></c> is being tracked normally and
+        /// <c><see cref="InstantPlacementPoint"/></c>.Pose is fully determined by ARCore.
         ///
-        /// ARCore does not limit the number of <see cref="InstantPlacementPoint"/>s with
+        /// ARCore does not limit the number of <c><see cref="InstantPlacementPoint"/></c>s with
         /// <c>FullTracking</c> that are being tracked concurrently.
         /// </summary>
         FullTracking = 0x02,
