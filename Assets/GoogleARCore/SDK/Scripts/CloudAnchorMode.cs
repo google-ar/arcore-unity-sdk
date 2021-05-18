@@ -35,6 +35,5 @@ namespace GoogleARCore
         /// available. The app is expected to have the INTERNET permission (Android only).
         /// </summary>
         Enabled = 1,
-
     }
 }

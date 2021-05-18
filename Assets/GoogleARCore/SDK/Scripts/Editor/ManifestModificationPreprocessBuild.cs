@@ -31,6 +31,8 @@ namespace GoogleARCoreInternal
     using GoogleARCore;
     using UnityEditor;
     using UnityEditor.Build;
+    using UnityEditor.Callbacks;
+    using UnityEngine;
 
     internal class ManifestModificationPreprocessBuild : PreprocessBuildBase
     {
@@ -60,6 +62,27 @@ namespace GoogleARCoreInternal
             }
 
             return new XDocument(mergedRoot);
+        }
+
+        /// <summary>
+        /// Callback after the build is done.
+        /// </summary>
+        /// <param name="target">Build target platform.</param>
+        /// <param name="pathToBuiltProject">Path to build project.</param>
+        [PostProcessBuild(1)]
+        public static void OnPostprocessBuild(
+            UnityEditor.BuildTarget target, string pathToBuiltProject)
+        {
+            if (target == UnityEditor.BuildTarget.Android)
+            {
+                Debug.Log("Cleaning generated aar for customized manifest.");
+                string cachedCurrentDirectory = Directory.GetCurrentDirectory();
+                string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,
+                    AssetDatabase.GUIDToAssetPath(_pluginsFolderGuid));
+                string customizedManifestAarPath =
+                    Path.Combine(pluginsFolderPath, "customized_manifest.aar");
+                File.Delete(customizedManifestAarPath);
+            }
         }
 
         public override void OnPreprocessBuild(BuildTarget target, string path)

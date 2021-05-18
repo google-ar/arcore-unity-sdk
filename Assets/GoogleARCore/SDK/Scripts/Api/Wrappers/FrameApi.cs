@@ -247,6 +247,119 @@ namespace GoogleARCoreInternal
             return DepthStatus.Success;
         }
 
+        public DepthStatus UpdateRawDepthTexture(ref Texture2D depthTexture)
+        {
+            IntPtr depthImageHandle = IntPtr.Zero;
+
+            // Get the current depth image.
+            ApiArStatus status = (ApiArStatus)ExternApi.ArFrame_acquireRawDepthImage(
+                _nativeSession.SessionHandle,
+                _nativeSession.FrameHandle,
+                ref depthImageHandle);
+
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogErrorFormat("[ARCore] failed to acquire raw depth image with status {0}",
+                                     status.ToString());
+                return status.ToDepthStatus();
+            }
+
+            if (!UpdateDepthTexture(ref depthTexture, depthImageHandle))
+            {
+                return DepthStatus.InternalError;
+            }
+
+            return DepthStatus.Success;
+        }
+
+        public DepthStatus UpdateRawDepthConfidenceTexture(ref Texture2D confidenceTexture)
+        {
+            IntPtr confidenceImageHandle = IntPtr.Zero;
+            ApiArStatus status = (ApiArStatus)ExternApi.ArFrame_acquireRawDepthConfidenceImage(
+                _nativeSession.SessionHandle,
+                _nativeSession.FrameHandle,
+                ref confidenceImageHandle);
+
+            if (status != ApiArStatus.Success)
+            {
+                Debug.LogErrorFormat(
+                  "[ARCore] failed to acquire raw depth confidence image with status {0}",
+                  status.ToString());
+                return status.ToDepthStatus();
+            }
+
+            if (!UpdateDepthTexture(ref confidenceTexture, confidenceImageHandle))
+            {
+                return DepthStatus.InternalError;
+            }
+
+            return DepthStatus.Success;
+        }
+
+        public RecordingResult RecordTrackData(Guid trackId, byte[] data)
+        {
+            ApiArStatus status = ApiArStatus.ErrorFatal;
+
+            GCHandle trackIdHandle = GCHandle.Alloc(trackId.ToByteArray(), GCHandleType.Pinned);
+            GCHandle dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+
+            status = ExternApi.ArFrame_recordTrackData(
+                _nativeSession.SessionHandle,
+                _nativeSession.FrameHandle,
+                trackIdHandle.AddrOfPinnedObject(),
+                dataHandle.AddrOfPinnedObject(),
+                data.Length);
+
+            if (trackIdHandle.IsAllocated)
+            {
+                trackIdHandle.Free();
+            }
+
+            if (dataHandle.IsAllocated)
+            {
+                dataHandle.Free();
+            }
+
+            return status.ToRecordingResult();
+        }
+
+        public List<TrackData> GetUpdatedTrackData(Guid trackId)
+        {
+            List<TrackData> trackDataList = new List<TrackData>();
+            IntPtr listHandle = _nativeSession.TrackDataListApi.Create();
+
+            GCHandle trackIdHandle = GCHandle.Alloc(trackId.ToByteArray(),
+                                                    GCHandleType.Pinned);
+
+            ExternApi.ArFrame_getUpdatedTrackData(_nativeSession.SessionHandle,
+                                                  _nativeSession.FrameHandle,
+                                                  trackIdHandle.AddrOfPinnedObject(),
+                                                  listHandle);
+
+            if (trackIdHandle.IsAllocated)
+            {
+                trackIdHandle.Free();
+            }
+
+            int count = _nativeSession.TrackDataListApi.GetCount(listHandle);
+            for (int i = 0; i < count; i++)
+            {
+                IntPtr trackDataHandle =
+                    _nativeSession.TrackDataListApi.AcquireItem(listHandle, i);
+
+                TrackData trackData;
+                trackData.FrameTimestamp = _nativeSession.TrackDataApi.GetFrameTimestamp(
+                    trackDataHandle);
+                trackData.Data = _nativeSession.TrackDataApi.GetData(trackDataHandle);
+
+                trackDataList.Add(trackData);
+            }
+
+            _nativeSession.TrackDataListApi.Destroy(listHandle);
+
+            return trackDataList;
+        }
+
         private bool UpdateDepthTexture(ref Texture2D texture, IntPtr imageHandle)
         {
             // Get the size of the depth data.
@@ -348,6 +461,15 @@ namespace GoogleARCoreInternal
                 IntPtr sessionHandle, IntPtr frameHandle, ref int outTextureId);
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArFrame_recordTrackData(
+                IntPtr sessionHandle, IntPtr frameHandle, IntPtr trackIdBytes, IntPtr dataBytes,
+                int dataSize);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArFrame_getUpdatedTrackData(
+                IntPtr sessionHandle, IntPtr frameHandle, IntPtr trackId, IntPtr trackDataList);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArFrame_acquireDepthImage(
                 IntPtr sessionHandle, IntPtr frameHandle, ref IntPtr imageHandle);
 
@@ -356,6 +478,14 @@ namespace GoogleARCoreInternal
                                                                   IntPtr imageHandle,
                                                                   int planeIndex,
                                                                   ref int pixelStride);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArFrame_acquireRawDepthImage(
+                IntPtr sessionHandle, IntPtr frameHandle, ref IntPtr imageHandle);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern ApiArStatus ArFrame_acquireRawDepthConfidenceImage(
+                IntPtr sessionHandle, IntPtr frameHandle, ref IntPtr imageHandle);
 #pragma warning restore 626
         }
     }

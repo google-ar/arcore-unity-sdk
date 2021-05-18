@@ -21,8 +21,10 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
+    using UnityEngine;
 
 #if UNITY_IOS && !UNITY_EDITOR
     using AndroidImport = GoogleARCoreInternal.DllImportNoop;
@@ -46,7 +48,6 @@ namespace GoogleARCoreInternal
             IntPtr configHandle = IntPtr.Zero;
             ExternApi.ArRecordingConfig_create(
                 _nativeSession.SessionHandle, ref configHandle);
-
             if (config != null)
             {
                 ExternApi.ArRecordingConfig_setMp4DatasetFilePath(
@@ -57,6 +58,21 @@ namespace GoogleARCoreInternal
                     _nativeSession.SessionHandle,
                     configHandle,
                     config.AutoStopOnPause ? 1 : 0);
+
+                foreach (Track track in config.Tracks)
+                {
+                    IntPtr trackHandle =
+                        _nativeSession.TrackApi.Create(track);
+
+                    ExternApi.ArRecordingConfig_addTrack(_nativeSession.SessionHandle,
+                                                         configHandle,
+                                                         trackHandle);
+
+                    // Internally the recording config uses the Track to generate its own local
+                    // structures, so it is appropriate to destroy it after sending it to the
+                    // recording config.
+                    _nativeSession.TrackApi.Destroy(trackHandle);
+                }
             }
 
             return configHandle;
@@ -85,6 +101,10 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArRecordingConfig_setAutoStopOnPause(
                 IntPtr session, IntPtr configHandle, int configEnabled);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArRecordingConfig_addTrack(
+                IntPtr session, IntPtr configHandle, IntPtr trackHandle);
 #pragma warning restore 626
         }
     }

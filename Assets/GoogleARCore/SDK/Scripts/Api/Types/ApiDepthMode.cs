@@ -24,5 +24,6 @@ namespace GoogleARCoreInternal
     {
         Disabled = 0,
         Automatic = 1,
+        RawDepthOnly = 3,
     }
 }

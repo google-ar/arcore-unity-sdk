@@ -384,6 +384,26 @@ namespace GoogleARCoreInternal
             }
         }
 
+        public static RecordingResult ToRecordingResult(
+            this ApiArStatus recordingResult)
+        {
+            switch (recordingResult)
+            {
+                case ApiArStatus.Success:
+                    return RecordingResult.OK;
+                case ApiArStatus.ErrorIllegalState:
+                    return RecordingResult.ErrorIllegalState;
+                case ApiArStatus.ErrorInvalidArgument:
+                    return RecordingResult.ErrorInvalidArgument;
+                case ApiArStatus.ErrorRecordingFailed:
+                    return RecordingResult.ErrorRecordingFailed;
+                default:
+                    Debug.LogErrorFormat("Attempt to record failed with unexpected " +
+                        "status: {0}", recordingResult);
+                    return RecordingResult.ErrorRecordingFailed;
+            }
+        }
+
         public static PlaybackStatus ToPlaybackStatus(
             this ApiPlaybackStatus playbackStatus)
         {

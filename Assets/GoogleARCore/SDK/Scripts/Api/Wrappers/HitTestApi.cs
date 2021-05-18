@@ -191,6 +191,10 @@ namespace GoogleARCoreInternal
             {
                 // No flag update for InstantPlacementPoint Trackable Type.
             }
+            else if (trackable is DepthPoint)
+            {
+                flag |= TrackableHitFlags.Depth;
+            }
             else
             {
                 ApiTrackableType trackableType =

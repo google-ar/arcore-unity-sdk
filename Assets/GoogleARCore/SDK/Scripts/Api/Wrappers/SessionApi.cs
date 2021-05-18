@@ -274,6 +274,7 @@ namespace GoogleARCoreInternal
                 _nativeSession.RecordingConfigApi.Create(config);
             ApiArStatus status = ExternApi.ArSession_startRecording(
                 _nativeSession.SessionHandle, recordingConfigHandle);
+
             _nativeSession.RecordingConfigApi.Destory(recordingConfigHandle);
 
             // Only specific ArStatus responses are expected.
@@ -383,7 +384,6 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_isDepthModeSupported(
                 IntPtr sessionHandle, ApiDepthMode depthMode, ref int isSupported);
-#pragma warning restore 626
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_reportEngineType(
@@ -413,7 +413,7 @@ namespace GoogleARCoreInternal
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArSession_estimateFeatureMapQualityForHosting(
                 IntPtr sessionHandle, IntPtr poseHandle, ref int featureMapQuality);
-#pragma warning disable 626
+
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_getRecordingStatus(
                 IntPtr sessionHandle, ref ApiRecordingStatus recordingStatus);
@@ -425,8 +425,6 @@ namespace GoogleARCoreInternal
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern ApiArStatus ArSession_stopRecording(
                 IntPtr sessionHandle);
-#pragma warning restore 626
-#pragma warning disable 626
 
             [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArSession_getPlaybackStatus(

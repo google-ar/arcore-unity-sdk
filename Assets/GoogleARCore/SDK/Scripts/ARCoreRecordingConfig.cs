@@ -20,6 +20,8 @@
 
 namespace GoogleARCore
 {
+    using System;
+    using System.Collections.Generic;
     using GoogleARCoreInternal;
     using UnityEngine;
     using UnityEngine.Serialization;
@@ -27,7 +29,11 @@ namespace GoogleARCore
     /// <summary>
     /// Configuration to record camera and sensor data from an ARCore session.
     /// </summary>
-    public class ARCoreRecordingConfig
+    [CreateAssetMenu(
+        fileName = "ARCoreRecordingConfig",
+        menuName = "Google ARCore/ARCore Recording Config",
+        order = 3)]
+    public class ARCoreRecordingConfig : ScriptableObject
     {
         /// <summary>
         /// A full path and filename on the device where the MP4 recording will be
@@ -46,5 +52,11 @@ namespace GoogleARCore
         /// destroyed, or the recording is stopped manually.
         /// </summary>
         public bool AutoStopOnPause = true;
+
+        /// <summary>
+        /// The list of <c><see cref="Track"/></c> to add to the recording config.
+        /// </summary>
+        [HideInInspector]
+        public List<Track> Tracks = new List<Track>();
     }
 }

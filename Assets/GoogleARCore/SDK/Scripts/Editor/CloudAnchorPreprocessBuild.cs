@@ -34,6 +34,16 @@ namespace GoogleARCoreInternal
         private const string _manifestTemplateGuid = "5e182918f0b8c4929a3d4b0af0ed6f56";
         private const string _pluginsFolderGuid = "93be2b9777c348648a2d9151b7e233fc";
         private const string _runtimeSettingsPath = "GoogleARCore/Resources/RuntimeSettings";
+        private const string _aarFileName = "cloud_anchor_manifest.aar";
+
+        [PostProcessBuildAttribute(1)]
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        {
+            if (target == BuildTarget.Android)
+            {
+                CleanupGeneratedAAR();
+            }
+        }
 
         public override void OnPreprocessBuild(BuildTarget target, string path)
         {
@@ -47,6 +57,17 @@ namespace GoogleARCoreInternal
             }
         }
 
+        private static void CleanupGeneratedAAR()
+        {
+            Debug.Log("Cleaning generated aar for Cloud Anchors.");
+            string cachedCurrentDirectory = Directory.GetCurrentDirectory();
+            string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,
+                AssetDatabase.GUIDToAssetPath(_pluginsFolderGuid));
+            string aarPath =
+                Path.Combine(pluginsFolderPath, _aarFileName);
+            File.Delete(aarPath);
+        }
+
         private void PreprocessAndroidBuild()
         {
             SetApiKeyOnAndroid();
@@ -57,58 +78,12 @@ namespace GoogleARCoreInternal
             SetApiKeyOnIos();
         }
 
-        private bool IsApiKeyDirty(string jarPath, string aarPath, string apiKey)
-        {
-            bool isApiKeyDirty = true;
-            var cachedCurrentDirectory = Directory.GetCurrentDirectory();
-            var tempDirectoryPath =
-                Path.Combine(cachedCurrentDirectory, FileUtil.GetUniqueTempPathInProject());
-
-            if (!File.Exists(aarPath))
-            {
-                return isApiKeyDirty;
-            }
-
-            try
-            {
-                // Move to a temp directory.
-                Directory.CreateDirectory(tempDirectoryPath);
-                Directory.SetCurrentDirectory(tempDirectoryPath);
-                var tempAarPath = Path.Combine(tempDirectoryPath, "cloud_anchor_manifest.aar");
-                File.Copy(aarPath, tempAarPath, true);
-
-                // Extract the aar.
-                string output;
-                string errors;
-                ShellHelper.RunCommand(jarPath, string.Format("xf \"{0}\"", tempAarPath),
-                    out output, out errors);
-
-                // Read Api key parameter in manifest file.
-                var manifestPath = Path.Combine(tempDirectoryPath, "AndroidManifest.xml");
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(manifestPath);
-                XmlNode metaDataNode =
-                    xmlDocument.SelectSingleNode("/manifest/application/meta-data");
-                string oldApiKey = metaDataNode.Attributes["android:value"].Value;
-                isApiKeyDirty = !apiKey.Equals(oldApiKey);
-            }
-            finally
-            {
-                // Cleanup.
-                Directory.SetCurrentDirectory(cachedCurrentDirectory);
-                Directory.Delete(tempDirectoryPath, true);
-            }
-
-            return isApiKeyDirty;
-        }
-
         private void SetApiKeyOnAndroid()
         {
             string cachedCurrentDirectory = Directory.GetCurrentDirectory();
             string pluginsFolderPath = Path.Combine(cachedCurrentDirectory,
                 AssetDatabase.GUIDToAssetPath(_pluginsFolderGuid));
-            string cloudAnchorsManifestAarPath =
-                Path.Combine(pluginsFolderPath, "cloud_anchor_manifest.aar");
+            string cloudAnchorsManifestAarPath = Path.Combine(pluginsFolderPath, _aarFileName);
 
             bool cloudAnchorsEnabled =
                 !string.IsNullOrEmpty(ARCoreProjectSettings.Instance.CloudServicesApiKey);
@@ -121,13 +96,6 @@ namespace GoogleARCoreInternal
                 }
 
                 jarPath = Path.Combine(jarPath, "bin/jar");
-
-                // If the API Key didn't change then do nothing.
-                if (!IsApiKeyDirty(jarPath, cloudAnchorsManifestAarPath,
-                  ARCoreProjectSettings.Instance.CloudServicesApiKey))
-                {
-                    return;
-                }
 
                 // Replace the project's cloud anchor AAR with the newly generated AAR.
                 Debug.Log("Enabling Cloud Anchors with API Key Authentication in this build.");
@@ -168,7 +136,7 @@ namespace GoogleARCoreInternal
                     }
 
                     string command = string.Format(
-                        "cf cloud_anchor_manifest.aar {0}", fileListBuilder.ToString());
+                        "cf {0} {1}", _aarFileName, fileListBuilder.ToString());
 
                     ShellHelper.RunCommand(
                         jarPath,
@@ -183,7 +151,7 @@ namespace GoogleARCoreInternal
                                 "Error creating jar for cloud anchor manifest: {0}", errors));
                     }
 
-                    File.Copy(Path.Combine(tempDirectoryPath, "cloud_anchor_manifest.aar"),
+                    File.Copy(Path.Combine(tempDirectoryPath, _aarFileName),
                         cloudAnchorsManifestAarPath, true);
                 }
                 finally
@@ -195,7 +163,7 @@ namespace GoogleARCoreInternal
                     AssetDatabase.Refresh();
                 }
 
-                AssetHelper.GetPluginImporterByName("cloud_anchor_manifest.aar")
+                AssetHelper.GetPluginImporterByName(_aarFileName)
                     .SetCompatibleWithPlatform(BuildTarget.Android, true);
             }
             else

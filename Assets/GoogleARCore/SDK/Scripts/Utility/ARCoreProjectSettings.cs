@@ -37,8 +37,9 @@ namespace GoogleARCoreInternal
      Justification = "Internal.")]
     public enum AndroidAuthenticationStrategy
     {
-        None = 0,
-        [DisplayName("Api Key")]
+        [DisplayName("Do Not Use")]
+        DoNotUse = 0,
+        [DisplayName("API Key")]
         ApiKey = 1,
         [DisplayName("Keyless (recommended)")]
         Keyless = 2,
@@ -53,8 +54,9 @@ namespace GoogleARCoreInternal
      Justification = "Internal.")]
     public enum IOSAuthenticationStrategy
     {
-        None = 0,
-        [DisplayName("Api Key")]
+        [DisplayName("Do Not Use")]
+        DoNotUse = 0,
+        [DisplayName("API Key")]
         ApiKey = 1,
         [DisplayName("Authentication Token (recommended)")]
         AuthenticationToken = 2,
@@ -80,9 +82,8 @@ namespace GoogleARCoreInternal
 
         [DisplayName("Android Authentication Strategy")]
         [DynamicHelp("GetAndroidStrategyHelpInfo")]
-        [EnumRange("GetAndroidStrategyRange")]
         public AndroidAuthenticationStrategy AndroidAuthenticationStrategySetting =
-            AndroidAuthenticationStrategy.None;
+            AndroidAuthenticationStrategy.DoNotUse;
 
         [DisplayName("Android API Key")]
         [DisplayCondition("IsAndroidApiKeyFieldDisplayed")]
@@ -90,9 +91,8 @@ namespace GoogleARCoreInternal
 
         [DisplayName("iOS Authentication Strategy")]
         [DynamicHelp("GetIosStrategyHelpInfo")]
-        [EnumRange("GetIosStrategyRange")]
         public IOSAuthenticationStrategy IOSAuthenticationStrategySetting =
-            IOSAuthenticationStrategy.None;
+            IOSAuthenticationStrategy.DoNotUse;
 
         [DisplayName("iOS API Key")]
         [DisplayCondition("IsIosApiKeyFieldDisplayed")]
@@ -130,8 +130,8 @@ namespace GoogleARCoreInternal
             IsInstantPreviewEnabled = true;
             CloudServicesApiKey = string.Empty;
             IosCloudServicesApiKey = string.Empty;
-            AndroidAuthenticationStrategySetting = AndroidAuthenticationStrategy.None;
-            IOSAuthenticationStrategySetting = IOSAuthenticationStrategy.None;
+            AndroidAuthenticationStrategySetting = AndroidAuthenticationStrategy.DoNotUse;
+            IOSAuthenticationStrategySetting = IOSAuthenticationStrategy.DoNotUse;
 
             string absolutePath = Application.dataPath + "/../" + _projectSettingsPath;
             if (File.Exists(absolutePath))
@@ -148,21 +148,16 @@ namespace GoogleARCoreInternal
                 Debug.Log("Cannot find ARCoreProjectSettings at " + absolutePath);
             }
 
-            if (AndroidAuthenticationStrategySetting == AndroidAuthenticationStrategy.None)
+            if (!string.IsNullOrEmpty(CloudServicesApiKey))
             {
-                AndroidAuthenticationStrategySetting =
-                    string.IsNullOrEmpty(ARCoreProjectSettings.Instance.CloudServicesApiKey) ?
-                    AndroidAuthenticationStrategy.Keyless :
-                    AndroidAuthenticationStrategy.ApiKey;
+                AndroidAuthenticationStrategySetting = AndroidAuthenticationStrategy.ApiKey;
             }
 
-            if (IOSAuthenticationStrategySetting == IOSAuthenticationStrategy.None)
+            if (!string.IsNullOrEmpty(IosCloudServicesApiKey))
             {
-                IOSAuthenticationStrategySetting =
-                    string.IsNullOrEmpty(ARCoreProjectSettings.Instance.IosCloudServicesApiKey) ?
-                    IOSAuthenticationStrategy.AuthenticationToken :
-                    IOSAuthenticationStrategy.ApiKey;
+                IOSAuthenticationStrategySetting = IOSAuthenticationStrategy.ApiKey;
             }
+
             // Upgrades settings from V1.0.0 to V1.1.0.
             if (Version.Equals("V1.0.0"))
             {
@@ -217,15 +212,6 @@ namespace GoogleARCoreInternal
             }
         }
 
-        public Array GetAndroidStrategyRange()
-        {
-            return new AndroidAuthenticationStrategy[]
-                {
-                    AndroidAuthenticationStrategy.ApiKey,
-                    AndroidAuthenticationStrategy.Keyless,
-                };
-        }
-
         public bool IsIosApiKeyFieldDisplayed()
         {
             if (IOSAuthenticationStrategySetting == IOSAuthenticationStrategy.ApiKey)
@@ -237,15 +223,6 @@ namespace GoogleARCoreInternal
                 IosCloudServicesApiKey = string.Empty;
                 return false;
             }
-        }
-
-        public Array GetIosStrategyRange()
-        {
-            return new IOSAuthenticationStrategy[]
-                {
-                    IOSAuthenticationStrategy.ApiKey,
-                    IOSAuthenticationStrategy.AuthenticationToken,
-                };
         }
 
         public HelpAttribute GetIosStrategyHelpInfo()

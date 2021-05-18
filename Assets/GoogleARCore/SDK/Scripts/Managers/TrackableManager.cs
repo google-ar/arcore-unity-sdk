@@ -94,6 +94,10 @@ namespace GoogleARCoreInternal
             {
                 result = new AugmentedFace(nativeHandle, _nativeSession);
             }
+            else if (trackableType == ApiTrackableType.DepthPoint)
+            {
+                result = new DepthPoint(nativeHandle, _nativeSession);
+            }
             else if (ExperimentManager.Instance.IsManagingTrackableType((int)trackableType))
             {
                 result =

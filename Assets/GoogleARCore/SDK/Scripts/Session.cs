@@ -254,19 +254,25 @@ namespace GoogleARCore
         }
 
         /// <summary>
-        /// Sets an MP4 dataset file to playback instead of using the live camera feed and IMU
+        /// Sets an MP4 dataset file to play back instead of using the live camera feed and IMU
         /// sensor data.
         ///
         /// Restrictions:
+        /// - Can only be called while the session is paused. Playback of the MP4 dataset file will
+        ///   start once the session is resumed.
+        /// - The MP4 dataset file must use the same camera facing direction as is configured in the
+        ///   session.
         /// - Due to the way session data is processed, ARCore APIs may sometimes produce different
         ///   results during playback than during recording and produce different results during
         ///   subsequent playback sessions. For exmaple, the number of detected planes and other
         ///   trackables, the precise timing of their detection and their pose over time may be
         ///   different in subsequent playback sessions.
-        /// - Can only be called while the session is paused. Playback of the MP4 dataset file will
-        ///   start once the session is resumed.
-        /// - The MP4 dataset file must use the same camera facing direction as is configured in the
-        ///   session.
+        /// - Once playback has started pausing the session (by disabling the ARCoreSession) will
+        ///   suspend processing of all camera image frames and any other recorded sensor data in
+        ///   the dataset. Camera image frames and sensor frame data that is discarded in this way
+        ///   will not be reprocessed when the session is again resumed (by re-enabling the
+        ///   ARCoreSession). AR tracking for the session will generally suffer due to the gap in
+        ///   processed data.
         ///
         /// <param name="datasetFilepath"> The filepath of the MP4 dataset. Null if
         /// stopping the playback and resuming a live feed.</param>

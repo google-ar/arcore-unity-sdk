@@ -133,7 +133,7 @@ namespace GoogleARCore.Examples.HelloAR
         private void OnMenuButtonClick()
         {
             _menuWindow.SetActive(true);
-#if ARCORE_FEATURE_INSTANT_PLACEMENT // Both Dpeth and IP are enabled.
+#if ARCORE_FEATURE_INSTANT_PLACEMENT // Both Depth and IP are enabled.
             _settingMenuUi.SetActive(true);
 #else // Only Depth is enabled.
             _depthMenuUi.SetActive(true);
