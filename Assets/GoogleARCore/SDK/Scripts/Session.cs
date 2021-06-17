@@ -190,7 +190,7 @@ namespace GoogleARCore
         /// <summary>
         /// Check whether the depth mode is supported on this device. Not all
         /// devices support depth, see the
-        /// <a href="https://developers.google.com/ar/discover/supported-devices">
+        /// <a href="https://developers.google.com/ar/devices">
         /// ARCore supported devices</a> page for details.
         /// </summary>
         /// <param name="depthMode">The depth mode.</param>

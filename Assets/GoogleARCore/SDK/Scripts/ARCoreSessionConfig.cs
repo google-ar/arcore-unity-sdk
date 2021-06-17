@@ -106,7 +106,7 @@ namespace GoogleARCore
         /// On these devices, the default desired focus mode is currently
         /// <c><see cref="GoogleARCore.CameraFocusMode"/></c>.<c>FixedFocus</c>, although this
         /// default might change in the future. See the
-        /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
+        /// <a href="https://developers.google.com/ar/devices">ARCore supported
         /// devices</a> page for a list of devices on which ARCore does not support changing the
         /// desired focus mode.
         ///

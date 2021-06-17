@@ -37,13 +37,13 @@ namespace GoogleARCore
         ///  - Hardware depth sensor, such as a time-of-flight sensor (or ToF sensor)
         /// Provides depth estimation for every pixel in the image, and works best
         /// for static scenes. For a list of supported devices, see:
-        ///  https://developers.google.com/ar/discover/supported-devices
+        ///  https://developers.google.com/ar/devices
         /// Adds significant computational load.
         /// </summary>
         Automatic = 1,
 
         /// <summary>
-        /// On <a href="https://developers.google.com/ar/discover/supported-devices">ARCore
+        /// On <a href="https://developers.google.com/ar/devices">ARCore
         /// supported devices</a> that also support the Depth API, provides a "raw", mostly
         /// unfiltered, depth image (<c>Frame.UpdateRawDepthTexture</c>) and depth confidence image
         /// (<c>Frame.UpdateRawDepthConfidenceTexture</c>).

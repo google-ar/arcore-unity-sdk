@@ -36,7 +36,7 @@ namespace GoogleARCore
     ///
     /// Beginning with ARCore SDK 1.15.0, some devices support additional camera configs with lower
     /// GPU texture resolutions than the device's default GPU texture resolution. See the
-    /// <a href="https://developers.google.com/ar/discover/supported-devices">ARCore supported
+    /// <a href="https://developers.google.com/ar/devices">ARCore supported
     /// devices</a> for an up to date list of affected devices.
     ///
     /// An app may adjust its capabilities at runtime by selecting a wider range of config filters
@@ -130,7 +130,7 @@ namespace GoogleARCore
             ///
             /// Increases power consumption and may increase app memory usage.
             ///
-            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// See the <a href="https://developers.google.com/ar/devices">
             /// ARCore supported devices</a> page for a list of
             /// devices that currently support 60fps.
             /// </summary>
@@ -150,7 +150,7 @@ namespace GoogleARCore
             /// time-of-flight sensor (or ToF sensor), to be present on the device,
             /// and that will be used by ARCore.
             ///
-            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// See the <a href="https://developers.google.com/ar/devices">
             /// ARCore supported devices</a> page for a list of
             /// devices that currently have supported depth sensors.
             /// </summary>
@@ -183,7 +183,7 @@ namespace GoogleARCore
             /// Filters for camera configs that require a stereo camera to be present on the device,
             /// and that will be used by ARCore.
             ///
-            /// See the <a href="https://developers.google.com/ar/discover/supported-devices">
+            /// See the <a href="https://developers.google.com/ar/devices">
             /// ARCore supported devices</a> page for a list of devices that currently have
             /// supported stereo cameras.
             /// </summary>

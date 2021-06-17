@@ -81,7 +81,7 @@ Shader "Hidden/OcclusionImageEffect"
                 if (_UseDepthFromPlanes)
                 {
                     depthMeters = tex2Dlod(_CurrentDepthTexture, float4(i.uv, 0, 0)).r
-                                    * ARCORE_MAX_DEPTH_MM;
+                                    * ARCORE_FLOAT_TO_SHORT;
                     depthMeters *= ARCORE_DEPTH_SCALE;
                 }
                 else

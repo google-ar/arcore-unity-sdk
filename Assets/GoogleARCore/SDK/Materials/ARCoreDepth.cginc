@@ -19,7 +19,7 @@
 //-----------------------------------------------------------------------
 
 #define ARCORE_DEPTH_SCALE 0.001        // mm to m
-#define ARCORE_MAX_DEPTH_MM 8191.0
+#define ARCORE_FLOAT_TO_SHORT 0xFFFF    // (0.0, 1.0) -> (0, 65535)
 #define ARCORE_FLOAT_TO_5BITS 31        // (0.0, 1.0) -> (0, 31)
 #define ARCORE_FLOAT_TO_6BITS 63        // (0.0, 1.0) -> (0, 63)
 #define ARCORE_RGB565_RED_SHIFT 2048    // left shift 11 bits
@@ -49,7 +49,6 @@ inline float ArCoreDepth_GetMeters(float2 uv)
     float depth = (rawDepth.r * ARCORE_FLOAT_TO_5BITS * ARCORE_RGB565_RED_SHIFT)
                 + (rawDepth.g * ARCORE_FLOAT_TO_6BITS * ARCORE_RGB565_GREEN_SHIFT)
                 + (rawDepth.b * ARCORE_FLOAT_TO_5BITS);
-    depth = min(depth, ARCORE_MAX_DEPTH_MM);
     depth *= ARCORE_DEPTH_SCALE;
     return depth;
 }
