@@ -7,6 +7,11 @@ tracking, environmental understanding, and light estimation. With these
 capabilities you can build entirely new AR experiences or enhance existing apps
 with AR features.
 
+<b>Caution</b>: The <i>ARCore SDK for Unity</i> is <b>deprecated</b>, and no longer
+supported in the 2020 and later versions of Unity. This SDK should only be
+used by developers working on existing projects which are unable to migrate
+to Unity's AR Foundation. Developers starting new projects should instead use
+the [ARCore Extensions for AR Foundation](//github.com/google-ar/arcore-unity-extensions).
 
 ## Quick Start
 
